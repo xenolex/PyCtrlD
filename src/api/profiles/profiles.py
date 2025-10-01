@@ -1,10 +1,9 @@
 from dataclasses import asdict, dataclass
-from enum import Enum
 from typing import List, Optional
 
-import requests
-
+from ._base import BaseApi
 from ._models.profiles import OptionItem, ProfileItem
+from .constants import Status
 
 
 @dataclass
@@ -51,21 +50,16 @@ class ModifyProfileFormData:
                 del self.__dict__[item]
 
 
-class OptionStatus(Enum):
-    ENABLED = 0
-    DISABLED = 1
-
-
 @dataclass
 class ModifyOptionFormData:
     """Form data for modifying profile options.
 
     Args:
-        status (OptionStatus): Status of the Profile Option. ENABLED to enable, DISABLED to disable.
+        status (Status): Status of the Profile Option. ENABLED to enable, DISABLED to disable.
         value (Optional[str], optional): Optional value of the option to set. Defaults to None.
     """
 
-    status: OptionStatus
+    status: Status
     value: Optional[str] = None
 
     def __post_init__(self):
@@ -73,11 +67,9 @@ class ModifyOptionFormData:
             del self.__dict__["value"]
 
 
-class ProfilesApi:
+class ProfilesApi(BaseApi):
     def __init__(self, token: str) -> None:
-        self._url = "https://api.controld.com/profiles"
-        self._session = requests.Session()
-        self._session.headers.update({"Authorization": f"Bearer {token}"})
+        super().__init__(token)
 
     def list(self) -> List[ProfileItem]:
         """List all profiles associated with an account.

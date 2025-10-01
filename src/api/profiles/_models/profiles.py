@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import List
 
+from api.profiles.constants import Do, Status
+
 
 @dataclass
 class CountData:
@@ -21,8 +23,12 @@ class OptData:
 
 @dataclass
 class DAData:
-    do: int
-    status: int
+    do: Do
+    status: Status
+
+    def __init__(self, do: Do, status: Status) -> None:
+        self.do = Do(do)
+        self.status = Status(status)
 
 
 @dataclass
