@@ -1,9 +1,9 @@
 from dataclasses import asdict, dataclass
 from typing import List, Optional
 
-from ._base import BaseApi
-from ._models.profiles import OptionItem, ProfileItem
-from .constants import Status
+from api.profiles._base import BaseEndpoint
+from api.profiles._models.profiles import OptionItem, ProfileItem
+from api.profiles.constants import Status
 
 
 @dataclass
@@ -67,7 +67,7 @@ class ModifyOptionFormData:
             del self.__dict__["value"]
 
 
-class ProfilesApi(BaseApi):
+class ProfilesEndpoint(BaseEndpoint):
     def __init__(self, token: str) -> None:
         super().__init__(token)
 

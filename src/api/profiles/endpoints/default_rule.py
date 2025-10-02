@@ -1,4 +1,4 @@
-class DefaultRule:
+class DefaultRuleEndpoint:
     def list(self):
         return NotImplemented
 

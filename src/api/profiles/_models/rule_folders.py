@@ -23,7 +23,7 @@ class CreateActionItems(ListActionItem):
 
 
 @dataclass
-class ListRuleFoldersItem:
+class ListRuleFolderItem:
     PK: int
     group: str
     action: ListActionItem
@@ -37,7 +37,7 @@ class ListRuleFoldersItem:
 
 
 @dataclass
-class CreateRuleFoldersItem:
+class CreateRuleFolderItem:
     PK: int
     group: str
     action: CreateActionItems

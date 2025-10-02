@@ -1,12 +1,14 @@
-import ipaddress
-import re
 from dataclasses import asdict, dataclass
 from typing import List, Optional
 
-from api.profiles._base import BaseApi
-
-from ._models.services import ServiceItem, ServiceModifedItem
-from .constants import Do, Status
+from api.profiles._base import (
+    BaseEndpoint,
+    check_via_is_proxy_identifier,
+    check_via_is_record_or_cname,
+    check_via_v6_is_aaaa_record,
+)
+from api.profiles._models.services import ServiceItem, ServiceModifedItem
+from api.profiles.constants import Do, Status
 
 
 @dataclass
@@ -35,56 +37,19 @@ class ModifyServiceFormData:
         self.via_v6 = via_v6
 
         if do == Do.SPOOF:
-            self._check_via_is_record_or_cname()
-            self._check_via_v6_is_aaaa_record()
+            check_via_is_record_or_cname(self.via)
+            check_via_v6_is_aaaa_record(self.via_v6)
 
         if do == Do.REDIRECT:
-            self._check_via_is_proxy_identifier()
+            check_via_is_proxy_identifier(self.via_v6)
             if via_v6 is not None:
                 # todo add logger
                 # logger.warning("via_v6 has no effect for REDIRECT")
                 print("via_v6 has no effect for REDIRECT")
 
-    def _check_via_is_proxy_identifier(self):
-        """Check that via field contains a valid 3-letter uppercase proxy identifier."""
-        if not all((self.via is not None, str(self.via).isupper(), len(str(self.via)) == 3)):
-            raise ValueError(f"via field must be a valid proxy identifier, got: {self.via}")
 
-    def _check_via_is_record_or_cname(self):
-        """Check that via field contains either a valid IPv4 address or domain name."""
-        if self.via is None:
-            raise ValueError("via field is required when do=SPOOF")
-
-        is_ipv4 = True
-        is_cname = True
-
-        try:
-            ipaddress.IPv4Address(self.via)
-        except ipaddress.AddressValueError:
-            is_ipv4 = False
-
-        # Basic domain name validation regex
-        domain_pattern = r"^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$"
-
-        if not re.match(domain_pattern, self.via):
-            is_cname = False
-
-        if not is_ipv4 and not is_cname:
-            raise ValueError(
-                f"via field must be a valid IPv4 address or domain name, got: {self.via}"
-            )
-
-    def _check_via_v6_is_aaaa_record(self):
-        """Check that via_v6 field contains a valid IPv6 address (AAAA record)."""
-        if self.via_v6 is not None:
-            try:
-                ipaddress.IPv6Address(self.via_v6)
-            except ipaddress.AddressValueError:
-                raise ValueError(f"via_v6 field must be a valid IPv6 address, got: {self.via_v6}")
-
-
-class ServicesApi(BaseApi):
-    """API client for managing profile services."""
+class ServicesEndpoint(BaseEndpoint):
+    """Endpoint for managing profile services."""
 
     def __init__(self, token: str) -> None:
         super().__init__(token)

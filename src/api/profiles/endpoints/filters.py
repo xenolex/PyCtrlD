@@ -1,9 +1,9 @@
 from dataclasses import asdict, dataclass
 from typing import List
 
-from ._base import BaseApi
-from ._models.filters import FilterItem
-from .constants import Status
+from api.profiles._base import BaseEndpoint
+from api.profiles._models.filters import FilterItem
+from api.profiles.constants import Status
 
 
 @dataclass
@@ -17,8 +17,8 @@ class ModifyFilterFormData:
     status: Status
 
 
-class FiltersApi(BaseApi):
-    """API client for managing profile filters."""
+class FiltersEndpoint(BaseEndpoint):
+    """Endpoint for managing profile filters."""
 
     def __init__(self, token: str) -> None:
         super().__init__(token)

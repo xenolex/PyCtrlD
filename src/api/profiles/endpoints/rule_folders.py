@@ -1,10 +1,9 @@
 from dataclasses import asdict, dataclass
 from typing import List, Optional
 
+from api.profiles._base import BaseEndpoint
+from api.profiles._models.rule_folders import CreateRuleFolderItem, ListRuleFolderItem
 from api.profiles.constants import Do, Status
-
-from ._base import BaseApi
-from ._models.rule_folders import CreateRuleFoldersItem, ListRuleFoldersItem
 
 
 @dataclass
@@ -80,14 +79,14 @@ class DeleteRuleFoldersFormData(RuleFoldersFormData):
         super().__init__(name=name, do=do, status=status, via=via)
 
 
-class RuleFoldersApi(BaseApi):
-    """API client for managing profile rule folders (groups)."""
+class RuleFoldersEndpoint(BaseEndpoint):
+    """Endpoint for managing profile rule folders (groups)."""
 
     def __init__(self, token: str) -> None:
         super().__init__(token)
         self._url = self._url + "/{profile_id}/groups"
 
-    def list(self, profile_id: str) -> List[ListRuleFoldersItem]:
+    def list(self, profile_id: str) -> List[ListRuleFolderItem]:
         """Return all folders in a profile. These can be used to group custom rules.
 
         Args:
@@ -105,7 +104,7 @@ class RuleFoldersApi(BaseApi):
 
         data = response.json()
         return [
-            ListRuleFoldersItem(
+            ListRuleFolderItem(
                 PK=item["PK"],
                 group=item["name"],
                 action=item["action"],
@@ -138,7 +137,7 @@ class RuleFoldersApi(BaseApi):
 
     def create(
         self, profile_id: str, form_data: CreateRuleFoldersFormData
-    ) -> List[CreateRuleFoldersItem]:
+    ) -> List[CreateRuleFolderItem]:
         """Create a new folder and assign it an optional rule.
 
         Args:
@@ -159,7 +158,7 @@ class RuleFoldersApi(BaseApi):
 
         data = response.json()
         return [
-            CreateRuleFoldersItem(
+            CreateRuleFolderItem(
                 PK=item["PK"],
                 group=item["name"],
                 action=item["action"],

@@ -1,19 +1,8 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
+from api.profiles._base import ActionItem
 from api.profiles.constants import Do, Status
-
-
-@dataclass
-class ActionItem:
-    do: Do
-    status: Status
-    via: Optional[str]
-
-    def __init__(self, do: Do, status: Status, via: Optional[str] = None):
-        self.do = Do(do)
-        self.status = Status(status)
-        self.via = via
 
 
 @dataclass

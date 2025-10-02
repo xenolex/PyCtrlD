@@ -1,3 +1,3 @@
-class ListProxies:
+class ListProxiesEndpoint:
     def list(self):
         return NotImplemented
