@@ -28,6 +28,9 @@ class BaseEndpoint:
         )
         self._url = "https://api.controld.com/profiles"
 
+    def get_raw_response(self, url):
+        return self._session.get(url)
+
 
 def check_via_is_proxy_identifier(via: str | None):
     """Check that via field contains a valid 3-letter uppercase proxy identifier."""

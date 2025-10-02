@@ -1,6 +1,8 @@
-from typing import Any, Dict
+from typing import List
 
 from api.profiles._base import BaseEndpoint
+from api.profiles._models.list_proxies import ProxieItem
+from api.profiles.constants import LIST_PROXIES_ENDPOINT
 
 
 class ListProxiesEndpoint(BaseEndpoint):
@@ -8,9 +10,9 @@ class ListProxiesEndpoint(BaseEndpoint):
 
     def __init__(self, token: str) -> None:
         super().__init__(token)
-        self._url = "https://api.controld.com/proxies"
+        self._url = LIST_PROXIES_ENDPOINT
 
-    def list(self) -> Dict[str, Any]:
+    def list(self) -> List[ProxieItem]:
         """Returns list of usable proxies that traffic can be redirected through.
 
         Returns:
@@ -19,7 +21,20 @@ class ListProxiesEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/get_proxies
         """
-        # TODO: The response format is not documented, need to check it
+
         response = self._session.get(self._url)
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+        # Important: The response format is not documented in source doc
+        return [
+            ProxieItem(
+                PK=item["PK"],
+                city=item["city"],
+                country=item["country"],
+                country_name=item["country_name"],
+                gps_lat=item["gps_lat"],
+                gps_long=item["gps_long"],
+                uid=item["uid"],
+            )
+            for item in data["body"]["proxies"]
+        ]

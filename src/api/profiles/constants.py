@@ -1,5 +1,7 @@
 from enum import Enum
 
+LIST_PROXIES_ENDPOINT = "https://api.controld.com/proxies"
+
 
 class Do(Enum):
     BLOCK = 0
