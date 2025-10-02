@@ -1,6 +1,7 @@
 from enum import Enum
 
-LIST_PROXIES_ENDPOINT = "https://api.controld.com/proxies"
+LIST_PROXIES_ENDPOINT_URL = "https://api.controld.com/proxies"
+DEFAULT_RULE_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/default"
 
 
 class Do(Enum):
