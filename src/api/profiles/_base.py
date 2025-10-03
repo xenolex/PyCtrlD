@@ -1,28 +1,32 @@
 import ipaddress
 import re
-from dataclasses import dataclass
 from typing import Optional
 
-import requests
+from pydantic import BaseModel, field_validator
+from requests import Response, Session
 
 from api.profiles.constants import Do, Status
 
 
-@dataclass
-class ActionItem:
+class ActionItem(BaseModel):
     do: Do
     status: Status
-    via: Optional[str]
+    via: Optional[str] = None
 
-    def __init__(self, do: Do, status: Status, via: Optional[str] = None):
-        self.do = Do(do)
-        self.status = Status(status)
-        self.via = via
+    @field_validator("do", mode="before")
+    @classmethod
+    def validate_do(cls, v):
+        return Do(v)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status(cls, v):
+        return Status(v)
 
 
 class BaseEndpoint:
     def __init__(self, token: str) -> None:
-        self._session = requests.Session()
+        self._session = Session()
         self._session.headers.update(
             {"Authorization": f"Bearer {token}", "accept": "application/json"}
         )
@@ -68,3 +72,15 @@ def check_via_v6_is_aaaa_record(via_v6: str | None):
             ipaddress.IPv6Address(via_v6)
         except ipaddress.AddressValueError:
             raise ValueError(f"via_v6 field must be a valid IPv6 address, got: {via_v6}")
+
+
+def check_response(response: Response):
+    class ApiError(Exception):
+        def __init__(self, response: Response):
+            data = response.json()["body"]["error"]
+            message = f"HTTP Status: {response.status_code} | Error Code: {data['code']} | Message: {data['message']}"
+
+            super().__init__(message)
+
+    if response.status_code != 200:
+        raise ApiError(response)
