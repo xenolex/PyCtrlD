@@ -1,5 +1,6 @@
 import os
 import sys
+from pprint import pprint
 
 sys.path.append("./src/")
 
@@ -27,7 +28,8 @@ def test_list_proxies_not_changed():
     data = response.json()
     proxies = data["body"]["proxies"]
     for proxie_item in proxies:
+        pprint(proxie_item)
         for key in proxie_item:
-            assert key in ProxieItem.model_fields, (  # ty: ignore[unresolved-attribute]
+            assert key in ProxieItem.model_fields, (
                 f"Key '{key}' not found in 'ProxieItem' class\n {proxie_item}"
             )

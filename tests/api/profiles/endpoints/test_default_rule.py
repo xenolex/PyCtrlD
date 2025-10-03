@@ -1,5 +1,6 @@
 import os
 import sys
+from pprint import pprint
 
 sys.path.append("./src/")
 
@@ -30,6 +31,7 @@ class TestDefaultRule:
 
     def test_list(self):
         default = self.api.list(profile_id)
+        pprint(default)
         assert isinstance(default, DefaultRuleItem)
 
     def test_modify(self, current_default_rule_settings):
@@ -49,6 +51,6 @@ def test_list_default_rule_not_changed():
     data = response.json()
     default = data["body"]["default"]
     for key in default:
-        assert key in DefaultRuleItem.model_fields, (  # ty: ignore[unresolved-attribute]
+        assert key in DefaultRuleItem.model_fields, (
             f"Key '{key}' not found in 'DefaultRuleItem' class\n {default}"
         )

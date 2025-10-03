@@ -2,13 +2,14 @@ import ipaddress
 import re
 from typing import Optional
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 from requests import Response, Session
 
 from api.profiles.constants import Do, Status
 
 
 class ActionItem(BaseModel):
+    model_config = ConfigDict(extra="allow")
     do: Do
     status: Status
     via: Optional[str] = None
@@ -77,7 +78,7 @@ def check_via_v6_is_aaaa_record(via_v6: str | None):
 def check_response(response: Response):
     class ApiError(Exception):
         def __init__(self, response: Response):
-            data = response.json()["body"]["error"]
+            data = response.json()["error"]
             message = f"HTTP Status: {response.status_code} | Error Code: {data['code']} | Message: {data['message']}"
 
             super().__init__(message)
