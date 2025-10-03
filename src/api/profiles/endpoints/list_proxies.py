@@ -26,4 +26,4 @@ class ListProxiesEndpoint(BaseEndpoint):
         check_response(response)
         data = response.json()
         # Important: The response format is not documented in source doc
-        return [ProxieItem.model_validate(item) for item in data["body"]["proxies"]]
+        return [ProxieItem.model_validate(item, strict=True) for item in data["body"]["proxies"]]
