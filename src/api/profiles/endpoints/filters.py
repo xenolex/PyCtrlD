@@ -1,7 +1,7 @@
 from dataclasses import asdict, dataclass
 from typing import List
 
-from api.profiles._base import BaseEndpoint
+from api.profiles._base import BaseEndpoint, check_response
 from api.profiles._models.filters import FilterItem
 from api.profiles.constants import Status
 
@@ -38,7 +38,7 @@ class FiltersEndpoint(BaseEndpoint):
         """
         url = self._url.format(profile_id=profile_id)
         response = self._session.get(url)
-        response.raise_for_status()
+        check_response(response)
 
         data = response.json()
         return [
@@ -67,7 +67,7 @@ class FiltersEndpoint(BaseEndpoint):
         """
         url = self._url.format(profile_id=profile_id)
         response = self._session.get(url + "/external")
-        response.raise_for_status()
+        check_response(response)
 
         data = response.json()
         return [
@@ -101,7 +101,7 @@ class FiltersEndpoint(BaseEndpoint):
         response = self._session.put(
             url + f"/filter/{filter}", data=asdict(form_data), headers=headers
         )
-        response.raise_for_status()
+        check_response(response)
 
         data = response.json()
         return data["body"]["filter"]

@@ -1,7 +1,7 @@
 from dataclasses import asdict, dataclass
 from typing import List, Optional
 
-from api.profiles._base import BaseEndpoint
+from api.profiles._base import BaseEndpoint, check_response
 from api.profiles._models.rule_folders import CreateRuleFolderItem, ListRuleFolderItem
 from api.profiles.constants import Do, Status
 
@@ -100,7 +100,7 @@ class RuleFoldersEndpoint(BaseEndpoint):
         """
         url = self._url.format(profile_id=profile_id)
         response = self._session.get(url)
-        response.raise_for_status()
+        check_response(response)
 
         data = response.json()
         return [
@@ -132,7 +132,7 @@ class RuleFoldersEndpoint(BaseEndpoint):
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         response = self._session.put(url, data=asdict(form_data), headers=headers)
-        response.raise_for_status()
+        check_response(response)
         return True
 
     def create(
@@ -154,7 +154,7 @@ class RuleFoldersEndpoint(BaseEndpoint):
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         response = self._session.post(url, data=asdict(form_data), headers=headers)
-        response.raise_for_status()
+        check_response(response)
 
         data = response.json()
         return [
@@ -186,5 +186,5 @@ class RuleFoldersEndpoint(BaseEndpoint):
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         response = self._session.delete(url, data=asdict(form_data), headers=headers)
-        response.raise_for_status()
+        check_response(response)
         return True

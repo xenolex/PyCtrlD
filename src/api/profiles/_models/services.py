@@ -1,43 +1,42 @@
-from dataclasses import dataclass
 from typing import List, Optional
+
+from pydantic import BaseModel, field_validator, model_validator
 
 from api.profiles._base import ActionItem
 from api.profiles.constants import Do, Status
 
 
-@dataclass
-class ServiceItem:
-    """ServiceItem dataclass definition for service data from the API."""
-
+class ServiceItem(BaseModel):
     PK: str
     name: str
     locations: List[str]
     unlock_location: str
-    warning: Optional[str]
+    warning: Optional[str] = None
     category: str
     action: ActionItem
 
-    def __init__(self, **kwargs):
-        self.PK = kwargs["PK"]
-        self.name = kwargs["name"]
-        self.locations = kwargs["locations"]
-        self.unlock_location = kwargs["unlock_location"]
-        self.warning = kwargs.get("warning")
-        self.category = kwargs["category"]
+    @model_validator(mode="before")
+    @classmethod
+    def validate_service_item(cls, values):
+        if isinstance(values, dict) and "action" in values and isinstance(values["action"], dict):
+            action_dict = values["action"]
+            values["action"] = ActionItem(
+                do=action_dict["do"], status=action_dict["status"], via=action_dict.get("via")
+            )
+        return values
 
-        action = kwargs["action"]
-        self.action = ActionItem(do=action["do"], status=action["status"], via=action.get("via"))
 
+class ServiceModifedItem(BaseModel):
+    do: Optional[Do] = None
+    via: Optional[str] = None
+    status: Optional[Status] = None
 
-@dataclass
-class ServiceModifedItem:
-    do: Optional[Do]
-    via: Optional[str]
-    status: Optional[Status]
+    @field_validator("do", mode="before")
+    @classmethod
+    def validate_do(cls, v):
+        return None if v is None else Do(v)
 
-    def __init__(
-        self, do: Optional[Do] = None, via: Optional[str] = None, status: Optional[Status] = None
-    ):
-        self.do = None if do is None else Do(do)
-        self.via = via
-        self.status = None if status is None else Status(status)
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status(cls, v):
+        return None if v is None else Status(v)

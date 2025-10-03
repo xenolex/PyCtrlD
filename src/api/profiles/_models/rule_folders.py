@@ -1,50 +1,54 @@
-from dataclasses import dataclass
+from pydantic import BaseModel, field_validator, model_validator
 
 from api.profiles.constants import Do, Status
 
 
-@dataclass
-class ListActionItem:
+class ListActionItem(BaseModel):
     do: Do
     status: Status
 
-    def __init__(self, do: Do, status: Status):
-        self.do = Do(do)
-        self.status = Status(status)
+    @field_validator("do", mode="before")
+    @classmethod
+    def validate_do(cls, v):
+        return Do(v)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status(cls, v):
+        return Status(v)
 
 
-@dataclass
 class CreateActionItems(ListActionItem):
     via: str
 
-    def __init__(self, do: Do, status: Status, via: str):
-        super().__init__(do, status)
-        self.via = via
 
-
-@dataclass
-class ListRuleFolderItem:
+class ListRuleFolderItem(BaseModel):
     PK: int
     group: str
     action: ListActionItem
     count: int
 
-    def __init__(self, PK: int, group: str, action: dict, count: int):
-        self.PK = PK
-        self.group = group
-        self.action = ListActionItem(action["do"], action["status"])
-        self.count = count
+    @model_validator(mode="before")
+    @classmethod
+    def validate_list_rule_folder_item(cls, values):
+        if isinstance(values, dict) and "action" in values and isinstance(values["action"], dict):
+            action_dict = values["action"]
+            values["action"] = ListActionItem(do=action_dict["do"], status=action_dict["status"])
+        return values
 
 
-@dataclass
-class CreateRuleFolderItem:
+class CreateRuleFolderItem(BaseModel):
     PK: int
     group: str
     action: CreateActionItems
     count: int
 
-    def __init__(self, PK: int, group: str, action: dict, count: int):
-        self.PK = PK
-        self.group = group
-        self.action = CreateActionItems(action["do"], action["status"], action["via"])
-        self.count = count
+    @model_validator(mode="before")
+    @classmethod
+    def validate_create_rule_folder_item(cls, values):
+        if isinstance(values, dict) and "action" in values and isinstance(values["action"], dict):
+            action_dict = values["action"]
+            values["action"] = CreateActionItems(
+                do=action_dict["do"], status=action_dict["status"], via=action_dict["via"]
+            )
+        return values

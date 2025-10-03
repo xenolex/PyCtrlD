@@ -1,42 +1,47 @@
-from dataclasses import dataclass
 from typing import Optional
 
-from api.profiles._models.services import ActionItem
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
+
+from api.profiles._base import ActionItem
 from api.profiles.constants import Do, Status
 
 
-@dataclass
-class ListCustomRuleItem:
+class CustomRulesActionItem(ActionItem):
+    via_v6: Optional[str] = None  # not documented
+
+
+class ListCustomRuleItem(BaseModel):
+    model_config = ConfigDict(extra="allow")
     PK: str
     order: int
     group: int
-    action: ActionItem
+    action: CustomRulesActionItem
+    comment: Optional[str] = None  # not documented
 
-    def __init__(self, PK: str, order: int, group: int, action: dict):
-        self.PK = PK
-        self.order = order
-        self.group = group
-        self.action = ActionItem(do=action["do"], status=action["status"], via=action.get("via"))
+    @model_validator(mode="before")
+    @classmethod
+    def validate_list_custom_rule_item(cls, values):
+        if isinstance(values, dict) and "action" in values and isinstance(values["action"], dict):
+            action_dict = values["action"]
+            values["action"] = CustomRulesActionItem.model_validate(action_dict, strict=True)
+        return values
 
 
-@dataclass
-class CreateCustomRuleItem:
-    do: Optional[Do]
-    status: Optional[Status]
-    via: Optional[str]
-    order: Optional[int]
-    group: Optional[int]
+class CreatedCustomRuleItem(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    do: Do
+    status: Status
+    via: Optional[str] = None
+    via_v6: Optional[str] = None  # Not documented
+    order: Optional[int] = None
+    group: Optional[int] = None
 
-    def __init__(
-        self,
-        do: Optional[Do] = None,
-        status: Optional[Status] = None,
-        via: Optional[str] = None,
-        order: Optional[int] = None,
-        group: Optional[int] = None,
-    ):
-        self.do = None if do is None else Do(do)
-        self.status = None if status is None else Status(status)
-        self.via = via
-        self.order = order
-        self.group = group
+    @field_validator("do", mode="before")
+    @classmethod
+    def validate_do(cls, v):
+        return Do(v)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status(cls, v):
+        return Status(v)

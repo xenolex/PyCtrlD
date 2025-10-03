@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from api.profiles._base import (
     BaseEndpoint,
+    check_response,
     check_via_is_proxy_identifier,
     check_via_is_record_or_cname,
     check_via_v6_is_aaaa_record,
@@ -69,7 +70,7 @@ class ServicesEndpoint(BaseEndpoint):
         """
         url = self._url.format(profile_id=profile_id)
         response = self._session.get(url)
-        response.raise_for_status()
+        check_response(response)
 
         data = response.json()
         return [
@@ -104,7 +105,7 @@ class ServicesEndpoint(BaseEndpoint):
         url = self._url.format(profile_id=profile_id)
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         response = self._session.put(f"{url}/{service}", data=asdict(form_data), headers=headers)
-        response.raise_for_status()
+        check_response(response)
 
         data = response.json()
 

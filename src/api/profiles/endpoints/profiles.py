@@ -1,7 +1,7 @@
 from dataclasses import asdict, dataclass
 from typing import List, Optional
 
-from api.profiles._base import BaseEndpoint
+from api.profiles._base import BaseEndpoint, check_response
 from api.profiles._models.profiles import OptionItem, ProfileItem
 from api.profiles.constants import Status
 
@@ -81,7 +81,7 @@ class ProfilesEndpoint(BaseEndpoint):
             https://docs.controld.com/reference/get_profiles
         """
         response = self._session.get(self._url)
-        response.raise_for_status()
+        check_response(response)
         data = response.json()
         return [
             ProfileItem(
@@ -105,7 +105,7 @@ class ProfilesEndpoint(BaseEndpoint):
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         response = self._session.post(self._url, data=asdict(form_data), headers=headers)
-        response.raise_for_status()
+        check_response(response)
 
         return True
 
@@ -126,7 +126,7 @@ class ProfilesEndpoint(BaseEndpoint):
         response = self._session.put(
             f"{self._url}/{profile_id}", data=asdict(form_data), headers=headers
         )
-        response.raise_for_status()
+        check_response(response)
 
         return response.json()
 
@@ -144,7 +144,7 @@ class ProfilesEndpoint(BaseEndpoint):
             https://docs.controld.com/reference/delete_profiles-profile-id
         """
         response = self._session.delete(f"{self._url}/{profile_id}")
-        response.raise_for_status()
+        check_response(response)
 
         return True
 
@@ -159,7 +159,7 @@ class ProfilesEndpoint(BaseEndpoint):
         """
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         response = self._session.get(f"{self._url}/options", headers=headers)
-        response.raise_for_status()
+        check_response(response)
         data = response.json()
 
         return [
@@ -192,6 +192,6 @@ class ProfilesEndpoint(BaseEndpoint):
         response = self._session.put(
             f"{self._url}/{profile_id}/options/{name}", data=asdict(form_data), headers=headers
         )
-        response.raise_for_status()
+        check_response(response)
 
         return True

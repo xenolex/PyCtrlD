@@ -1,63 +1,107 @@
-from dataclasses import asdict, dataclass
 from typing import List, Optional
+
+from pydantic import BaseModel, field_validator, model_validator
 
 from api.profiles._base import (
     BaseEndpoint,
+    check_response,
     check_via_is_proxy_identifier,
     check_via_is_record_or_cname,
     check_via_v6_is_aaaa_record,
 )
-from api.profiles._models.custom_rules import CreateCustomRuleItem, ListCustomRuleItem
-from api.profiles.constants import Do, Status
+from api.profiles._models.custom_rules import CreatedCustomRuleItem, ListCustomRuleItem
+from api.profiles.constants import CUSTOM_RULES_ENDPOINT_URL, Do, Status
 
 
-@dataclass
-class CustomRuleFormData:
-    """Form data for creating and modifying custom rules.
+class __BaseCustomRuleFormData(BaseModel)
+
+     via: Optional[str] = None
+     via_v6: Optional[str] = None
+     group: Optional[int] = None
+     hostnames: List[str]
+
+class CreateCustomRuleFormData(__BaseCustomRuleFormData):
+    """Form data for creating custom rules.
 
     Args:
         do (Do): Rule type. (BLOCK, BYPASS, SPOOF, REDIRECT).
         status (Status): Rule status. (ENABLED or DISABLED).
-        via (str): Spoof/Redirect target. If SPOOF, this can be an IPv4 or hostname.
+        via (Optional[str]): Spoof/Redirect target. If SPOOF, this can be an IPv4 or hostname.
                    If REDIRECT, this must be a valid proxy identifier.
         via_v6 (Optional[str]): If SPOOF this can be a valid IPv6 address (AAAA record).
-        group (int): Group ID to organize rules.
-        hostnames (List[str]): List of hostnames this rule applies to.
+        group (Optional[int]): Group ID to organize rules.
+        hostnames (List[str]): List of hostnames this rule applies to. len(hostnames) rules will be created
     """
 
     do: Do
     status: Status
-    via: str
-    via_v6: Optional[str]
-    group: int
-    hostnames: List[str]
 
-    def __init__(
-        self,
-        do: Do,
-        status: Status,
-        via: str,
-        via_v6: Optional[str],
-        group: int,
-        hostnames: List[str],
-    ) -> None:
-        self.do = Do(do)
-        self.status = Status(status)
-        self.via = via
-        self.via_v6 = via_v6
-        self.group = group
-        self.hostnames = hostnames
+    @field_validator("do", mode="before")
+    @classmethod
+    def validate_do(cls, v):
+        return Do(v)
 
-        if do == Do.SPOOF:
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status(cls, v):
+        return Status(v)
+
+    @model_validator(mode="after")
+    def validate_rule_constraints(self):
+        if self.do == Do.SPOOF:
             check_via_is_record_or_cname(self.via)
             check_via_v6_is_aaaa_record(self.via_v6)
 
-        if do == Do.REDIRECT:
+        if self.do == Do.REDIRECT:
             check_via_is_proxy_identifier(self.via)
-            if via_v6 is not None:
+            if self.via_v6 is not None:
                 # todo add logger
                 # logger.warning("via_v6 has no effect for REDIRECT")
                 print("via_v6 has no effect for REDIRECT")
+
+        return self
+
+
+class ModifyCustomRuleFormData(__BaseCustomRuleFormData):
+    """Form data modifying custom rules.
+
+    Args:
+        do (Optional[Do]): Rule type. (BLOCK, BYPASS, SPOOF, REDIRECT).
+        status (Optional[Status]): Rule status. (ENABLED or DISABLED).
+        via (str): Spoof/Redirect target. If SPOOF, this can be an IPv4 or hostname.
+                   If REDIRECT, this must be a valid proxy identifier.
+        via_v6 (Optional[str]): If SPOOF this can be a valid IPv6 address (AAAA record).
+        group (int): Group ID to organize rules.
+        hostnames (List[str]): List of hostnames this rule applies to. len(hostnames) rules will be created
+    """
+
+    do: Optional[Do] = None
+    status: Optional[Status] = None
+
+    @field_validator("do", mode="before")
+    @classmethod
+    def validate_do(cls, v):
+        return None if v is None else Do(v)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status(cls, v):
+        return None if v is None else Status(v)
+
+    @model_validator(mode="after")
+    def validate_rule_constraints(self):
+        if self.do == Do.SPOOF:
+            check_via_is_record_or_cname(self.via)
+            check_via_v6_is_aaaa_record(self.via_v6)
+
+        if self.do == Do.REDIRECT:
+            check_via_is_proxy_identifier(self.via)
+            if self.via_v6 is not None:
+                # todo add logger
+                # logger.warning("via_v6 has no effect for REDIRECT")
+                print("via_v6 has no effect for REDIRECT")
+
+        return self
 
 
 class CustomRulesEndpoint(BaseEndpoint):
@@ -65,14 +109,14 @@ class CustomRulesEndpoint(BaseEndpoint):
 
     def __init__(self, token: str) -> None:
         super().__init__(token)
-        self._url = self._url + "/{profile_id}/rules"
+        self._url = CUSTOM_RULES_ENDPOINT_URL
 
-    def list(self, profile_id: str, folder_id: str) -> List[ListCustomRuleItem]:
+    def list(self, profile_id: str, folder_id: Optional[int] = None) -> List[ListCustomRuleItem]:
         """Return custom rules in a folder. For root folder, omit the folder ID.
 
         Args:
             profile_id (str): Primary key (PK) of the profile.
-            folder_id (str): Folder ID (0 or omit for root).
+            folder_id (Optional[int]): Folder ID (None for root). Defaults to None.
 
         Returns:
             List[ListCustomRuleItem]: List of custom rule items.
@@ -81,22 +125,16 @@ class CustomRulesEndpoint(BaseEndpoint):
             https://docs.controld.com/reference/get_profiles-profile-id-rules-folder-id
         """
         url = self._url.format(profile_id=profile_id)
-        url += f"/{folder_id}"
+        url += f"/{'' if folder_id is None else folder_id}"
         response = self._session.get(url)
-        response.raise_for_status()
+        check_response(response)
 
         data = response.json()
         return [
-            ListCustomRuleItem(
-                PK=item["PK"],
-                order=item["order"],
-                group=item["group"],
-                action=item["action"],
-            )
-            for item in data["body"]["rules"]
+            ListCustomRuleItem.model_validate(item, strict=True) for item in data["body"]["rules"]
         ]
 
-    def modify(self, profile_id: str, form_data: CustomRuleFormData) -> bool:
+    def modify(self, profile_id: str, form_data: ModifyCustomRuleFormData) -> bool:
         """Modify an existing custom rule.
 
         Args:
@@ -111,12 +149,14 @@ class CustomRulesEndpoint(BaseEndpoint):
         """
         url = self._url.format(profile_id=profile_id)
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
-        response = self._session.put(url, data=asdict(form_data), headers=headers)
-        response.raise_for_status()
+        breakpoint()
+        response = self._session.put(url, data=form_data.model_dump_json(), headers=headers)
+        check_response(response)
         return True
 
-    def create(self, profile_id: str, form_data: CustomRuleFormData) -> List[CreateCustomRuleItem]:
+    def create(
+        self, profile_id: str, form_data: CreateCustomRuleFormData
+    ) -> List[CreatedCustomRuleItem]:
         """Create one or more custom rules.
 
         Args:
@@ -132,18 +172,12 @@ class CustomRulesEndpoint(BaseEndpoint):
         url = self._url.format(profile_id=profile_id)
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-        response = self._session.post(url, data=asdict(form_data), headers=headers)
-        response.raise_for_status()
+        response = self._session.post(url, data=form_data.model_dump_json(), headers=headers)
+        check_response(response)
 
         data = response.json()
         return [
-            CreateCustomRuleItem(
-                do=item.get("do"),
-                status=item.get("status"),
-                via=item.get("via"),
-                order=item.get("order"),
-                group=item.get("group"),
-            )
+            CreatedCustomRuleItem.model_validate(item, strict=True)
             for item in data["body"]["rules"]
         ]
 
@@ -165,5 +199,5 @@ class CustomRulesEndpoint(BaseEndpoint):
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         response = self._session.delete(url, headers=headers)
-        response.raise_for_status()
+        check_response(response)
         return True

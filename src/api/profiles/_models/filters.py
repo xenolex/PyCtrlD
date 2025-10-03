@@ -1,9 +1,9 @@
-from dataclasses import dataclass
 from typing import List
 
+from pydantic import BaseModel, model_validator
 
-@dataclass
-class OptionItem:
+
+class OptionItem(BaseModel):
     title: str
     description: str
     type: str
@@ -11,9 +11,8 @@ class OptionItem:
     status: int
 
 
-@dataclass
-class FilterItem:
-    """FilterItem dataclass definition"""
+class FilterItem(BaseModel):
+    """FilterItem Pydantic model definition"""
 
     PK: str
     name: str
@@ -22,28 +21,24 @@ class FilterItem:
     sources: List[str]
     options: List[OptionItem]
 
-    def __init__(
-        self,
-        PK: str,
-        name: str,
-        description: str,
-        additional: str,
-        sources: List[str],
-        options: List[dict],
-    ):
-        self.PK = PK
-        self.name = name
-        self.description = description
-        self.additional = additional
-        self.sources = sources
-
-        self.options = [
-            OptionItem(
-                title=option["title"],
-                description=option["description"],
-                type=option["type"],
-                name=option["name"],
-                status=option["status"],
-            )
-            for option in options
-        ]
+    @model_validator(mode="before")
+    @classmethod
+    def validate_filter_item(cls, values):
+        if isinstance(values, dict) and "options" in values and isinstance(values["options"], list):
+            # Convert dict options to OptionItem instances
+            option_items = []
+            for option in values["options"]:
+                if isinstance(option, dict):
+                    option_items.append(
+                        OptionItem(
+                            title=option["title"],
+                            description=option["description"],
+                            type=option["type"],
+                            name=option["name"],
+                            status=option["status"],
+                        )
+                    )
+                else:
+                    option_items.append(option)
+            values["options"] = option_items
+        return values

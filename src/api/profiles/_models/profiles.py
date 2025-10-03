@@ -1,38 +1,40 @@
-from dataclasses import dataclass
 from typing import List
+
+from pydantic import BaseModel, field_validator, model_validator
 
 from api.profiles.constants import Do, Status
 
 
-@dataclass
-class CountData:
+class CountData(BaseModel):
     count: int
 
 
-@dataclass
-class OptItem:
+class OptItem(BaseModel):
     PK: str
     value: int
 
 
-@dataclass
-class OptData:
+class OptData(BaseModel):
     count: int
     data: List[OptItem]
 
 
-@dataclass
-class DAData:
+class DAData(BaseModel):
     do: Do
     status: Status
 
-    def __init__(self, do: Do, status: Status) -> None:
-        self.do = Do(do)
-        self.status = Status(status)
+    @field_validator("do", mode="before")
+    @classmethod
+    def validate_do(cls, v):
+        return Do(v)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status(cls, v):
+        return Status(v)
 
 
-@dataclass
-class ProfileData:
+class ProfileData(BaseModel):
     flt: CountData
     cflt: CountData
     ipflt: CountData
@@ -44,35 +46,42 @@ class ProfileData:
     # strings and its required, but the API response with dict
 
 
-@dataclass
-class ProfileItem:
+class ProfileItem(BaseModel):
     PK: str
     updated: int
     name: str
     profile: ProfileData
     # stats: int - https://docs.controld.com/reference/get_profiles this parameter is present in docs but absent in the API response
 
-    def __init__(self, PK: str, updated: int, name: str, profile: dict):
-        self.PK = PK
-        self.updated = updated
-        self.name = name
+    @model_validator(mode="before")
+    @classmethod
+    def validate_profile_item(cls, values):
+        if isinstance(values, dict) and "profile" in values and isinstance(values["profile"], dict):
+            profile_dict = values["profile"]
 
-        opt_items = [OptItem(PK=item["PK"], value=item["value"]) for item in profile["opt"]["data"]]
+            # Process opt items
+            opt_items = [
+                OptItem(PK=item["PK"], value=item["value"]) for item in profile_dict["opt"]["data"]
+            ]
 
-        self.profile = ProfileData(
-            flt=CountData(count=profile["flt"]["count"]),
-            cflt=CountData(count=profile["cflt"]["count"]),
-            ipflt=CountData(count=profile["ipflt"]["count"]),
-            rule=CountData(count=profile["rule"]["count"]),
-            svc=CountData(count=profile["svc"]["count"]),
-            grp=CountData(count=profile["grp"]["count"]),
-            opt=OptData(count=profile["opt"]["count"], data=opt_items),
-            da=DAData(do=profile["da"]["do"], status=profile["da"]["status"]),
-        )
+            # Build the profile data
+            profile_data = ProfileData(
+                flt=CountData(count=profile_dict["flt"]["count"]),
+                cflt=CountData(count=profile_dict["cflt"]["count"]),
+                ipflt=CountData(count=profile_dict["ipflt"]["count"]),
+                rule=CountData(count=profile_dict["rule"]["count"]),
+                svc=CountData(count=profile_dict["svc"]["count"]),
+                grp=CountData(count=profile_dict["grp"]["count"]),
+                opt=OptData(count=profile_dict["opt"]["count"], data=opt_items),
+                da=DAData(do=profile_dict["da"]["do"], status=profile_dict["da"]["status"]),
+            )
+
+            values["profile"] = profile_data
+
+        return values
 
 
-@dataclass
-class OptionItem:
+class OptionItem(BaseModel):
     PK: str
     title: str
     description: str
