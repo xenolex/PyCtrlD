@@ -1,9 +1,9 @@
-from dataclasses import dataclass
 from typing import Optional
 
+from pydantic import BaseModel
 
-@dataclass
-class ProxieItem:
+
+class ProxieItem(BaseModel):
     # Important: The response format is not documented in source doc
     PK: str
     city: str

@@ -28,6 +28,6 @@ def test_list_proxies_not_changed():
     proxies = data["body"]["proxies"]
     for proxie_item in proxies:
         for key in proxie_item:
-            assert key in ProxieItem.__match_args__, (  # ty: ignore[unresolved-attribute]
+            assert key in ProxieItem.model_fields, (  # ty: ignore[unresolved-attribute]
                 f"Key '{key}' not found in 'ProxieItem' class\n {proxie_item}"
             )

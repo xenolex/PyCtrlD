@@ -1,6 +1,6 @@
 from typing import List
 
-from api.profiles._base import BaseEndpoint
+from api.profiles._base import BaseEndpoint, check_response
 from api.profiles._models.list_proxies import ProxieItem
 from api.profiles.constants import LIST_PROXIES_ENDPOINT_URL
 
@@ -23,18 +23,7 @@ class ListProxiesEndpoint(BaseEndpoint):
         """
 
         response = self._session.get(self._url)
-        response.raise_for_status()
+        check_response(response)
         data = response.json()
         # Important: The response format is not documented in source doc
-        return [
-            ProxieItem(
-                PK=item["PK"],
-                city=item["city"],
-                country=item["country"],
-                country_name=item["country_name"],
-                gps_lat=item["gps_lat"],
-                gps_long=item["gps_long"],
-                uid=item["uid"],
-            )
-            for item in data["body"]["proxies"]
-        ]
+        return [ProxieItem.model_validate(item) for item in data["body"]["proxies"]]
