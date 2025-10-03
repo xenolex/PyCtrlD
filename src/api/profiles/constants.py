@@ -12,5 +12,5 @@ class Do(Enum):
 
 
 class Status(Enum):
-    ENABLED = 0
-    DISABLED = 1
+    DISABLED = 0
+    ENABLED = 1
