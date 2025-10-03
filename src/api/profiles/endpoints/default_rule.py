@@ -1,12 +1,10 @@
-from dataclasses import asdict, dataclass
 from typing import Optional
 
-from api.profiles._base import ActionItem, BaseEndpoint
+from api.profiles._base import ActionItem, BaseEndpoint, check_response
 from api.profiles._models.default_rule import DefaultRuleItem
-from api.profiles.constants import Do, Status
+from api.profiles.constants import DEFAULT_RULE_ENDPOINT_URL, Do, Status
 
 
-@dataclass
 class DefaultRuleFormData(ActionItem):
     """Form data for modifying default rule settings.
 
@@ -20,17 +18,13 @@ class DefaultRuleFormData(ActionItem):
     status: Status
     via: Optional[str] = None
 
-    def __post_init__(self):
-        if self.via is None:
-            del self.__dict__["via"]
-
 
 class DefaultRuleEndpoint(BaseEndpoint):
     """Endpoint for managing profile default rules."""
 
     def __init__(self, token: str) -> None:
         super().__init__(token)
-        self._url = self._url + "/{profile_id}/default"
+        self._url = DEFAULT_RULE_ENDPOINT_URL
 
     def list(self, profile_id: str) -> DefaultRuleItem:
         """Returns status of the Default Rule.
@@ -46,14 +40,10 @@ class DefaultRuleEndpoint(BaseEndpoint):
         """
         url = self._url.format(profile_id=profile_id)
         response = self._session.get(url)
-        response.raise_for_status()
+        check_response(response)
         data = response.json()
         default_data = data["body"]["default"]
-        return DefaultRuleItem(
-            do=default_data["do"],
-            status=default_data["status"],
-            via=default_data["via"],
-        )
+        return DefaultRuleItem.model_validate(default_data)
 
     def modify(self, profile_id: str, form_data: DefaultRuleFormData) -> DefaultRuleItem:
         """Modify the Default Rule for a profile.
@@ -70,12 +60,8 @@ class DefaultRuleEndpoint(BaseEndpoint):
         """
         url = self._url.format(profile_id=profile_id)
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        response = self._session.put(url, headers=headers, data=asdict(form_data))
-        response.raise_for_status()
+        response = self._session.put(url, headers=headers, data=form_data.model_dump_json())
+        check_response(response)
         data = response.json()
         default_data = data["body"]["default"]
-        return DefaultRuleItem(
-            do=default_data["do"],
-            status=default_data["status"],
-            via=default_data["via"],
-        )
+        return DefaultRuleItem.model_validate(default_data)
