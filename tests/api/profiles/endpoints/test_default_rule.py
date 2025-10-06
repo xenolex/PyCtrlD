@@ -1,8 +1,10 @@
-import os
 import sys
-from pprint import pprint
 
 sys.path.append("./src/")
+sys.path.append("./")
+
+import os
+from pprint import pprint
 
 import pytest
 from dotenv import load_dotenv
@@ -11,6 +13,7 @@ from api.profiles._base import BaseEndpoint
 from api.profiles._models.default_rule import DefaultRuleItem
 from api.profiles.constants import DEFAULT_RULE_ENDPOINT_URL, Do, Status
 from api.profiles.endpoints.default_rule import DefaultRuleEndpoint, DefaultRuleFormData
+from tests.api.profiles.checks import check_key_model
 
 load_dotenv()
 token = os.environ.get("TOKEN", "")
@@ -51,6 +54,4 @@ def test_list_default_rule_not_changed():
     data = response.json()
     default = data["body"]["default"]
     for key in default:
-        assert key in DefaultRuleItem.model_fields, (
-            f"Key '{key}' not found in 'DefaultRuleItem' class\n {default}"
-        )
+        check_key_model(key, DefaultRuleItem)
