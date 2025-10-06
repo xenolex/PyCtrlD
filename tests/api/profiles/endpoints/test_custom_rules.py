@@ -27,6 +27,7 @@ profile_id = os.environ.get("TEST_PROFILE_ID", "")
 
 class TestDefaultRule:
     api = CustomRulesEndpoint(token)
+    prefix = "create_site"
 
     def test_list(self):
         check_api_list_endpoint(
@@ -40,12 +41,11 @@ class TestDefaultRule:
         )
 
     def test_create(self):
-        prefix = "create_site"
         data = [
             {
                 "do": Do.BLOCK,
                 "status": Status.ENABLED,
-                "hostnames": [f"{prefix}{randint(0, 999999)}.com"],
+                "hostnames": [f"{self.prefix}{randint(0, 999999)}.com"],
                 "via": "127.0.0.1",
                 "via_v6": "::1",
                 "group": 0,
@@ -53,7 +53,7 @@ class TestDefaultRule:
             {
                 "do": Do.BYPASS,
                 "status": Status.ENABLED,
-                "hostnames": [f"{prefix}{randint(0, 999999)}.com"],
+                "hostnames": [f"{self.prefix}{randint(0, 999999)}.com"],
                 "via": "127.0.0.1",
                 "via_v6": "::1",
                 "group": 0,
@@ -61,7 +61,7 @@ class TestDefaultRule:
             {
                 "do": Do.SPOOF,
                 "status": Status.ENABLED,
-                "hostnames": [f"{prefix}{randint(0, 999999)}.com"],
+                "hostnames": [f"{self.prefix}{randint(0, 999999)}.com"],
                 "via": "127.0.0.1",
                 "via_v6": "::1",
                 "group": 0,
@@ -69,7 +69,7 @@ class TestDefaultRule:
             {
                 "do": Do.REDIRECT,
                 "status": Status.ENABLED,
-                "hostnames": [f"{prefix}{randint(0, 999999)}.com"],
+                "hostnames": [f"{self.prefix}{randint(0, 999999)}.com"],
                 "via": "JFK",
                 "group": 0,
             },
@@ -80,9 +80,9 @@ class TestDefaultRule:
 
             pprint(created_rule)
 
-            assert item["do"] == form_data.do
-            assert item["status"] == form_data.status
-            assert item["group"] == form_data.group
+            assert item["do"] == created_rule[-1].do
+            assert item["status"] == created_rule[-1].status
+            assert item["group"] == created_rule[-1].group
 
             for key in created_rule[-1].model_dump():
                 check_key_in_model(key, CustomRuleItem)
@@ -90,7 +90,7 @@ class TestDefaultRule:
     def test_modify(self):
         present_data = self.api.list(profile_id)
         for item in present_data:
-            if item.PK.startswith("create_site"):
+            if item.PK.startswith(self.prefix):
                 form_data = ModifyCustomRuleFormData(status=Status.DISABLED, hostnames=[item.PK])
                 modifed_data = self.api.modify(profile_id, form_data)
 
