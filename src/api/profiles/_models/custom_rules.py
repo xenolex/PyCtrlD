@@ -27,14 +27,14 @@ class ListCustomRuleItem(BaseModel):
         return values
 
 
-class CreatedCustomRuleItem(BaseModel):
+class CustomRuleItem(BaseModel):
     model_config = ConfigDict(extra="allow")
     do: Do
     status: Status
+    order: int
+    group: int
     via: Optional[str] = None
     via_v6: Optional[str] = None  # Not documented
-    order: Optional[int] = None
-    group: Optional[int] = None
 
     @field_validator("do", mode="before")
     @classmethod

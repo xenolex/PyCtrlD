@@ -9,16 +9,19 @@ from api.profiles._base import (
     check_via_is_record_or_cname,
     check_via_v6_is_aaaa_record,
 )
-from api.profiles._models.custom_rules import CreatedCustomRuleItem, ListCustomRuleItem
+from api.profiles._models.custom_rules import (
+    CustomRuleItem,
+    ListCustomRuleItem,
+)
 from api.profiles.constants import CUSTOM_RULES_ENDPOINT_URL, Do, Status
 
 
-class __BaseCustomRuleFormData(BaseModel)
+class __BaseCustomRuleFormData(BaseModel):
+    via: Optional[str] = None
+    via_v6: Optional[str] = None
+    group: Optional[int] = None
+    hostnames: List[str]
 
-     via: Optional[str] = None
-     via_v6: Optional[str] = None
-     group: Optional[int] = None
-     hostnames: List[str]
 
 class CreateCustomRuleFormData(__BaseCustomRuleFormData):
     """Form data for creating custom rules.
@@ -126,6 +129,7 @@ class CustomRulesEndpoint(BaseEndpoint):
         """
         url = self._url.format(profile_id=profile_id)
         url += f"/{'' if folder_id is None else folder_id}"
+
         response = self._session.get(url)
         check_response(response)
 
@@ -134,7 +138,7 @@ class CustomRulesEndpoint(BaseEndpoint):
             ListCustomRuleItem.model_validate(item, strict=True) for item in data["body"]["rules"]
         ]
 
-    def modify(self, profile_id: str, form_data: ModifyCustomRuleFormData) -> bool:
+    def modify(self, profile_id: str, form_data: ModifyCustomRuleFormData) -> List[CustomRuleItem]:
         """Modify an existing custom rule.
 
         Args:
@@ -142,21 +146,19 @@ class CustomRulesEndpoint(BaseEndpoint):
             form_data (CustomRuleFormData): Form data for rule modification.
 
         Returns:
-            bool: True if rule was modified successfully.
+            bool: List of modified items.
 
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id-rules
         """
         url = self._url.format(profile_id=profile_id)
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        breakpoint()
         response = self._session.put(url, data=form_data.model_dump_json(), headers=headers)
         check_response(response)
-        return True
+        data = response.json()
+        return [CustomRuleItem.model_validate(item, strict=True) for item in data["body"]["rules"]]
 
-    def create(
-        self, profile_id: str, form_data: CreateCustomRuleFormData
-    ) -> List[CreatedCustomRuleItem]:
+    def create(self, profile_id: str, form_data: CreateCustomRuleFormData) -> List[CustomRuleItem]:
         """Create one or more custom rules.
 
         Args:
@@ -176,10 +178,7 @@ class CustomRulesEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return [
-            CreatedCustomRuleItem.model_validate(item, strict=True)
-            for item in data["body"]["rules"]
-        ]
+        return [CustomRuleItem.model_validate(item, strict=True) for item in data["body"]["rules"]]
 
     def delete(self, profile_id: str, hostname: str) -> bool:
         """Delete one or more custom rules.
