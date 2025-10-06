@@ -1,99 +1,70 @@
-from dataclasses import asdict, dataclass
 from typing import List, Optional
 
+from pydantic import BaseModel, field_validator
+
 from api.profiles._base import BaseEndpoint, check_response
-from api.profiles._models.rule_folders import CreateRuleFolderItem, ListRuleFolderItem
-from api.profiles.constants import Do, Status
+from api.profiles._models.rule_folders import RuleFolderItem
+from api.profiles.constants import RULE_FOLDERS_ENDPOINT_URL, Do, Status
 
 
-@dataclass
-class RuleFoldersFormData:
+class RuleFoldersFormData(BaseModel):
     """Base form data for rule folder operations.
 
     Args:
-        name (Optional[str]): Name of your folder.
-        do (Optional[Do]): Rule type. (BLOCK, BYPASS, SPOOF, REDIRECT).
-        status (Optional[Status]): Rule status. (ENABLED or DISABLED).
-        via (Optional[str]): Spoof/Redirect target.
+        name: Name of the folder.
+        do: Rule type (BLOCK, BYPASS, SPOOF, REDIRECT).
+        status: Rule status (ENABLED or DISABLED).
+        via: Spoof/Redirect target for IPv4.
+        via_v6: Spoof/Redirect target for IPv6.
     """
 
-    name: Optional[str]
-    do: Optional[Do]
-    status: Optional[Status]
-    via: Optional[str]
+    name: Optional[str] = None
+    do: Optional[Do] = None
+    status: Optional[Status] = None
+    via: Optional[str] = None
+    via_v6: Optional[str] = None
 
 
-@dataclass
 class CreateRuleFoldersFormData(RuleFoldersFormData):
     """Form data for creating new rule folders.
 
     Args:
-        name (str): Name of your folder.
-        do (Do): Add a rule type to a folder. All rules inside will inherit rule type. (BLOCK, BYPASS, SPOOF, REDIRECT).
-        status (Status): Status of the folder and all rules inside.(ENABLED or DISABLED).
-        via (Optional[str], optional): Add spoof IP or hostname, or proxy identiifer if do=SPOOF or do=REDIRECT. Defaults to None.
+        name: Name of the folder.
+        do: Rule type for the folder. All rules inside will inherit this type
+            (BLOCK, BYPASS, SPOOF, REDIRECT).
+        status: Status of the folder and all rules inside (ENABLED or DISABLED).
+        via: Spoof IP or hostname, or proxy identifier if do=SPOOF or do=REDIRECT.
+        via_v6: IPv6 spoof target or proxy identifier if do=SPOOF or do=REDIRECT.
     """
 
-    def __init__(self, name: str, do: Do, status: Status, via: Optional[str] = None) -> None:
-        self.name = name
-        self.do = Do(do)
-        self.status = Status(status)
-        if via is not None:
-            self.via = via
-
-
-@dataclass
-class ModifyRuleFoldersFormData(RuleFoldersFormData):
-    """Form data for modifying existing rule folders.
-
-    Args:
-        do (Do): Add a rule type to a folder. All rules inside will inherit rule type.(BLOCK, BYPASS, SPOOF, REDIRECT).
-        status (Status): Status of the folder and all rules inside.(ENABLED or DISABLED).
-        name (Optional[str], optional): Rename the folder to this name. Defaults to None.
-        via (Optional[str], optional): Add spoof IP or hostname, or proxy identiifer if do=SPOOF or do=REDIRECT. Defaults to None.
-    """
-
-    def __init__(
-        self, do: Do, status: Status, name: Optional[str] = None, via: Optional[str] = None
-    ) -> None:
-        self.do = Do(do)
-        self.status = Status(status)
-        if via is not None:
-            self.via = via
-        if name is not None:
-            self.name = name
-
-
-@dataclass
-class DeleteRuleFoldersFormData(RuleFoldersFormData):
-    """Form data for deleting rule folders.
-
-    Args:
-        name (str): Name of your folder.
-        do (Do): Rule type. (BLOCK, BYPASS, SPOOF, REDIRECT).
-        status (Status): Rule status. (ENABLED or DISABLED).
-        via (str): Spoof/Redirect target.
-    """
-
-    def __init__(self, name: str, do: Do, status: Status, via: str) -> None:
-        super().__init__(name=name, do=do, status=status, via=via)
+    @field_validator("name", mode="before")
+    @classmethod
+    def validate_name(cls, v):
+        if not v:
+            raise ValueError("Name is required")
+        return v
 
 
 class RuleFoldersEndpoint(BaseEndpoint):
     """Endpoint for managing profile rule folders (groups)."""
 
     def __init__(self, token: str) -> None:
-        super().__init__(token)
-        self._url = self._url + "/{profile_id}/groups"
+        """Initialize the rule folders endpoint.
 
-    def list(self, profile_id: str) -> List[ListRuleFolderItem]:
+        Args:
+            token: Authentication token for API access.
+        """
+        super().__init__(token)
+        self._url = RULE_FOLDERS_ENDPOINT_URL
+
+    def list(self, profile_id: str) -> List[RuleFolderItem]:
         """Return all folders in a profile. These can be used to group custom rules.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
+            profile_id: Primary key (PK) of the profile.
 
         Returns:
-            List[ListRuleFoldersItem]: List of rule folder items.
+            List of rule folder items.
 
         Reference:
             https://docs.controld.com/reference/get_profiles-profile-id-groups
@@ -103,26 +74,20 @@ class RuleFoldersEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return [
-            ListRuleFolderItem(
-                PK=item["PK"],
-                group=item["name"],
-                action=item["action"],
-                count=item["count"],
-            )
-            for item in data["body"]["groups"]
-        ]
+        return [RuleFolderItem.model_validate(item, strict=True) for item in data["body"]["groups"]]
 
-    def modify(self, profile_id: str, folder: str, form_data: ModifyRuleFoldersFormData) -> bool:
+    def modify(
+        self, profile_id: str, folder: int, form_data: RuleFoldersFormData
+    ) -> List[RuleFolderItem]:
         """Modify an existing folder.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
-            folder (str): Folder ID.
-            form_data (ModifyRuleFoldersFormData): Form data for folder modification.
+            profile_id: Primary key (PK) of the profile.
+            folder: Folder ID.
+            form_data: Form data for folder modification.
 
         Returns:
-            bool: True if folder was modified successfully.
+            List of all rule folder items after modification.
 
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id-groups-folder
@@ -131,21 +96,20 @@ class RuleFoldersEndpoint(BaseEndpoint):
         url = url + f"/{folder}"
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-        response = self._session.put(url, data=asdict(form_data), headers=headers)
+        response = self._session.put(url, data=form_data.model_dump_json(), headers=headers)
         check_response(response)
-        return True
+        data = response.json()
+        return [RuleFolderItem.model_validate(item, strict=True) for item in data["body"]["groups"]]
 
-    def create(
-        self, profile_id: str, form_data: CreateRuleFoldersFormData
-    ) -> List[CreateRuleFolderItem]:
+    def create(self, profile_id: str, form_data: CreateRuleFoldersFormData) -> List[RuleFolderItem]:
         """Create a new folder and assign it an optional rule.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
-            form_data (CreateRuleFoldersFormData): Form data for folder creation.
+            profile_id: Primary key (PK) of the profile.
+            form_data: Form data for folder creation.
 
         Returns:
-            List[CreateRuleFoldersItem]: List containing the created rule folder item.
+            List of all rule folder items after creation.
 
         Reference:
             https://docs.controld.com/reference/post_profiles-profile-id-groups
@@ -153,30 +117,25 @@ class RuleFoldersEndpoint(BaseEndpoint):
         url = self._url.format(profile_id=profile_id)
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-        response = self._session.post(url, data=asdict(form_data), headers=headers)
+        response = self._session.post(url, data=form_data.model_dump_json(), headers=headers)
         check_response(response)
 
         data = response.json()
-        return [
-            CreateRuleFolderItem(
-                PK=item["PK"],
-                group=item["name"],
-                action=item["action"],
-                count=item["count"],
-            )
-            for item in data["body"]["groups"]
-        ]
+        return [RuleFolderItem.model_validate(item, strict=True) for item in data["body"]["groups"]]
 
-    def delete(self, profile_id: str, folder: str, form_data: DeleteRuleFoldersFormData) -> bool:
+    def delete(
+        self,
+        profile_id: str,
+        folder: int,
+    ) -> bool:
         """Delete folder and all custom rules inside it.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
-            folder (str): Folder ID.
-            form_data (DeleteRuleFoldersFormData): Form data for folder deletion.
+            profile_id: Primary key (PK) of the profile.
+            folder: Folder ID.
 
         Returns:
-            bool: True if folder was deleted successfully.
+            True if folder was deleted successfully.
 
         Reference:
             https://docs.controld.com/reference/delete_profiles-profile-id-groups-folder
@@ -185,6 +144,9 @@ class RuleFoldersEndpoint(BaseEndpoint):
         url = url + f"/{folder}"
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-        response = self._session.delete(url, data=asdict(form_data), headers=headers)
+        response = self._session.delete(
+            url,
+            headers=headers,
+        )
         check_response(response)
         return True

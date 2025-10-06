@@ -3,6 +3,7 @@ from enum import Enum
 LIST_PROXIES_ENDPOINT_URL = "https://api.controld.com/proxies"
 DEFAULT_RULE_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/default"
 CUSTOM_RULES_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/rules"
+RULE_FOLDERS_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/groups"
 
 
 class Do(Enum):
