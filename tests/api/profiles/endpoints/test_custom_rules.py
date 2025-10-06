@@ -106,12 +106,12 @@ class TestDefaultRule:
     def test_delete(self):
         present_data = self.api.list(profile_id)
         for item in present_data:
-            if item.PK.startswith("create_site"):
+            if item.PK.startswith(self.prefix):
                 assert self.api.delete(profile_id, item.PK)
 
         present_data = self.api.list(profile_id)
         for item in present_data:
-            assert not item.PK.startswith("create_site")
+            assert not item.PK.startswith(self.prefix)
 
 
 def test_list_custom_rules_not_changed():
