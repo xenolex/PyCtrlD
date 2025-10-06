@@ -1,8 +1,11 @@
-import os
 import sys
-from pprint import pprint
 
+sys.path.append("./")
 sys.path.append("./src/")
+
+
+import os
+from pprint import pprint
 
 from dotenv import load_dotenv
 
@@ -10,6 +13,7 @@ from api.profiles._base import BaseEndpoint
 from api.profiles._models.list_proxies import ProxieItem
 from api.profiles.constants import LIST_PROXIES_ENDPOINT_URL
 from api.profiles.endpoints.list_proxies import ListProxiesEndpoint
+from tests.api.profiles.checks import check_key_model
 
 load_dotenv()
 token = os.environ.get("TOKEN", "")
@@ -30,6 +34,4 @@ def test_list_proxies_not_changed():
     for proxie_item in proxies:
         pprint(proxie_item)
         for key in proxie_item:
-            assert key in ProxieItem.model_fields, (
-                f"Key '{key}' not found in 'ProxieItem' class\n {proxie_item}"
-            )
+            check_key_model(key, ProxieItem)
