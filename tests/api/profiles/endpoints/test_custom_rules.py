@@ -18,7 +18,7 @@ from api.profiles.endpoints.custom_rules import (
     ListCustomRuleItem,
     ModifyCustomRuleFormData,
 )
-from tests.api.profiles.checks import check_key_model
+from tests.api.profiles.checks import check_api_list_endpoint, check_key_in_model
 
 load_dotenv()
 token = os.environ.get("TOKEN", "")
@@ -29,15 +29,15 @@ class TestDefaultRule:
     api = CustomRulesEndpoint(token)
 
     def test_list(self):
-        root_rules = self.api.list(profile_id)
-        for rule in root_rules:
-            pprint(rule)
-            assert isinstance(rule, ListCustomRuleItem)
+        check_api_list_endpoint(
+            self.api, model=ListCustomRuleItem, api_kwargs={"profile_id": profile_id}
+        )
 
-        foldered_rules = self.api.list(profile_id, folder_id=1)
-        for foldered_rule in foldered_rules:
-            pprint(foldered_rule)
-            assert isinstance(foldered_rule, ListCustomRuleItem)
+        check_api_list_endpoint(
+            self.api,
+            model=ListCustomRuleItem,
+            api_kwargs={"profile_id": profile_id, "folder_id": 1},
+        )
 
     def test_create(self):
         prefix = "create_site"
@@ -85,7 +85,7 @@ class TestDefaultRule:
             assert item["group"] == form_data.group
 
             for key in created_rule[-1].model_dump():
-                check_key_model(key, CustomRuleItem)
+                check_key_in_model(key, CustomRuleItem)
 
     def test_modify(self):
         present_data = self.api.list(profile_id)
@@ -101,7 +101,7 @@ class TestDefaultRule:
                 assert item.order == modifed_data[-1].order
                 assert item.group == modifed_data[-1].group
                 for key in modifed_data[-1].model_dump():
-                    check_key_model(key, CustomRuleItem)
+                    check_key_in_model(key, CustomRuleItem)
 
     def test_delete(self):
         present_data = self.api.list(profile_id)
@@ -124,7 +124,7 @@ def test_list_custom_rules_not_changed():
     for item in items:
         pprint(item)
         for key in item:
-            check_key_model(key, ListCustomRuleItem)
+            check_key_in_model(key, ListCustomRuleItem)
             if key == "action":
                 for k in item[key]:
-                    check_key_model(k, CustomRulesActionItem)
+                    check_key_in_model(k, CustomRulesActionItem)

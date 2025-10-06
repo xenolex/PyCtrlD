@@ -13,7 +13,7 @@ from api.profiles._base import BaseEndpoint
 from api.profiles._models.default_rule import DefaultRuleItem
 from api.profiles.constants import DEFAULT_RULE_ENDPOINT_URL, Do, Status
 from api.profiles.endpoints.default_rule import DefaultRuleEndpoint, DefaultRuleFormData
-from tests.api.profiles.checks import check_key_model
+from tests.api.profiles.checks import check_key_in_model
 
 load_dotenv()
 token = os.environ.get("TOKEN", "")
@@ -54,4 +54,4 @@ def test_list_default_rule_not_changed():
     data = response.json()
     default = data["body"]["default"]
     for key in default:
-        check_key_model(key, DefaultRuleItem)
+        check_key_in_model(key, DefaultRuleItem)
