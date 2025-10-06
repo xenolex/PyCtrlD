@@ -1,9 +1,11 @@
 from typing import List
 
-from pydantic import BaseModel, model_validator
+from pydantic import model_validator
+
+from api.profiles._base import ConfiguratedBaseModel
 
 
-class OptionItem(BaseModel):
+class OptionItem(ConfiguratedBaseModel):
     title: str
     description: str
     type: str
@@ -11,7 +13,7 @@ class OptionItem(BaseModel):
     status: int
 
 
-class FilterItem(BaseModel):
+class FilterItem(ConfiguratedBaseModel):
     """FilterItem Pydantic model definition"""
 
     PK: str

@@ -1,25 +1,26 @@
 from typing import List
 
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import field_validator, model_validator
 
+from api.profiles._base import ConfiguratedBaseModel
 from api.profiles.constants import Do, Status
 
 
-class CountData(BaseModel):
+class CountData(ConfiguratedBaseModel):
     count: int
 
 
-class OptItem(BaseModel):
+class OptItem(ConfiguratedBaseModel):
     PK: str
     value: int
 
 
-class OptData(BaseModel):
+class OptData(ConfiguratedBaseModel):
     count: int
     data: List[OptItem]
 
 
-class DAData(BaseModel):
+class DAData(ConfiguratedBaseModel):
     do: Do
     status: Status
 
@@ -34,7 +35,7 @@ class DAData(BaseModel):
         return Status(v)
 
 
-class ProfileData(BaseModel):
+class ProfileData(ConfiguratedBaseModel):
     flt: CountData
     cflt: CountData
     ipflt: CountData
@@ -46,7 +47,7 @@ class ProfileData(BaseModel):
     # strings and its required, but the API response with dict
 
 
-class ProfileItem(BaseModel):
+class ProfileItem(ConfiguratedBaseModel):
     PK: str
     updated: int
     name: str
@@ -81,7 +82,7 @@ class ProfileItem(BaseModel):
         return values
 
 
-class OptionItem(BaseModel):
+class OptionItem(ConfiguratedBaseModel):
     PK: str
     title: str
     description: str

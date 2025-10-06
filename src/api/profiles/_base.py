@@ -8,8 +8,11 @@ from requests import Response, Session
 from api.profiles.constants import Do, Status
 
 
-class ActionItem(BaseModel):
+class ConfiguratedBaseModel(BaseModel):
     model_config = ConfigDict(extra="allow")
+
+
+class ActionItem(ConfiguratedBaseModel):
     do: Do
     status: Status
     via: Optional[str] = None

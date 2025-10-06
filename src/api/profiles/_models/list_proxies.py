@@ -1,10 +1,9 @@
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict
+from api.profiles._base import ConfiguratedBaseModel
 
 
-class ProxieItem(BaseModel):
-    model_config = ConfigDict(extra="allow")
+class ProxieItem(ConfiguratedBaseModel):
     # Important: The response format is not documented in source doc
     PK: str
     city: str

@@ -1,9 +1,10 @@
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import field_validator, model_validator
 
+from api.profiles._base import ConfiguratedBaseModel
 from api.profiles.constants import Do, Status
 
 
-class ListActionItem(BaseModel):
+class ListActionItem(ConfiguratedBaseModel):
     do: Do
     status: Status
 
@@ -22,7 +23,7 @@ class CreateActionItems(ListActionItem):
     via: str
 
 
-class ListRuleFolderItem(BaseModel):
+class ListRuleFolderItem(ConfiguratedBaseModel):
     PK: int
     group: str
     action: ListActionItem
@@ -37,7 +38,7 @@ class ListRuleFolderItem(BaseModel):
         return values
 
 
-class CreateRuleFolderItem(BaseModel):
+class CreateRuleFolderItem(ConfiguratedBaseModel):
     PK: int
     group: str
     action: CreateActionItems

@@ -1,12 +1,12 @@
 from typing import List, Optional
 
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import field_validator, model_validator
 
-from api.profiles._base import ActionItem
+from api.profiles._base import ActionItem, ConfiguratedBaseModel
 from api.profiles.constants import Do, Status
 
 
-class ServiceItem(BaseModel):
+class ServiceItem(ConfiguratedBaseModel):
     PK: str
     name: str
     locations: List[str]
@@ -26,7 +26,7 @@ class ServiceItem(BaseModel):
         return values
 
 
-class ServiceModifedItem(BaseModel):
+class ServiceModifedItem(ConfiguratedBaseModel):
     do: Optional[Do] = None
     via: Optional[str] = None
     status: Optional[Status] = None

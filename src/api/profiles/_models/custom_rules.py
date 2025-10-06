@@ -1,8 +1,8 @@
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, field_validator, model_validator
+from pydantic import field_validator, model_validator
 
-from api.profiles._base import ActionItem
+from api.profiles._base import ActionItem, ConfiguratedBaseModel
 from api.profiles.constants import Do, Status
 
 
@@ -10,8 +10,7 @@ class CustomRulesActionItem(ActionItem):
     via_v6: Optional[str] = None  # not documented
 
 
-class ListCustomRuleItem(BaseModel):
-    model_config = ConfigDict(extra="allow")
+class ListCustomRuleItem(ConfiguratedBaseModel):
     PK: str
     order: int
     group: int
@@ -27,8 +26,7 @@ class ListCustomRuleItem(BaseModel):
         return values
 
 
-class CustomRuleItem(BaseModel):
-    model_config = ConfigDict(extra="allow")
+class CustomRuleItem(ConfiguratedBaseModel):
     do: Do
     status: Status
     order: int
