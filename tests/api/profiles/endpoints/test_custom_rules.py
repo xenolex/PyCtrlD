@@ -8,8 +8,8 @@ from random import randint
 
 from dotenv import load_dotenv
 
-from api.profiles._base import BaseEndpoint
-from api.profiles._models.custom_rules import CustomRuleItem, CustomRulesActionItem
+from api.profiles._base import ActionItem, BaseEndpoint
+from api.profiles._models.custom_rules import CustomRuleItem
 from api.profiles.constants import CUSTOM_RULES_ENDPOINT_URL, Do, Status
 from api.profiles.endpoints.custom_rules import (
     CreateCustomRuleFormData,
@@ -126,4 +126,4 @@ def test_list_custom_rules_not_changed():
             check_key_in_model(key, ListCustomRuleItem)
             if key == "action":
                 for k in item[key]:
-                    check_key_in_model(k, CustomRulesActionItem)
+                    check_key_in_model(k, ActionItem)

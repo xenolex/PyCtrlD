@@ -1,7 +1,6 @@
 from typing import Optional
 
 from api.profiles._base import ActionItem, BaseEndpoint, check_response
-from api.profiles._models.default_rule import DefaultRuleItem
 from api.profiles.constants import DEFAULT_RULE_ENDPOINT_URL, Do, Status
 
 
@@ -26,14 +25,14 @@ class DefaultRuleEndpoint(BaseEndpoint):
         super().__init__(token)
         self._url = DEFAULT_RULE_ENDPOINT_URL
 
-    def list(self, profile_id: str) -> DefaultRuleItem:
+    def list(self, profile_id: str) -> ActionItem:
         """Returns status of the Default Rule.
 
         Args:
             profile_id (str): Primary key (PK) of the profile.
 
         Returns:
-            DefaultRuleItem: Default rule item with current settings.
+            ActionItem: Default rule item with current settings.
 
         Reference:
             https://docs.controld.com/reference/get_profiles-profile-id-default
@@ -43,9 +42,9 @@ class DefaultRuleEndpoint(BaseEndpoint):
         check_response(response)
         data = response.json()
         default_data = data["body"]["default"]
-        return DefaultRuleItem.model_validate(default_data)
+        return ActionItem.model_validate(default_data)
 
-    def modify(self, profile_id: str, form_data: DefaultRuleFormData) -> DefaultRuleItem:
+    def modify(self, profile_id: str, form_data: DefaultRuleFormData) -> ActionItem:
         """Modify the Default Rule for a profile.
 
         Args:
@@ -53,7 +52,7 @@ class DefaultRuleEndpoint(BaseEndpoint):
             form_data (DefaultRuleFormData): Form data for default rule modification.
 
         Returns:
-            DefaultRuleItem: Modified default rule item with updated settings.
+            ActionItem: Modified default rule item with updated settings.
 
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id-default
@@ -64,4 +63,4 @@ class DefaultRuleEndpoint(BaseEndpoint):
         check_response(response)
         data = response.json()
         default_data = data["body"]["default"]
-        return DefaultRuleItem.model_validate(default_data)
+        return ActionItem.model_validate(default_data)

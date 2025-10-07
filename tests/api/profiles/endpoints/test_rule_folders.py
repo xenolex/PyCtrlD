@@ -8,8 +8,8 @@ from random import randint
 
 from dotenv import load_dotenv
 
-from api.profiles._base import BaseEndpoint
-from api.profiles._models.rule_folders import RuleFolderActionItem, RuleFolderItem
+from api.profiles._base import ActionItem, BaseEndpoint
+from api.profiles._models.rule_folders import RuleFolderItem
 from api.profiles.constants import RULE_FOLDERS_ENDPOINT_URL, Do, Status
 from api.profiles.endpoints.rule_folders import (
     CreateRuleFoldersFormData,
@@ -79,7 +79,7 @@ class TestRuleFolders:
                     if key == "action":
                         action_item = folder.model_dump()[key]
                         for k in action_item:
-                            check_key_in_model(k, RuleFolderActionItem)
+                            check_key_in_model(k, ActionItem)
 
     def test_modify(self):
         present_data = self.api.list(profile_id)
@@ -101,7 +101,7 @@ class TestRuleFolders:
                     if key == "action":
                         action_item = modifed_data[-1].model_dump()[key]
                         for k in action_item:
-                            check_key_in_model(k, RuleFolderActionItem)
+                            check_key_in_model(k, ActionItem)
 
     def test_delete(self):
         present_data = self.api.list(profile_id)
@@ -127,4 +127,4 @@ def test_list_rule_folders_not_changed():
             check_key_in_model(key, RuleFolderItem)
             if key == "action":
                 for k in item[key]:
-                    check_key_in_model(k, RuleFolderActionItem)
+                    check_key_in_model(k, ActionItem)

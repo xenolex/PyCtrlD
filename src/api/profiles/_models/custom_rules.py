@@ -6,15 +6,11 @@ from api.profiles._base import ActionItem, ConfiguratedBaseModel
 from api.profiles.constants import Do, Status
 
 
-class CustomRulesActionItem(ActionItem):
-    via_v6: Optional[str] = None  # not documented
-
-
 class ListCustomRuleItem(ConfiguratedBaseModel):
     PK: str
     order: int
     group: int
-    action: CustomRulesActionItem
+    action: ActionItem
     comment: Optional[str] = None  # not documented
 
     @model_validator(mode="before")
@@ -22,7 +18,7 @@ class ListCustomRuleItem(ConfiguratedBaseModel):
     def validate_list_custom_rule_item(cls, values):
         if isinstance(values, dict) and "action" in values and isinstance(values["action"], dict):
             action_dict = values["action"]
-            values["action"] = CustomRulesActionItem.model_validate(action_dict, strict=True)
+            values["action"] = ActionItem.model_validate(action_dict, strict=True)
         return values
 
 

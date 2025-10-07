@@ -8,8 +8,7 @@ from pprint import pprint
 import pytest
 from dotenv import load_dotenv
 
-from api.profiles._base import BaseEndpoint
-from api.profiles._models.default_rule import DefaultRuleItem
+from api.profiles._base import ActionItem, BaseEndpoint
 from api.profiles.constants import DEFAULT_RULE_ENDPOINT_URL, Do, Status
 from api.profiles.endpoints.default_rule import DefaultRuleEndpoint, DefaultRuleFormData
 from tests.api.profiles.checks import check_key_in_model
@@ -34,7 +33,7 @@ class TestDefaultRule:
     def test_list(self):
         default = self.api.list(profile_id)
         pprint(default)
-        assert isinstance(default, DefaultRuleItem)
+        assert isinstance(default, ActionItem)
 
     def test_modify(self, current_default_rule_settings):
         preset_data = current_default_rule_settings
@@ -53,4 +52,4 @@ def test_list_default_rule_not_changed():
     data = response.json()
     default = data["body"]["default"]
     for key in default:
-        check_key_in_model(key, DefaultRuleItem)
+        check_key_in_model(key, ActionItem)
