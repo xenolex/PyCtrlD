@@ -1,8 +1,9 @@
-import os
 import sys
 
-sys.path.append("./src/")
-sys.path.append("./tests/")
+sys.path.extend(["./", "./src/"])
+
+import os
+
 from dotenv import load_dotenv
 
 from api.profiles.endpoints.profiles import ProfilesEndpoint

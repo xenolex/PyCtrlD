@@ -1,7 +1,6 @@
 import sys
 
-sys.path.append("./src/")
-sys.path.append("./")
+sys.path.extend(["./", "./src/"])
 
 import os
 from pprint import pprint
