@@ -1,0 +1,60 @@
+import sys
+
+sys.path.extend(["./", "./src/"])
+
+import os
+from pprint import pprint
+
+from dotenv import load_dotenv
+
+from api.profiles._base import ActionItem, BaseEndpoint
+from api.profiles._models.services import ServiceItem
+from api.profiles.constants import SERVICES_ENDPOINT_URL, Status
+from api.profiles.endpoints.services import (
+    ModifyServiceFormData,
+    ServicesEndpoint,
+)
+from tests.api.profiles.checks import check_api_list_endpoint, check_key_in_model
+
+load_dotenv()
+token = os.environ.get("TOKEN", "")
+profile_id = os.environ.get("TEST_PROFILE_ID", "")
+
+
+class TestServices:
+    api = ServicesEndpoint(token)
+
+    def test_list(self):
+        check_api_list_endpoint(
+            api=self.api, model=ServiceItem, api_kwargs={"profile_id": profile_id}
+        )
+
+    def test_modify(self):
+        for service in self.api.list(profile_id):
+            for status in [Status.DISABLED, Status.ENABLED]:
+                form_data = ModifyServiceFormData(status=status)
+                modifed_data = self.api.modify(profile_id, service=service.PK, form_data=form_data)
+
+                pprint(modifed_data)
+
+                assert service.action.do == modifed_data[-1].do
+                assert status == modifed_data[-1].status
+
+                for key in modifed_data[-1].model_dump():
+                    check_key_in_model(key, ActionItem)
+
+
+def test_list_rule_folders_not_changed():
+    api = BaseEndpoint(token)
+    response = api.get_raw_response(SERVICES_ENDPOINT_URL.format(profile_id=profile_id))
+
+    data = response.json()
+    items = data["body"]["services"]
+
+    for item in items:
+        pprint(item)
+        for key in item:
+            check_key_in_model(key, ServiceItem)
+            if key == "action":
+                for k in item[key]:
+                    check_key_in_model(k, ActionItem)
