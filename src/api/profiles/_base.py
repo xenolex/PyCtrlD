@@ -1,6 +1,6 @@
 import ipaddress
 import re
-from typing import Optional
+from typing import Any, Iterable, List, Optional
 
 from pydantic import BaseModel, ConfigDict, field_validator
 from requests import Response, Session
@@ -89,3 +89,7 @@ def check_response(response: Response):
 
     if response.status_code != 200:
         raise ApiError(response)
+
+
+def create_list_of_items(model: type[ConfiguratedBaseModel], items: Iterable) -> List[Any]:
+    return [model.model_validate(item, strict=True) for item in items]

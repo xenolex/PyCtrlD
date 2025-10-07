@@ -9,11 +9,15 @@ def check_key_in_model(key: str, model: type[BaseModel]) -> None:
 
 
 def check_api_list_endpoint(
-    api: Any, model: type[BaseModel], api_kwargs: Optional[Dict[str, Any]] = None
+    api: Any,
+    model: type[BaseModel],
+    api_kwargs: Optional[Dict[str, Any]] = None,
+    method_name="list",
 ):
     if api_kwargs is None:
         api_kwargs = {}
-    items = api.list(**api_kwargs)
+    func = getattr(api, method_name)
+    items = func(**api_kwargs)
     for item in items:
         pprint(item)
         assert isinstance(item, model), f"Api returns items is not an instance of {model.__name__}"

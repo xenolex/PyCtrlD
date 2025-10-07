@@ -8,6 +8,7 @@ from api.profiles._base import (
     check_via_is_proxy_identifier,
     check_via_is_record_or_cname,
     check_via_v6_is_aaaa_record,
+    create_list_of_items,
 )
 from api.profiles._models.custom_rules import (
     CustomRuleItem,
@@ -134,9 +135,7 @@ class CustomRulesEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return [
-            ListCustomRuleItem.model_validate(item, strict=True) for item in data["body"]["rules"]
-        ]
+        return create_list_of_items(ListCustomRuleItem, data["body"]["rules"])
 
     def modify(self, profile_id: str, form_data: ModifyCustomRuleFormData) -> List[CustomRuleItem]:
         """Modify an existing custom rule.
@@ -156,7 +155,7 @@ class CustomRulesEndpoint(BaseEndpoint):
         response = self._session.put(url, data=form_data.model_dump_json(), headers=headers)
         check_response(response)
         data = response.json()
-        return [CustomRuleItem.model_validate(item, strict=True) for item in data["body"]["rules"]]
+        return create_list_of_items(CustomRuleItem, data["body"]["rules"])
 
     def create(self, profile_id: str, form_data: CreateCustomRuleFormData) -> List[CustomRuleItem]:
         """Create one or more custom rules.
@@ -178,7 +177,7 @@ class CustomRulesEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return [CustomRuleItem.model_validate(item, strict=True) for item in data["body"]["rules"]]
+        return create_list_of_items(CustomRuleItem, data["body"]["rules"])
 
     def delete(self, profile_id: str, hostname: str) -> bool:
         """Delete one or more custom rules.

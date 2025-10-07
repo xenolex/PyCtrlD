@@ -1,16 +1,20 @@
 from typing import List
 
-from pydantic import model_validator
+from pydantic import field_validator, model_validator
 
-from api.profiles._base import ConfiguratedBaseModel
+from api.profiles._base import ConfiguratedBaseModel, Do, Status, create_list_of_items
 
 
-class OptionItem(ConfiguratedBaseModel):
-    title: str
-    description: str
+class LevelItem(ConfiguratedBaseModel):
     type: str
     name: str
-    status: int
+    status: Status
+    title: str
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status(cls, v):
+        return Status(v)
 
 
 class FilterItem(ConfiguratedBaseModel):
@@ -21,7 +25,7 @@ class FilterItem(ConfiguratedBaseModel):
     description: str
     additional: str
     sources: List[str]
-    options: List[OptionItem]
+    options: List[LevelItem]
 
     @model_validator(mode="before")
     @classmethod
@@ -30,17 +34,50 @@ class FilterItem(ConfiguratedBaseModel):
             # Convert dict options to OptionItem instances
             option_items = []
             for option in values["options"]:
-                if isinstance(option, dict):
-                    option_items.append(
-                        OptionItem(
-                            title=option["title"],
-                            description=option["description"],
-                            type=option["type"],
-                            name=option["name"],
-                            status=option["status"],
-                        )
-                    )
-                else:
-                    option_items.append(option)
+                option_items.append(LevelItem.model_validate(option, strict=True))
             values["options"] = option_items
         return values
+
+
+class NativeActionItem(ConfiguratedBaseModel):
+    do: Do
+    lvl: str
+    status: Status
+
+    @field_validator("do", mode="before")
+    @classmethod
+    def validate_do(cls, v):
+        return Do(v)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status(cls, v):
+        return Status(v)
+
+
+class NativeFilterItem(ConfiguratedBaseModel):
+    """FilterItem Pydantic model definition"""
+
+    PK: str
+    action: NativeActionItem
+    additional: str
+    description: str
+    levels: List[LevelItem]
+    name: str
+    sources: List[str]
+    status: Status
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status(cls, v):
+        return Status(v)
+
+    @field_validator("action", mode="before")
+    @classmethod
+    def validate_action(cls, v):
+        return NativeActionItem.model_validate(v, strict=True)
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_level(cls, values):
+        return create_list_of_items(model=LevelItem, items=values["levels"])

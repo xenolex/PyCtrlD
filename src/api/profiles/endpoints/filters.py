@@ -1,13 +1,16 @@
-from dataclasses import asdict, dataclass
 from typing import List
 
-from api.profiles._base import BaseEndpoint, check_response
+from api.profiles._base import (
+    BaseEndpoint,
+    ConfiguratedBaseModel,
+    check_response,
+    create_list_of_items,
+)
 from api.profiles._models.filters import FilterItem
 from api.profiles.constants import Status
 
 
-@dataclass
-class ModifyFilterFormData:
+class ModifyFilterFormData(ConfiguratedBaseModel):
     """Form data for modifying filter.
 
     Args:
@@ -41,17 +44,8 @@ class FiltersEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return [
-            FilterItem(
-                PK=item["PK"],
-                name=item["name"],
-                description=item["description"],
-                additional=item["additional"],
-                sources=item["sources"],
-                options=item["options"],
-            )
-            for item in data["body"]["filters"]
-        ]
+        breakpoint()
+        return create_list_of_items(FilterItem, data["body"]["filters"])
 
     def list_third_party(self, profile_id: str) -> List[FilterItem]:
         """Returns all 3rd party filters for this profile and their states.
@@ -70,17 +64,7 @@ class FiltersEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return [
-            FilterItem(
-                PK=item["PK"],
-                name=item["name"],
-                description=item["description"],
-                additional=item["additional"],
-                sources=item["sources"],
-                options=item["options"],
-            )
-            for item in data["body"]["filters"]
-        ]
+        return create_list_of_items(FilterItem, data["body"]["filters"])
 
     def modify(self, profile_id: str, filter: str, form_data: ModifyFilterFormData) -> List[str]:
         """Enables or disables a {filter} on a specified {profile}, which is the value of PK from the List endpoint.
@@ -99,9 +83,10 @@ class FiltersEndpoint(BaseEndpoint):
         url = self._url.format(profile_id=profile_id)
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         response = self._session.put(
-            url + f"/filter/{filter}", data=asdict(form_data), headers=headers
+            url + f"/filter/{filter}", data=form_data.model_dump_json(), headers=headers
         )
         check_response(response)
 
         data = response.json()
+        breakpoint()
         return data["body"]["filter"]

@@ -10,6 +10,7 @@ from api.profiles._base import (
     check_via_is_proxy_identifier,
     check_via_is_record_or_cname,
     check_via_v6_is_aaaa_record,
+    create_list_of_items,
 )
 from api.profiles._models.services import ServiceItem
 from api.profiles.constants import SERVICES_ENDPOINT_URL, Do, Status
@@ -71,7 +72,7 @@ class ServicesEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return [ServiceItem.model_validate(item, strict=True) for item in data["body"]["services"]]
+        return create_list_of_items(model=ServiceItem, items=data["body"]["services"])
 
     def modify(
         self, profile_id: str, service: str, form_data: ModifyServiceFormData
@@ -99,4 +100,4 @@ class ServicesEndpoint(BaseEndpoint):
 
         data = response.json()
 
-        return [ActionItem.model_validate(item, strict=True) for item in data["body"]["services"]]
+        return create_list_of_items(ActionItem, data["body"]["services"])

@@ -1,6 +1,6 @@
 from typing import List
 
-from api.profiles._base import BaseEndpoint, check_response
+from api.profiles._base import BaseEndpoint, check_response, create_list_of_items
 from api.profiles._models.list_proxies import ProxieItem
 from api.profiles.constants import LIST_PROXIES_ENDPOINT_URL
 
@@ -26,4 +26,4 @@ class ListProxiesEndpoint(BaseEndpoint):
         check_response(response)
         data = response.json()
         # Important: The response format is not documented in source doc
-        return [ProxieItem.model_validate(item, strict=True) for item in data["body"]["proxies"]]
+        return create_list_of_items(ProxieItem, data["body"]["proxies"])

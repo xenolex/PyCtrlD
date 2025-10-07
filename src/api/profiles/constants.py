@@ -5,6 +5,7 @@ DEFAULT_RULE_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/defa
 CUSTOM_RULES_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/rules"
 RULE_FOLDERS_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/groups"
 SERVICES_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/services"
+FILTERS_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/filters"
 
 
 class Do(Enum):
