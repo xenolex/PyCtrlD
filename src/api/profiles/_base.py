@@ -16,6 +16,7 @@ class ActionItem(ConfiguratedBaseModel):
     do: Do
     status: Status
     via: Optional[str] = None
+    via_v6: Optional[str] = None
 
     @field_validator("do", mode="before")
     @classmethod
