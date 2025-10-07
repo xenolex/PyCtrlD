@@ -114,7 +114,7 @@ class TestRuleFolders:
             assert not item.group.startswith(self.prefix)
 
 
-def test_list_custom_rules_not_changed():
+def test_list_rule_folders_not_changed():
     api = BaseEndpoint(token)
     response = api.get_raw_response(RULE_FOLDERS_ENDPOINT_URL.format(profile_id=profile_id))
 
