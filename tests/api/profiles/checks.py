@@ -18,6 +18,7 @@ def check_api_list_endpoint(
         api_kwargs = {}
     func = getattr(api, method_name)
     items = func(**api_kwargs)
+
     for item in items:
         pprint(item)
         assert isinstance(item, model), f"Api returns items is not an instance of {model.__name__}"

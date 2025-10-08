@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, field_validator
 from requests import Response, Session
 
 from api.profiles.constants import Do, Status
-
+from pprint import pprint
 
 class ConfiguratedBaseModel(BaseModel):
     model_config = ConfigDict(extra="allow")
@@ -92,4 +92,8 @@ def check_response(response: Response):
 
 
 def create_list_of_items(model: type[ConfiguratedBaseModel], items: Iterable) -> List[Any]:
-    return [model.model_validate(item, strict=True) for item in items]
+    out_list = []
+    for item in items:
+        model_instance = model.model_validate(item, strict=True)
+        out_list.append(model_instance)
+    return out_list

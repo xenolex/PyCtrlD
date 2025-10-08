@@ -17,7 +17,7 @@ class TestProfiles:
 
     def test_list(self):
         profiles = self.api.list()
-        breakpoint()
+
         assert isinstance(profiles, list)
 
 

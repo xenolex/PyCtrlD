@@ -1,12 +1,15 @@
 from typing import List
 
+from typing_extensions import Dict
+
 from api.profiles._base import (
+    ActionItem,
     BaseEndpoint,
     ConfiguratedBaseModel,
     check_response,
     create_list_of_items,
 )
-from api.profiles._models.filters import FilterItem
+from api.profiles._models.filters import NativeFilterItem, ThirdPartyFilterItem
 from api.profiles.constants import Status
 
 
@@ -27,7 +30,7 @@ class FiltersEndpoint(BaseEndpoint):
         super().__init__(token)
         self._url = self._url + "/{profile_id}/filters"
 
-    def list_native(self, profile_id: str) -> List[FilterItem]:
+    def list_native(self, profile_id: str) -> List[NativeFilterItem]:
         """Returns all Native filters for this profile and their states.
 
         Args:
@@ -44,10 +47,9 @@ class FiltersEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        breakpoint()
-        return create_list_of_items(FilterItem, data["body"]["filters"])
+        return create_list_of_items(NativeFilterItem, data["body"]["filters"])
 
-    def list_third_party(self, profile_id: str) -> List[FilterItem]:
+    def list_third_party(self, profile_id: str) -> List[ThirdPartyFilterItem]:
         """Returns all 3rd party filters for this profile and their states.
 
         Args:
@@ -64,9 +66,12 @@ class FiltersEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return create_list_of_items(FilterItem, data["body"]["filters"])
 
-    def modify(self, profile_id: str, filter: str, form_data: ModifyFilterFormData) -> List[str]:
+        return create_list_of_items(ThirdPartyFilterItem, data["body"]["filters"])
+
+    def modify(
+        self, profile_id: str, filter: str, form_data: ModifyFilterFormData
+    ) -> Dict[str, ActionItem]:
         """Enables or disables a {filter} on a specified {profile}, which is the value of PK from the List endpoint.
 
         Args:
@@ -75,7 +80,7 @@ class FiltersEndpoint(BaseEndpoint):
             form_data (ModifyFilterFormData): Form data for filter modification.
 
         Returns:
-            List[str]: Response data from the API containing filter information.
+           Dict[str, ActionItem]: Response data from the API containing filter information.
 
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id-filters-filter-filter
@@ -88,5 +93,8 @@ class FiltersEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        breakpoint()
-        return data["body"]["filter"]
+
+        return {
+            key: ActionItem.model_validate(value, strict=True)
+            for key, value in data["body"]["filters"].items()
+        }
