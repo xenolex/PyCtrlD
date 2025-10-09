@@ -57,13 +57,13 @@ class TestFilters:
             if status == Status.DISABLED:
                 assert modifed_filter is None
             else:
-                assert status == modifed_filter.status
+                assert status == modifed_filter.status  # type: ignore
 
                 if filter.action is not None:
-                    assert filter.action.do == modifed_filter.do
-                    assert filter.action.status != modifed_filter.status
+                    assert filter.action.do == modifed_filter.do  # type: ignore
+                    assert filter.action.status != modifed_filter.status  # type: ignore
 
-                assert filter.status != modifed_filter.status
+                assert filter.status != modifed_filter.status  # type: ignore
 
 
 def test_list_native_filters_not_changed():

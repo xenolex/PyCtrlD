@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, field_validator
 from requests import Response, Session
 
 from api.profiles.constants import Do, Status
-from pprint import pprint
+
 
 class ConfiguratedBaseModel(BaseModel):
     model_config = ConfigDict(extra="allow")
