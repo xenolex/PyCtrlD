@@ -1,23 +1,34 @@
-from typing import List
+from typing import Any, List, Optional
 
-from pydantic import field_validator, model_validator
+from pydantic import field_validator
 
-from api.profiles._base import ConfiguratedBaseModel
+from api.profiles._base import ConfiguratedBaseModel, create_list_of_items
 from api.profiles.constants import Do, Status
+
+
+class Cbp(ConfiguratedBaseModel):
+    custom_message: str
+    no_link: int
 
 
 class CountData(ConfiguratedBaseModel):
     count: int
 
 
-class OptItem(ConfiguratedBaseModel):
+class Data(ConfiguratedBaseModel):
     PK: str
-    value: int
+    value: Any
+    cbp: Optional[Cbp] = None
 
 
 class OptData(ConfiguratedBaseModel):
     count: int
-    data: List[OptItem]
+    data: List[Data]
+
+    @classmethod
+    @field_validator("data", mode="before")
+    def validate_data(cls, v):
+        return create_list_of_items(model=Data, items=v)
 
 
 class DAData(ConfiguratedBaseModel):
@@ -54,38 +65,11 @@ class ProfileItem(ConfiguratedBaseModel):
     profile: ProfileData
     # stats: int - https://docs.controld.com/reference/get_profiles this parameter is present in docs but absent in the API response
 
-    @model_validator(mode="before")
-    @classmethod
-    def validate_profile_item(cls, values):
-        if isinstance(values, dict) and "profile" in values and isinstance(values["profile"], dict):
-            profile_dict = values["profile"]
-
-            # Process opt items
-            opt_items = [
-                OptItem(PK=item["PK"], value=item["value"]) for item in profile_dict["opt"]["data"]
-            ]
-
-            # Build the profile data
-            profile_data = ProfileData(
-                flt=CountData(count=profile_dict["flt"]["count"]),
-                cflt=CountData(count=profile_dict["cflt"]["count"]),
-                ipflt=CountData(count=profile_dict["ipflt"]["count"]),
-                rule=CountData(count=profile_dict["rule"]["count"]),
-                svc=CountData(count=profile_dict["svc"]["count"]),
-                grp=CountData(count=profile_dict["grp"]["count"]),
-                opt=OptData(count=profile_dict["opt"]["count"], data=opt_items),
-                da=DAData(do=profile_dict["da"]["do"], status=profile_dict["da"]["status"]),
-            )
-
-            values["profile"] = profile_data
-
-        return values
-
 
 class OptionItem(ConfiguratedBaseModel):
     PK: str
     title: str
     description: str
     type: str
-    default_value: int
+    default_value: Any
     info_url: str

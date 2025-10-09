@@ -35,7 +35,7 @@ class BaseEndpoint:
         self._session.headers.update(
             {"Authorization": f"Bearer {token}", "accept": "application/json"}
         )
-        self._url = "https://api.controld.com/profiles"
+        self._url = ""
 
     def get_raw_response(self, url):
         return self._session.get(url)

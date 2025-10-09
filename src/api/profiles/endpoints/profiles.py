@@ -1,13 +1,18 @@
-from dataclasses import asdict, dataclass
 from typing import List, Optional
 
-from api.profiles._base import BaseEndpoint, check_response
-from api.profiles._models.profiles import OptionItem, ProfileItem
-from api.profiles.constants import Status
+from pydantic import model_validator
+
+from api.profiles._base import (
+    BaseEndpoint,
+    ConfiguratedBaseModel,
+    check_response,
+    create_list_of_items,
+)
+from api.profiles._models.profiles import Data, OptionItem, ProfileItem
+from api.profiles.constants import PROFILES_ENDPOINT_URL, Status
 
 
-@dataclass
-class CreateProfileFormData:
+class CreateProfileFormData(ConfiguratedBaseModel):
     """Form data for creating a new profile.
 
     Args:
@@ -16,16 +21,18 @@ class CreateProfileFormData:
             If omitted, a blank profile is created. Defaults to None.
     """
 
-    name: str
+    name: Optional[str] = None
     clone_profile_id: Optional[str] = None
 
-    def __post_init__(self):
-        if self.clone_profile_id is None:
-            del self.__dict__["clone_profile_id"]
+    @model_validator(mode="after")
+    def validate_name(self):
+        if self.name is not None and self.clone_profile_id is not None:
+            print("Warning: profile 'name' will not be set because 'clone_profile_id' is provided")
+
+        return self
 
 
-@dataclass
-class ModifyProfileFormData:
+class ModifyProfileFormData(ConfiguratedBaseModel):
     """Form data for modifying an existing profile.
 
     Args:
@@ -44,14 +51,8 @@ class ModifyProfileFormData:
     lock_message: Optional[str] = None
     password: Optional[str] = None
 
-    def __post_init__(self):
-        for item in vars(self):
-            if item is None:
-                del self.__dict__[item]
 
-
-@dataclass
-class ModifyOptionFormData:
+class ModifyOptionFormData(ConfiguratedBaseModel):
     """Form data for modifying profile options.
 
     Args:
@@ -62,14 +63,11 @@ class ModifyOptionFormData:
     status: Status
     value: Optional[str] = None
 
-    def __post_init__(self):
-        if self.value is None:
-            del self.__dict__["value"]
-
 
 class ProfilesEndpoint(BaseEndpoint):
     def __init__(self, token: str) -> None:
         super().__init__(token)
+        self._url = PROFILES_ENDPOINT_URL
 
     def list(self) -> List[ProfileItem]:
         """List all profiles associated with an account.
@@ -83,14 +81,10 @@ class ProfilesEndpoint(BaseEndpoint):
         response = self._session.get(self._url)
         check_response(response)
         data = response.json()
-        return [
-            ProfileItem(
-                PK=item["PK"], updated=item["updated"], name=item["name"], profile=item["profile"]
-            )
-            for item in data["body"]["profiles"]
-        ]
 
-    def create(self, form_data: CreateProfileFormData) -> bool:
+        return create_list_of_items(ProfileItem, data["body"]["profiles"])
+
+    def create(self, form_data: CreateProfileFormData) -> List[ProfileItem]:
         """Create a new blank profile, or clone an existing one.
 
         Args:
@@ -104,10 +98,11 @@ class ProfilesEndpoint(BaseEndpoint):
         """
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-        response = self._session.post(self._url, data=asdict(form_data), headers=headers)
+        response = self._session.post(self._url, data=form_data.model_dump_json(), headers=headers)
         check_response(response)
 
-        return True
+        data = response.json()
+        return create_list_of_items(ProfileItem, data["body"]["profiles"])
 
     def modify(self, profile_id: str, form_data: ModifyProfileFormData):
         """Modify an existing profile.
@@ -124,11 +119,11 @@ class ProfilesEndpoint(BaseEndpoint):
         """
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         response = self._session.put(
-            f"{self._url}/{profile_id}", data=asdict(form_data), headers=headers
+            f"{self._url}/{profile_id}", data=form_data.model_dump_json(), headers=headers
         )
         check_response(response)
-
-        return response.json()
+        data = response.json()
+        return create_list_of_items(ProfileItem, data["body"]["profiles"])
 
     def delete(self, profile_id: str) -> bool:
         """Delete profile based on the primary key (PK).
@@ -160,21 +155,13 @@ class ProfilesEndpoint(BaseEndpoint):
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         response = self._session.get(f"{self._url}/options", headers=headers)
         check_response(response)
+
         data = response.json()
+        return create_list_of_items(OptionItem, data["body"]["options"])
 
-        return [
-            OptionItem(
-                PK=item["PK"],
-                title=item["title"],
-                description=item["description"],
-                type=item["type"],
-                default_value=item["default_value"],
-                info_url=item["info_url"],
-            )
-            for item in data["body"]["options"]
-        ]
-
-    def modify_options(self, profile_id: str, name: str, form_data: ModifyOptionFormData):
+    def modify_options(
+        self, profile_id: str, name: str, form_data: ModifyOptionFormData
+    ) -> List[Data]:
         """Set an option on a profile.
 
         Args:
@@ -190,8 +177,11 @@ class ProfilesEndpoint(BaseEndpoint):
         """
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         response = self._session.put(
-            f"{self._url}/{profile_id}/options/{name}", data=asdict(form_data), headers=headers
+            f"{self._url}/{profile_id}/options/{name}",
+            data=form_data.model_dump_json(),
+            headers=headers,
         )
         check_response(response)
 
-        return True
+        data = response.json()
+        return create_list_of_items(Data, data["body"]["options"])
