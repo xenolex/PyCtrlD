@@ -8,6 +8,7 @@ from pprint import pprint
 import pytest
 from dotenv import load_dotenv
 
+from api._base import BaseEndpoint
 from api.profiles._base import Action, BaseEndpoint
 from api.profiles.constants import Do, Endpoints, Status
 from api.profiles.endpoints.default_rule import DefaultRuleEndpoint, DefaultRuleFormData

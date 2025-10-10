@@ -7,7 +7,8 @@ from pprint import pprint
 
 from dotenv import load_dotenv
 
-from api.profiles._base import Action, BaseEndpoint
+from api._base import BaseEndpoint
+from api.profiles._base import Action
 from api.profiles._models.services import Service
 from api.profiles.constants import Endpoints, Status
 from api.profiles.endpoints.services import (

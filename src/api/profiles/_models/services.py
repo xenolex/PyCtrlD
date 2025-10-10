@@ -2,7 +2,8 @@ from typing import Optional
 
 from pydantic import model_validator
 
-from api.profiles._base import Action, ConfiguratedBaseModel
+from api._base import ConfiguratedBaseModel
+from api.profiles._base import Action
 
 
 class Service(ConfiguratedBaseModel):

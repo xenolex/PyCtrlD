@@ -1,6 +1,6 @@
 from typing import Optional
 
-from api.profiles._base import ConfiguratedBaseModel
+from api._base import ConfiguratedBaseModel
 
 
 class Proxie(ConfiguratedBaseModel):

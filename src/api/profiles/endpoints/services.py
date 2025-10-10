@@ -2,15 +2,13 @@ from typing import List, Optional
 
 from pydantic import model_validator
 
+from api._base import BaseEndpoint, check_response, create_list_of_items
 from api.profiles._base import (
     Action,
-    BaseEndpoint,
     ConfiguratedBaseModel,
-    check_response,
     check_via_is_proxy_identifier,
     check_via_is_record_or_cname,
     check_via_v6_is_aaaa_record,
-    create_list_of_items,
 )
 from api.profiles._models.services import Service
 from api.profiles.constants import Do, Endpoints, Status

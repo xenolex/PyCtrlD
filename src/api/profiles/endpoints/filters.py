@@ -2,12 +2,10 @@ from typing import List
 
 from typing_extensions import Dict
 
+from api._base import BaseEndpoint, check_response, create_list_of_items
 from api.profiles._base import (
     Action,
-    BaseEndpoint,
     ConfiguratedBaseModel,
-    check_response,
-    create_list_of_items,
 )
 from api.profiles._models.filters import NativeFilter, ThirdPartyFilter
 from api.profiles.constants import Endpoints, Status

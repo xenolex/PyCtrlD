@@ -19,6 +19,9 @@ from api.profiles.endpoints.custom_rules import (
 )
 from tests.api.profiles.checks import check_api_list_endpoint, check_key_in_model
 
+# Removed duplicate relative import of Action, BaseEndpoint (now imported above)
+
+
 load_dotenv()
 token = os.environ.get("TOKEN", "")
 profile_id = os.environ.get("TEST_PROFILE_ID", "")

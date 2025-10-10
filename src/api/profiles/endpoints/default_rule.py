@@ -1,6 +1,7 @@
 from typing import Optional
 
-from api.profiles._base import Action, BaseEndpoint, check_response
+from api._base import BaseEndpoint, check_response
+from api.profiles._base import Action
 from api.profiles.constants import Do, Endpoints, Status
 
 

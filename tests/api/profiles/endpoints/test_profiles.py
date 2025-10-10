@@ -8,7 +8,9 @@ from random import randint
 
 from dotenv import load_dotenv
 
-from api.profiles._base import BaseEndpoint
+
+from api._base import BaseEndpoint
+
 from api.profiles._models.profiles import (
     Count,
     Option,

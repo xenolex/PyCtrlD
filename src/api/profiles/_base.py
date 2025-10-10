@@ -1,15 +1,11 @@
 import ipaddress
 import re
-from typing import Any, Iterable, List, Optional
+from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, field_validator
-from requests import Response, Session
+from pydantic import field_validator
 
+from api._base import ConfiguratedBaseModel
 from api.profiles.constants import Do, Status
-
-
-class ConfiguratedBaseModel(BaseModel):
-    model_config = ConfigDict(extra="allow")
 
 
 class Action(ConfiguratedBaseModel):
@@ -27,18 +23,6 @@ class Action(ConfiguratedBaseModel):
     @classmethod
     def validate_status(cls, v):
         return Status(v)
-
-
-class BaseEndpoint:
-    def __init__(self, token: str) -> None:
-        self._session = Session()
-        self._session.headers.update(
-            {"Authorization": f"Bearer {token}", "accept": "application/json"}
-        )
-        self._url = ""
-
-    def get_raw_response(self, url):
-        return self._session.get(url)
 
 
 def check_via_is_proxy_identifier(via: str | None):
@@ -77,23 +61,3 @@ def check_via_v6_is_aaaa_record(via_v6: str | None):
             ipaddress.IPv6Address(via_v6)
         except ipaddress.AddressValueError:
             raise ValueError(f"via_v6 field must be a valid IPv6 address, got: {via_v6}")
-
-
-def check_response(response: Response):
-    class ApiError(Exception):
-        def __init__(self, response: Response):
-            data = response.json()["error"]
-            message = f"HTTP Status: {response.status_code} | Error Code: {data['code']} | Message: {data['message']}"
-
-            super().__init__(message)
-
-    if response.status_code != 200:
-        raise ApiError(response)
-
-
-def create_list_of_items(model: type[ConfiguratedBaseModel], items: Iterable) -> List[Any]:
-    out_list = []
-    for item in items:
-        model_instance = model.model_validate(item, strict=True)
-        out_list.append(model_instance)
-    return out_list
