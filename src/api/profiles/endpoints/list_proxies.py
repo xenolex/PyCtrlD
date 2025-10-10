@@ -2,7 +2,7 @@ from typing import List
 
 from api.profiles._base import BaseEndpoint, check_response, create_list_of_items
 from api.profiles._models.list_proxies import Proxie
-from api.profiles.constants import LIST_PROXIES_ENDPOINT_URL
+from api.profiles.constants import Endpoints
 
 
 class ListProxiesEndpoint(BaseEndpoint):
@@ -10,7 +10,7 @@ class ListProxiesEndpoint(BaseEndpoint):
 
     def __init__(self, token: str) -> None:
         super().__init__(token)
-        self._url = LIST_PROXIES_ENDPOINT_URL
+        self._url = Endpoints.LIST_PROXIES
 
     def list(self) -> List[Proxie]:
         """Returns list of usable proxies that traffic can be redirected through.

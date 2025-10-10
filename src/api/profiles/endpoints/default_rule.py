@@ -1,7 +1,7 @@
 from typing import Optional
 
 from api.profiles._base import Action, BaseEndpoint, check_response
-from api.profiles.constants import DEFAULT_RULE_ENDPOINT_URL, Do, Status
+from api.profiles.constants import Do, Endpoints, Status
 
 
 class DefaultRuleFormData(Action):
@@ -23,7 +23,7 @@ class DefaultRuleEndpoint(BaseEndpoint):
 
     def __init__(self, token: str) -> None:
         super().__init__(token)
-        self._url = DEFAULT_RULE_ENDPOINT_URL
+        self._url = Endpoints.DEFAULT_RULE
 
     def list(self, profile_id: str) -> Action:
         """Returns status of the Default Rule.

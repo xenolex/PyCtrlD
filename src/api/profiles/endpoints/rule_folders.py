@@ -4,7 +4,7 @@ from pydantic import BaseModel, field_validator
 
 from api.profiles._base import BaseEndpoint, check_response, create_list_of_items
 from api.profiles._models.rule_folders import RuleFolder
-from api.profiles.constants import RULE_FOLDERS_ENDPOINT_URL, Do, Status
+from api.profiles.constants import Do, Endpoints, Status
 
 
 class RuleFoldersFormData(BaseModel):
@@ -55,7 +55,7 @@ class RuleFoldersEndpoint(BaseEndpoint):
             token: Authentication token for API access.
         """
         super().__init__(token)
-        self._url = RULE_FOLDERS_ENDPOINT_URL
+        self._url = Endpoints.RULE_FOLDERS
 
     def list(self, profile_id: str) -> List[RuleFolder]:
         """Return all folders in a profile. These can be used to group custom rules.

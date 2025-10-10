@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 from api.profiles._base import Action, BaseEndpoint
 from api.profiles._models.rule_folders import RuleFolder
-from api.profiles.constants import RULE_FOLDERS_ENDPOINT_URL, Do, Status
+from api.profiles.constants import Do, Endpoints, Status
 from api.profiles.endpoints.rule_folders import (
     CreateRuleFoldersFormData,
     RuleFoldersEndpoint,
@@ -116,7 +116,7 @@ class TestRuleFolders:
 
 def test_list_rule_folders_not_changed():
     api = BaseEndpoint(token)
-    response = api.get_raw_response(RULE_FOLDERS_ENDPOINT_URL.format(profile_id=profile_id))
+    response = api.get_raw_response(Endpoints.RULE_FOLDERS.format(profile_id=profile_id))
 
     data = response.json()
     items = data["body"]["groups"]

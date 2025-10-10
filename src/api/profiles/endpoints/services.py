@@ -13,7 +13,7 @@ from api.profiles._base import (
     create_list_of_items,
 )
 from api.profiles._models.services import Service
-from api.profiles.constants import SERVICES_ENDPOINT_URL, Do, Status
+from api.profiles.constants import Do, Endpoints, Status
 
 
 class ModifyServiceFormData(ConfiguratedBaseModel):
@@ -53,7 +53,7 @@ class ServicesEndpoint(BaseEndpoint):
 
     def __init__(self, token: str) -> None:
         super().__init__(token)
-        self._url = SERVICES_ENDPOINT_URL
+        self._url = Endpoints.SERVICES
 
     def list(self, profile_id: str) -> List[Service]:
         """This returns services that have any kind of rule associated with it.

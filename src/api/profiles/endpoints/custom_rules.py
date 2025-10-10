@@ -14,7 +14,7 @@ from api.profiles._models.custom_rules import (
     CustomRule,
     ModifiedCustomRule,
 )
-from api.profiles.constants import CUSTOM_RULES_ENDPOINT_URL, Do, Status
+from api.profiles.constants import Do, Endpoints, Status
 
 
 class __BaseCustomRuleFormData(BaseModel):
@@ -113,7 +113,7 @@ class CustomRulesEndpoint(BaseEndpoint):
 
     def __init__(self, token: str) -> None:
         super().__init__(token)
-        self._url = CUSTOM_RULES_ENDPOINT_URL
+        self._url = Endpoints.CUSTOM_RULES
 
     def list(self, profile_id: str, folder_id: Optional[int] = None) -> List[CustomRule]:
         """Return custom rules in a folder. For root folder, omit the folder ID.

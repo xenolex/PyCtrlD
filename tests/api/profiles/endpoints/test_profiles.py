@@ -19,7 +19,7 @@ from api.profiles._models.profiles import (
     Data,
     Cbp,
 )
-from api.profiles.constants import PROFILES_ENDPOINT_URL, Status
+from api.profiles.constants import Endpoints, Status
 from api.profiles.endpoints.profiles import (
     CreateProfileFormData,
     ModifyOptionFormData,
@@ -86,7 +86,7 @@ class TestProfiles:
 
 def test_list_profiles_not_changed():
     api = BaseEndpoint(token)
-    response = api.get_raw_response(PROFILES_ENDPOINT_URL)
+    response = api.get_raw_response(Endpoints.PROFILES)
 
     data = response.json()
     items = data["body"]["profiles"]
@@ -121,7 +121,7 @@ def test_list_profiles_not_changed():
 
 def test_list_options_profiles_not_changed():
     api = BaseEndpoint(token)
-    response = api.get_raw_response(PROFILES_ENDPOINT_URL + "/options")
+    response = api.get_raw_response(Endpoints.PROFILES + "/options")
 
     data = response.json()
     items = data["body"]["options"]

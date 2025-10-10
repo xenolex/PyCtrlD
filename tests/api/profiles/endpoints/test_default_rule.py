@@ -9,7 +9,7 @@ import pytest
 from dotenv import load_dotenv
 
 from api.profiles._base import Action, BaseEndpoint
-from api.profiles.constants import DEFAULT_RULE_ENDPOINT_URL, Do, Status
+from api.profiles.constants import Do, Endpoints, Status
 from api.profiles.endpoints.default_rule import DefaultRuleEndpoint, DefaultRuleFormData
 from tests.api.profiles.checks import check_key_in_model
 
@@ -48,7 +48,7 @@ class TestDefaultRule:
 
 def test_list_default_rule_not_changed():
     api = BaseEndpoint(token)
-    response = api.get_raw_response(DEFAULT_RULE_ENDPOINT_URL.format(profile_id=profile_id))
+    response = api.get_raw_response(Endpoints.DEFAULT_RULE.format(profile_id=profile_id))
     data = response.json()
     default = data["body"]["default"]
     for key in default:

@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 from api.profiles._base import Action, BaseEndpoint
 from api.profiles._models.custom_rules import ModifiedCustomRule
-from api.profiles.constants import CUSTOM_RULES_ENDPOINT_URL, Do, Status
+from api.profiles.constants import Do, Endpoints, Status
 from api.profiles.endpoints.custom_rules import (
     CreateCustomRuleFormData,
     CustomRule,
@@ -113,7 +113,7 @@ class TestCustomRules:
 
 def test_list_custom_rules_not_changed():
     api = BaseEndpoint(token)
-    response = api.get_raw_response(CUSTOM_RULES_ENDPOINT_URL.format(profile_id=profile_id))
+    response = api.get_raw_response(Endpoints.CUSTOM_RULES.format(profile_id=profile_id))
 
     data = response.json()
     items = data["body"]["rules"]

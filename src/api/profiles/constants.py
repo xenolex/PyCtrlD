@@ -1,12 +1,14 @@
-from enum import Enum
+from enum import Enum, StrEnum
 
-LIST_PROXIES_ENDPOINT_URL = "https://api.controld.com/proxies"
-DEFAULT_RULE_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/default"
-CUSTOM_RULES_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/rules"
-RULE_FOLDERS_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/groups"
-SERVICES_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/services"
-FILTERS_ENDPOINT_URL = "https://api.controld.com/profiles/{profile_id}/filters"
-PROFILES_ENDPOINT_URL = "https://api.controld.com/profiles"
+
+class Endpoints(StrEnum):
+    LIST_PROXIES = "https://api.controld.com/proxies"
+    DEFAULT_RULE = "https://api.controld.com/profiles/{profile_id}/default"
+    CUSTOM_RULES = "https://api.controld.com/profiles/{profile_id}/rules"
+    RULE_FOLDERS = "https://api.controld.com/profiles/{profile_id}/groups"
+    SERVICES = "https://api.controld.com/profiles/{profile_id}/services"
+    FILTERS = "https://api.controld.com/profiles/{profile_id}/filters"
+    PROFILES = "https://api.controld.com/profiles"
 
 
 class Do(Enum):

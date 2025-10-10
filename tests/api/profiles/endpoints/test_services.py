@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 from api.profiles._base import Action, BaseEndpoint
 from api.profiles._models.services import Service
-from api.profiles.constants import SERVICES_ENDPOINT_URL, Status
+from api.profiles.constants import Endpoints, Status
 from api.profiles.endpoints.services import (
     ModifyServiceFormData,
     ServicesEndpoint,
@@ -44,7 +44,7 @@ class TestServices:
 
 def test_list_rule_folders_not_changed():
     api = BaseEndpoint(token)
-    response = api.get_raw_response(SERVICES_ENDPOINT_URL.format(profile_id=profile_id))
+    response = api.get_raw_response(Endpoints.SERVICES.format(profile_id=profile_id))
 
     data = response.json()
     items = data["body"]["services"]

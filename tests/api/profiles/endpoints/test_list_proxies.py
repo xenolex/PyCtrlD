@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 from api.profiles._base import BaseEndpoint
 from api.profiles._models.list_proxies import Proxie
-from api.profiles.constants import LIST_PROXIES_ENDPOINT_URL
+from api.profiles.constants import Endpoints
 from api.profiles.endpoints.list_proxies import ListProxiesEndpoint
 from tests.api.profiles.checks import check_api_list_endpoint, check_key_in_model
 
@@ -24,7 +24,7 @@ def test_list_proxies_serialization():
 
 def test_list_proxies_not_changed():
     api = BaseEndpoint(token)
-    response = api.get_raw_response(LIST_PROXIES_ENDPOINT_URL)
+    response = api.get_raw_response(Endpoints.LIST_PROXIES)
     data = response.json()
     proxies = data["body"]["proxies"]
     for proxie_item in proxies:

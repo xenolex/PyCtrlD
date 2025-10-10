@@ -9,7 +9,7 @@ from api.profiles._base import (
     create_list_of_items,
 )
 from api.profiles._models.profiles import Data, Option, ProfileObject
-from api.profiles.constants import PROFILES_ENDPOINT_URL, Status
+from api.profiles.constants import Endpoints, Status
 
 
 class CreateProfileFormData(ConfiguratedBaseModel):
@@ -67,7 +67,7 @@ class ModifyOptionFormData(ConfiguratedBaseModel):
 class ProfilesEndpoint(BaseEndpoint):
     def __init__(self, token: str) -> None:
         super().__init__(token)
-        self._url = PROFILES_ENDPOINT_URL
+        self._url = Endpoints.PROFILES
 
     def list(self) -> List[ProfileObject]:
         """List all profiles associated with an account.

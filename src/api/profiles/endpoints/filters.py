@@ -10,7 +10,7 @@ from api.profiles._base import (
     create_list_of_items,
 )
 from api.profiles._models.filters import NativeFilter, ThirdPartyFilter
-from api.profiles.constants import FILTERS_ENDPOINT_URL, Status
+from api.profiles.constants import Endpoints, Status
 
 
 class ModifyFilterFormData(ConfiguratedBaseModel):
@@ -28,7 +28,7 @@ class FiltersEndpoint(BaseEndpoint):
 
     def __init__(self, token: str) -> None:
         super().__init__(token)
-        self._url = FILTERS_ENDPOINT_URL
+        self._url = Endpoints.FILTERS
 
     def list_native(self, profile_id: str) -> List[NativeFilter]:
         """Returns all Native filters for this profile and their states.

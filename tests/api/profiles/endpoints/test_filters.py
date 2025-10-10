@@ -15,7 +15,7 @@ from api.profiles._models.filters import (
     Resolvers,
     ThirdPartyFilter,
 )
-from api.profiles.constants import FILTERS_ENDPOINT_URL, Status
+from api.profiles.constants import Endpoints, Status
 from api.profiles.endpoints.filters import (
     FiltersEndpoint,
     ModifyFilterFormData,
@@ -68,7 +68,7 @@ class TestFilters:
 
 def test_list_native_filters_not_changed():
     api = BaseEndpoint(token)
-    response = api.get_raw_response(FILTERS_ENDPOINT_URL.format(profile_id=profile_id))
+    response = api.get_raw_response(Endpoints.FILTERS.format(profile_id=profile_id))
 
     data = response.json()
     items = data["body"]["filters"]
@@ -88,7 +88,7 @@ def test_list_native_filters_not_changed():
 
 def test_list_third_party_filters_not_changed():
     api = BaseEndpoint(token)
-    url = FILTERS_ENDPOINT_URL.format(profile_id=profile_id)
+    url = Endpoints.FILTERS.format(profile_id=profile_id)
     response = api.get_raw_response(url + "/external")
 
     data = response.json()
