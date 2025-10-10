@@ -3,14 +3,14 @@ from typing import List
 from typing_extensions import Dict
 
 from api.profiles._base import (
-    ActionItem,
+    Action,
     BaseEndpoint,
     ConfiguratedBaseModel,
     check_response,
     create_list_of_items,
 )
-from api.profiles._models.filters import NativeFilterItem, ThirdPartyFilterItem
-from api.profiles.constants import Status
+from api.profiles._models.filters import NativeFilter, ThirdPartyFilter
+from api.profiles.constants import FILTERS_ENDPOINT_URL, Status
 
 
 class ModifyFilterFormData(ConfiguratedBaseModel):
@@ -28,9 +28,9 @@ class FiltersEndpoint(BaseEndpoint):
 
     def __init__(self, token: str) -> None:
         super().__init__(token)
-        self._url = self._url + "/{profile_id}/filters"
+        self._url = FILTERS_ENDPOINT_URL
 
-    def list_native(self, profile_id: str) -> List[NativeFilterItem]:
+    def list_native(self, profile_id: str) -> List[NativeFilter]:
         """Returns all Native filters for this profile and their states.
 
         Args:
@@ -47,9 +47,9 @@ class FiltersEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return create_list_of_items(NativeFilterItem, data["body"]["filters"])
+        return create_list_of_items(NativeFilter, data["body"]["filters"])
 
-    def list_third_party(self, profile_id: str) -> List[ThirdPartyFilterItem]:
+    def list_third_party(self, profile_id: str) -> List[ThirdPartyFilter]:
         """Returns all 3rd party filters for this profile and their states.
 
         Args:
@@ -67,11 +67,11 @@ class FiltersEndpoint(BaseEndpoint):
 
         data = response.json()
 
-        return create_list_of_items(ThirdPartyFilterItem, data["body"]["filters"])
+        return create_list_of_items(ThirdPartyFilter, data["body"]["filters"])
 
     def modify(
         self, profile_id: str, filter: str, form_data: ModifyFilterFormData
-    ) -> Dict[str, ActionItem]:
+    ) -> Dict[str, Action]:
         """Enables or disables a {filter} on a specified {profile}, which is the value of PK from the List endpoint.
 
         Args:
@@ -95,6 +95,6 @@ class FiltersEndpoint(BaseEndpoint):
         data = response.json()
 
         return {
-            key: ActionItem.model_validate(value, strict=True)
+            key: Action.model_validate(value, strict=True)
             for key, value in data["body"]["filters"].items()
         }

@@ -5,7 +5,7 @@ from pydantic import field_validator
 from api.profiles._base import ConfiguratedBaseModel, Do, Status, create_list_of_items
 
 
-class LevelItem(ConfiguratedBaseModel):
+class Level(ConfiguratedBaseModel):
     type: str
     name: str
     status: Status
@@ -23,7 +23,7 @@ class Resolvers(ConfiguratedBaseModel):
     v6: List[str]
 
 
-class ThirdPartyFilterItem(ConfiguratedBaseModel):
+class ThirdPartyFilter(ConfiguratedBaseModel):
     """ThirdPartyFilterItem Pydantic model definition"""
 
     PK: str
@@ -45,7 +45,7 @@ class ThirdPartyFilterItem(ConfiguratedBaseModel):
         return Resolvers.model_validate(v, strict=True)
 
 
-class NativeActionItem(ConfiguratedBaseModel):
+class NativeAction(ConfiguratedBaseModel):
     do: Do
     lvl: Optional[str] = None
     status: Status
@@ -61,14 +61,14 @@ class NativeActionItem(ConfiguratedBaseModel):
         return Status(v)
 
 
-class NativeFilterItem(ConfiguratedBaseModel):
+class NativeFilter(ConfiguratedBaseModel):
     """NativeFilterItem Pydantic model definition"""
 
     PK: str
-    action: Optional[NativeActionItem] = None
+    action: Optional[NativeAction] = None
     additional: Optional[str] = None
     description: str
-    levels: Optional[List[LevelItem]] = None
+    levels: Optional[List[Level]] = None
     name: str
     sources: List[str]
     status: Status
@@ -83,11 +83,11 @@ class NativeFilterItem(ConfiguratedBaseModel):
     def validate_action(cls, v):
         if v is None:
             return None
-        return NativeActionItem.model_validate(v, strict=True)
+        return NativeAction.model_validate(v, strict=True)
 
     @field_validator("levels", mode="before")
     @classmethod
     def validate_level(cls, v):
         if v is None:
             return None
-        return create_list_of_items(model=LevelItem, items=v)
+        return create_list_of_items(model=Level, items=v)

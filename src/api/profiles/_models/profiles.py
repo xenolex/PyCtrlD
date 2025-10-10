@@ -11,7 +11,7 @@ class Cbp(ConfiguratedBaseModel):
     no_link: int
 
 
-class CountData(ConfiguratedBaseModel):
+class Count(ConfiguratedBaseModel):
     count: int
 
 
@@ -21,8 +21,7 @@ class Data(ConfiguratedBaseModel):
     cbp: Optional[Cbp] = None
 
 
-class OptData(ConfiguratedBaseModel):
-    count: int
+class Opt(Count):
     data: List[Data]
 
     @classmethod
@@ -31,7 +30,7 @@ class OptData(ConfiguratedBaseModel):
         return create_list_of_items(model=Data, items=v)
 
 
-class DAData(ConfiguratedBaseModel):
+class Da(ConfiguratedBaseModel):
     do: Do
     status: Status
 
@@ -46,27 +45,27 @@ class DAData(ConfiguratedBaseModel):
         return Status(v)
 
 
-class ProfileData(ConfiguratedBaseModel):
-    flt: CountData
-    cflt: CountData
-    ipflt: CountData
-    rule: CountData
-    svc: CountData
-    grp: CountData
-    opt: OptData
-    da: DAData  # https://docs.controld.com/reference/get_profiles says that "da" is an array of
+class Profile(ConfiguratedBaseModel):
+    flt: Count
+    cflt: Count
+    ipflt: Count
+    rule: Count
+    svc: Count
+    grp: Count
+    opt: Opt
+    da: Da  # https://docs.controld.com/reference/get_profiles says that "da" is an array of
     # strings and its required, but the API response with dict
 
 
-class ProfileItem(ConfiguratedBaseModel):
+class ProfileObject(ConfiguratedBaseModel):
     PK: str
     updated: int
     name: str
-    profile: ProfileData
+    profile: Profile
     # stats: int - https://docs.controld.com/reference/get_profiles this parameter is present in docs but absent in the API response
 
 
-class OptionItem(ConfiguratedBaseModel):
+class Option(ConfiguratedBaseModel):
     PK: str
     title: str
     description: str

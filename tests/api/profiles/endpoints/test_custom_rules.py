@@ -8,13 +8,13 @@ from random import randint
 
 from dotenv import load_dotenv
 
-from api.profiles._base import ActionItem, BaseEndpoint
-from api.profiles._models.custom_rules import CustomRuleItem
+from api.profiles._base import Action, BaseEndpoint
+from api.profiles._models.custom_rules import ModifiedCustomRule
 from api.profiles.constants import CUSTOM_RULES_ENDPOINT_URL, Do, Status
 from api.profiles.endpoints.custom_rules import (
     CreateCustomRuleFormData,
+    CustomRule,
     CustomRulesEndpoint,
-    ListCustomRuleItem,
     ModifyCustomRuleFormData,
 )
 from tests.api.profiles.checks import check_api_list_endpoint, check_key_in_model
@@ -24,18 +24,16 @@ token = os.environ.get("TOKEN", "")
 profile_id = os.environ.get("TEST_PROFILE_ID", "")
 
 
-class TestDefaultRule:
+class TestCustomRules:
     api = CustomRulesEndpoint(token)
     prefix = "create_site"
 
     def test_list(self):
-        check_api_list_endpoint(
-            self.api, model=ListCustomRuleItem, api_kwargs={"profile_id": profile_id}
-        )
+        check_api_list_endpoint(self.api, model=CustomRule, api_kwargs={"profile_id": profile_id})
 
         check_api_list_endpoint(
             self.api,
-            model=ListCustomRuleItem,
+            model=CustomRule,
             api_kwargs={"profile_id": profile_id, "folder_id": 1},
         )
 
@@ -84,7 +82,7 @@ class TestDefaultRule:
             assert item["group"] == created_rule[-1].group
 
             for key in created_rule[-1].model_dump():
-                check_key_in_model(key, CustomRuleItem)
+                check_key_in_model(key, ModifiedCustomRule)
 
     def test_modify(self):
         present_data = self.api.list(profile_id)
@@ -100,7 +98,7 @@ class TestDefaultRule:
                 assert item.order == modifed_data[-1].order
                 assert item.group == modifed_data[-1].group
                 for key in modifed_data[-1].model_dump():
-                    check_key_in_model(key, CustomRuleItem)
+                    check_key_in_model(key, ModifiedCustomRule)
 
     def test_delete(self):
         present_data = self.api.list(profile_id)
@@ -123,7 +121,7 @@ def test_list_custom_rules_not_changed():
     for item in items:
         pprint(item)
         for key in item:
-            check_key_in_model(key, ListCustomRuleItem)
+            check_key_in_model(key, CustomRule)
             if key == "action":
                 for k in item[key]:
-                    check_key_in_model(k, ActionItem)
+                    check_key_in_model(k, Action)

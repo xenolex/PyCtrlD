@@ -1,10 +1,10 @@
 from typing import Optional
 
-from api.profiles._base import ActionItem, BaseEndpoint, check_response
+from api.profiles._base import Action, BaseEndpoint, check_response
 from api.profiles.constants import DEFAULT_RULE_ENDPOINT_URL, Do, Status
 
 
-class DefaultRuleFormData(ActionItem):
+class DefaultRuleFormData(Action):
     """Form data for modifying default rule settings.
 
     Args:
@@ -25,7 +25,7 @@ class DefaultRuleEndpoint(BaseEndpoint):
         super().__init__(token)
         self._url = DEFAULT_RULE_ENDPOINT_URL
 
-    def list(self, profile_id: str) -> ActionItem:
+    def list(self, profile_id: str) -> Action:
         """Returns status of the Default Rule.
 
         Args:
@@ -42,9 +42,9 @@ class DefaultRuleEndpoint(BaseEndpoint):
         check_response(response)
         data = response.json()
         default_data = data["body"]["default"]
-        return ActionItem.model_validate(default_data)
+        return Action.model_validate(default_data)
 
-    def modify(self, profile_id: str, form_data: DefaultRuleFormData) -> ActionItem:
+    def modify(self, profile_id: str, form_data: DefaultRuleFormData) -> Action:
         """Modify the Default Rule for a profile.
 
         Args:
@@ -63,4 +63,4 @@ class DefaultRuleEndpoint(BaseEndpoint):
         check_response(response)
         data = response.json()
         default_data = data["body"]["default"]
-        return ActionItem.model_validate(default_data)
+        return Action.model_validate(default_data)

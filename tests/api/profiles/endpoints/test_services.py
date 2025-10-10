@@ -7,8 +7,8 @@ from pprint import pprint
 
 from dotenv import load_dotenv
 
-from api.profiles._base import ActionItem, BaseEndpoint
-from api.profiles._models.services import ServiceItem
+from api.profiles._base import Action, BaseEndpoint
+from api.profiles._models.services import Service
 from api.profiles.constants import SERVICES_ENDPOINT_URL, Status
 from api.profiles.endpoints.services import (
     ModifyServiceFormData,
@@ -25,9 +25,7 @@ class TestServices:
     api = ServicesEndpoint(token)
 
     def test_list(self):
-        check_api_list_endpoint(
-            api=self.api, model=ServiceItem, api_kwargs={"profile_id": profile_id}
-        )
+        check_api_list_endpoint(api=self.api, model=Service, api_kwargs={"profile_id": profile_id})
 
     def test_modify(self):
         for service in self.api.list(profile_id):
@@ -41,7 +39,7 @@ class TestServices:
                 assert status == modifed_data[-1].status
 
                 for key in modifed_data[-1].model_dump():
-                    check_key_in_model(key, ActionItem)
+                    check_key_in_model(key, Action)
 
 
 def test_list_rule_folders_not_changed():
@@ -54,7 +52,7 @@ def test_list_rule_folders_not_changed():
     for item in items:
         pprint(item)
         for key in item:
-            check_key_in_model(key, ServiceItem)
+            check_key_in_model(key, Service)
             if key == "action":
                 for k in item[key]:
-                    check_key_in_model(k, ActionItem)
+                    check_key_in_model(k, Action)

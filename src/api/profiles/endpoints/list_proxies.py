@@ -1,7 +1,7 @@
 from typing import List
 
 from api.profiles._base import BaseEndpoint, check_response, create_list_of_items
-from api.profiles._models.list_proxies import ProxieItem
+from api.profiles._models.list_proxies import Proxie
 from api.profiles.constants import LIST_PROXIES_ENDPOINT_URL
 
 
@@ -12,7 +12,7 @@ class ListProxiesEndpoint(BaseEndpoint):
         super().__init__(token)
         self._url = LIST_PROXIES_ENDPOINT_URL
 
-    def list(self) -> List[ProxieItem]:
+    def list(self) -> List[Proxie]:
         """Returns list of usable proxies that traffic can be redirected through.
 
         Returns:
@@ -26,4 +26,4 @@ class ListProxiesEndpoint(BaseEndpoint):
         check_response(response)
         data = response.json()
         # Important: The response format is not documented in source doc
-        return create_list_of_items(ProxieItem, data["body"]["proxies"])
+        return create_list_of_items(Proxie, data["body"]["proxies"])

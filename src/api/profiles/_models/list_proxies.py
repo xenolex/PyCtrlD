@@ -3,7 +3,7 @@ from typing import Optional
 from api.profiles._base import ConfiguratedBaseModel
 
 
-class ProxieItem(ConfiguratedBaseModel):
+class Proxie(ConfiguratedBaseModel):
     # Important: The response format is not documented in source doc
     PK: str
     city: str

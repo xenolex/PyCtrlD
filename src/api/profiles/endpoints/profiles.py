@@ -8,7 +8,7 @@ from api.profiles._base import (
     check_response,
     create_list_of_items,
 )
-from api.profiles._models.profiles import Data, OptionItem, ProfileItem
+from api.profiles._models.profiles import Data, Option, ProfileObject
 from api.profiles.constants import PROFILES_ENDPOINT_URL, Status
 
 
@@ -69,7 +69,7 @@ class ProfilesEndpoint(BaseEndpoint):
         super().__init__(token)
         self._url = PROFILES_ENDPOINT_URL
 
-    def list(self) -> List[ProfileItem]:
+    def list(self) -> List[ProfileObject]:
         """List all profiles associated with an account.
 
         Returns:
@@ -82,9 +82,9 @@ class ProfilesEndpoint(BaseEndpoint):
         check_response(response)
         data = response.json()
 
-        return create_list_of_items(ProfileItem, data["body"]["profiles"])
+        return create_list_of_items(ProfileObject, data["body"]["profiles"])
 
-    def create(self, form_data: CreateProfileFormData) -> List[ProfileItem]:
+    def create(self, form_data: CreateProfileFormData) -> List[ProfileObject]:
         """Create a new blank profile, or clone an existing one.
 
         Args:
@@ -102,7 +102,7 @@ class ProfilesEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return create_list_of_items(ProfileItem, data["body"]["profiles"])
+        return create_list_of_items(ProfileObject, data["body"]["profiles"])
 
     def modify(self, profile_id: str, form_data: ModifyProfileFormData):
         """Modify an existing profile.
@@ -123,7 +123,7 @@ class ProfilesEndpoint(BaseEndpoint):
         )
         check_response(response)
         data = response.json()
-        return create_list_of_items(ProfileItem, data["body"]["profiles"])
+        return create_list_of_items(ProfileObject, data["body"]["profiles"])
 
     def delete(self, profile_id: str) -> bool:
         """Delete profile based on the primary key (PK).
@@ -157,7 +157,7 @@ class ProfilesEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return create_list_of_items(OptionItem, data["body"]["options"])
+        return create_list_of_items(Option, data["body"]["options"])
 
     def modify_options(
         self, profile_id: str, name: str, form_data: ModifyOptionFormData

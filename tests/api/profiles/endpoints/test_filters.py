@@ -9,11 +9,11 @@ from dotenv import load_dotenv
 
 from api.profiles._base import BaseEndpoint
 from api.profiles._models.filters import (
-    LevelItem,
-    NativeActionItem,
-    NativeFilterItem,
+    Level,
+    NativeAction,
+    NativeFilter,
     Resolvers,
-    ThirdPartyFilterItem,
+    ThirdPartyFilter,
 )
 from api.profiles.constants import FILTERS_ENDPOINT_URL, Status
 from api.profiles.endpoints.filters import (
@@ -33,7 +33,7 @@ class TestFilters:
     def test_list_native(self):
         check_api_list_endpoint(
             api=self.api,
-            model=NativeFilterItem,
+            model=NativeFilter,
             api_kwargs={"profile_id": profile_id},
             method_name="list_native",
         )
@@ -41,7 +41,7 @@ class TestFilters:
     def test_list_third_party(self):
         check_api_list_endpoint(
             api=self.api,
-            model=ThirdPartyFilterItem,
+            model=ThirdPartyFilter,
             api_kwargs={"profile_id": profile_id},
             method_name="list_third_party",
         )
@@ -76,14 +76,14 @@ def test_list_native_filters_not_changed():
     for item in items:
         pprint(item)
         for key in item:
-            check_key_in_model(key, NativeFilterItem)
+            check_key_in_model(key, NativeFilter)
             if key == "action":
                 for k in item[key]:
-                    check_key_in_model(k, NativeActionItem)
+                    check_key_in_model(k, NativeAction)
             if key == "levels":
                 for level in item[key]:
                     for k in level:
-                        check_key_in_model(k, LevelItem)
+                        check_key_in_model(k, Level)
 
 
 def test_list_third_party_filters_not_changed():
@@ -97,7 +97,7 @@ def test_list_third_party_filters_not_changed():
     for item in items:
         pprint(item)
         for key in item:
-            check_key_in_model(key, ThirdPartyFilterItem)
+            check_key_in_model(key, ThirdPartyFilter)
             if key == "resolvers":
                 for k in item[key]:
                     check_key_in_model(k, Resolvers)

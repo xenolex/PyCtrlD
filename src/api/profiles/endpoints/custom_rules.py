@@ -11,8 +11,8 @@ from api.profiles._base import (
     create_list_of_items,
 )
 from api.profiles._models.custom_rules import (
-    CustomRuleItem,
-    ListCustomRuleItem,
+    CustomRule,
+    ModifiedCustomRule,
 )
 from api.profiles.constants import CUSTOM_RULES_ENDPOINT_URL, Do, Status
 
@@ -115,7 +115,7 @@ class CustomRulesEndpoint(BaseEndpoint):
         super().__init__(token)
         self._url = CUSTOM_RULES_ENDPOINT_URL
 
-    def list(self, profile_id: str, folder_id: Optional[int] = None) -> List[ListCustomRuleItem]:
+    def list(self, profile_id: str, folder_id: Optional[int] = None) -> List[CustomRule]:
         """Return custom rules in a folder. For root folder, omit the folder ID.
 
         Args:
@@ -135,9 +135,11 @@ class CustomRulesEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return create_list_of_items(ListCustomRuleItem, data["body"]["rules"])
+        return create_list_of_items(CustomRule, data["body"]["rules"])
 
-    def modify(self, profile_id: str, form_data: ModifyCustomRuleFormData) -> List[CustomRuleItem]:
+    def modify(
+        self, profile_id: str, form_data: ModifyCustomRuleFormData
+    ) -> List[ModifiedCustomRule]:
         """Modify an existing custom rule.
 
         Args:
@@ -155,9 +157,11 @@ class CustomRulesEndpoint(BaseEndpoint):
         response = self._session.put(url, data=form_data.model_dump_json(), headers=headers)
         check_response(response)
         data = response.json()
-        return create_list_of_items(CustomRuleItem, data["body"]["rules"])
+        return create_list_of_items(ModifiedCustomRule, data["body"]["rules"])
 
-    def create(self, profile_id: str, form_data: CreateCustomRuleFormData) -> List[CustomRuleItem]:
+    def create(
+        self, profile_id: str, form_data: CreateCustomRuleFormData
+    ) -> List[ModifiedCustomRule]:
         """Create one or more custom rules.
 
         Args:
@@ -177,7 +181,7 @@ class CustomRulesEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return create_list_of_items(CustomRuleItem, data["body"]["rules"])
+        return create_list_of_items(ModifiedCustomRule, data["body"]["rules"])
 
     def delete(self, profile_id: str, hostname: str) -> bool:
         """Delete one or more custom rules.

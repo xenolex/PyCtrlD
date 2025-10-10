@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel, field_validator
 
 from api.profiles._base import BaseEndpoint, check_response, create_list_of_items
-from api.profiles._models.rule_folders import RuleFolderItem
+from api.profiles._models.rule_folders import RuleFolder
 from api.profiles.constants import RULE_FOLDERS_ENDPOINT_URL, Do, Status
 
 
@@ -57,7 +57,7 @@ class RuleFoldersEndpoint(BaseEndpoint):
         super().__init__(token)
         self._url = RULE_FOLDERS_ENDPOINT_URL
 
-    def list(self, profile_id: str) -> List[RuleFolderItem]:
+    def list(self, profile_id: str) -> List[RuleFolder]:
         """Return all folders in a profile. These can be used to group custom rules.
 
         Args:
@@ -74,11 +74,11 @@ class RuleFoldersEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return create_list_of_items(RuleFolderItem, data["body"]["groups"])
+        return create_list_of_items(RuleFolder, data["body"]["groups"])
 
     def modify(
         self, profile_id: str, folder: int, form_data: RuleFoldersFormData
-    ) -> List[RuleFolderItem]:
+    ) -> List[RuleFolder]:
         """Modify an existing folder.
 
         Args:
@@ -99,9 +99,9 @@ class RuleFoldersEndpoint(BaseEndpoint):
         response = self._session.put(url, data=form_data.model_dump_json(), headers=headers)
         check_response(response)
         data = response.json()
-        return create_list_of_items(RuleFolderItem, data["body"]["groups"])
+        return create_list_of_items(RuleFolder, data["body"]["groups"])
 
-    def create(self, profile_id: str, form_data: CreateRuleFoldersFormData) -> List[RuleFolderItem]:
+    def create(self, profile_id: str, form_data: CreateRuleFoldersFormData) -> List[RuleFolder]:
         """Create a new folder and assign it an optional rule.
 
         Args:
@@ -121,7 +121,7 @@ class RuleFoldersEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return create_list_of_items(RuleFolderItem, data["body"]["groups"])
+        return create_list_of_items(RuleFolder, data["body"]["groups"])
 
     def delete(
         self,

@@ -2,15 +2,15 @@ from typing import Optional
 
 from pydantic import field_validator, model_validator
 
-from api.profiles._base import ActionItem, ConfiguratedBaseModel
+from api.profiles._base import Action, ConfiguratedBaseModel
 from api.profiles.constants import Do, Status
 
 
-class ListCustomRuleItem(ConfiguratedBaseModel):
+class CustomRule(ConfiguratedBaseModel):
     PK: str
     order: int
     group: int
-    action: ActionItem
+    action: Action
     comment: Optional[str] = None  # not documented
 
     @model_validator(mode="before")
@@ -18,11 +18,11 @@ class ListCustomRuleItem(ConfiguratedBaseModel):
     def validate_list_custom_rule_item(cls, values):
         if isinstance(values, dict) and "action" in values and isinstance(values["action"], dict):
             action_dict = values["action"]
-            values["action"] = ActionItem.model_validate(action_dict, strict=True)
+            values["action"] = Action.model_validate(action_dict, strict=True)
         return values
 
 
-class CustomRuleItem(ConfiguratedBaseModel):
+class ModifiedCustomRule(ConfiguratedBaseModel):
     do: Do
     status: Status
     order: int

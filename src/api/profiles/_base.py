@@ -12,7 +12,7 @@ class ConfiguratedBaseModel(BaseModel):
     model_config = ConfigDict(extra="allow")
 
 
-class ActionItem(ConfiguratedBaseModel):
+class Action(ConfiguratedBaseModel):
     do: Do
     status: Status
     via: Optional[str] = None

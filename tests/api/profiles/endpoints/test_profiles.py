@@ -10,12 +10,12 @@ from dotenv import load_dotenv
 
 from api.profiles._base import BaseEndpoint
 from api.profiles._models.profiles import (
-    CountData,
-    OptionItem,
-    ProfileData,
-    ProfileItem,
-    DAData,
-    OptData,
+    Count,
+    Option,
+    Profile,
+    ProfileObject,
+    Da,
+    Opt,
     Data,
     Cbp,
 )
@@ -39,7 +39,7 @@ class TestProfiles:
     default_name = "Developer Profile"
 
     def test_list(self):
-        check_api_list_endpoint(self.api, model=ProfileItem)
+        check_api_list_endpoint(self.api, model=ProfileObject)
 
     def test_create(self):
         name = "test"
@@ -72,7 +72,7 @@ class TestProfiles:
             assert self.api.delete(to_delete_id)
 
     def test_list_options(self):
-        check_api_list_endpoint(self.api, OptionItem, method_name="list_options")
+        check_api_list_endpoint(self.api, Option, method_name="list_options")
 
     def test_modify_option(self):
         for status in [Status.ENABLED, Status.DISABLED]:
@@ -94,17 +94,17 @@ def test_list_profiles_not_changed():
     for item in items:
         pprint(item)
         for key in item:
-            check_key_in_model(key, ProfileItem)
+            check_key_in_model(key, ProfileObject)
             if key == "profile":
                 p = item[key]
                 for k in p:
-                    check_key_in_model(k, ProfileData)
+                    check_key_in_model(k, Profile)
 
                     pd = p[k]
 
                     match k:
                         case "opt":
-                            model = OptData
+                            model = Opt
                             for item in pd["data"]:
                                 for kkk in item:
                                     check_key_in_model(kkk, Data)
@@ -112,9 +112,9 @@ def test_list_profiles_not_changed():
                                         for kkkk in item[kkk]:
                                             check_key_in_model(kkkk, Cbp)
                         case "da":
-                            model = DAData
+                            model = Da
                         case _:
-                            model = CountData
+                            model = Count
                     for kk in pd:
                         check_key_in_model(kk, model)
 
@@ -128,4 +128,4 @@ def test_list_options_profiles_not_changed():
     for item in items:
         pprint(item)
         for key in item:
-            check_key_in_model(key, OptionItem)
+            check_key_in_model(key, Option)

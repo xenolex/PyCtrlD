@@ -8,8 +8,8 @@ from random import randint
 
 from dotenv import load_dotenv
 
-from api.profiles._base import ActionItem, BaseEndpoint
-from api.profiles._models.rule_folders import RuleFolderItem
+from api.profiles._base import Action, BaseEndpoint
+from api.profiles._models.rule_folders import RuleFolder
 from api.profiles.constants import RULE_FOLDERS_ENDPOINT_URL, Do, Status
 from api.profiles.endpoints.rule_folders import (
     CreateRuleFoldersFormData,
@@ -29,7 +29,7 @@ class TestRuleFolders:
 
     def test_list(self):
         check_api_list_endpoint(
-            api=self.api, model=RuleFolderItem, api_kwargs={"profile_id": profile_id}
+            api=self.api, model=RuleFolder, api_kwargs={"profile_id": profile_id}
         )
 
     def test_create(self):
@@ -75,11 +75,11 @@ class TestRuleFolders:
                 assert folder.count == 0
 
                 for key in folder.model_dump():
-                    check_key_in_model(key, RuleFolderItem)
+                    check_key_in_model(key, RuleFolder)
                     if key == "action":
                         action_item = folder.model_dump()[key]
                         for k in action_item:
-                            check_key_in_model(k, ActionItem)
+                            check_key_in_model(k, Action)
 
     def test_modify(self):
         present_data = self.api.list(profile_id)
@@ -97,11 +97,11 @@ class TestRuleFolders:
                 assert Status.DISABLED == modifed_data[-1].action.status
 
                 for key in modifed_data[-1].model_dump():
-                    check_key_in_model(key, RuleFolderItem)
+                    check_key_in_model(key, RuleFolder)
                     if key == "action":
                         action_item = modifed_data[-1].model_dump()[key]
                         for k in action_item:
-                            check_key_in_model(k, ActionItem)
+                            check_key_in_model(k, Action)
 
     def test_delete(self):
         present_data = self.api.list(profile_id)
@@ -124,7 +124,7 @@ def test_list_rule_folders_not_changed():
     for item in items:
         pprint(item)
         for key in item:
-            check_key_in_model(key, RuleFolderItem)
+            check_key_in_model(key, RuleFolder)
             if key == "action":
                 for k in item[key]:
-                    check_key_in_model(k, ActionItem)
+                    check_key_in_model(k, Action)

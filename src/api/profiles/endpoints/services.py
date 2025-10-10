@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import model_validator
 
 from api.profiles._base import (
-    ActionItem,
+    Action,
     BaseEndpoint,
     ConfiguratedBaseModel,
     check_response,
@@ -12,7 +12,7 @@ from api.profiles._base import (
     check_via_v6_is_aaaa_record,
     create_list_of_items,
 )
-from api.profiles._models.services import ServiceItem
+from api.profiles._models.services import Service
 from api.profiles.constants import SERVICES_ENDPOINT_URL, Do, Status
 
 
@@ -55,7 +55,7 @@ class ServicesEndpoint(BaseEndpoint):
         super().__init__(token)
         self._url = SERVICES_ENDPOINT_URL
 
-    def list(self, profile_id: str) -> List[ServiceItem]:
+    def list(self, profile_id: str) -> List[Service]:
         """This returns services that have any kind of rule associated with it.
 
         Args:
@@ -72,11 +72,11 @@ class ServicesEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        return create_list_of_items(model=ServiceItem, items=data["body"]["services"])
+        return create_list_of_items(model=Service, items=data["body"]["services"])
 
     def modify(
         self, profile_id: str, service: str, form_data: ModifyServiceFormData
-    ) -> List[ActionItem]:
+    ) -> List[Action]:
         """Create or modify a rule for a {service} in a {profile}.
 
         Args:
@@ -100,4 +100,4 @@ class ServicesEndpoint(BaseEndpoint):
 
         data = response.json()
 
-        return create_list_of_items(ActionItem, data["body"]["services"])
+        return create_list_of_items(Action, data["body"]["services"])
