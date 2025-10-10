@@ -1,0 +1,2 @@
+- Check 1 = enabled, 0 = disable in form data - make them bool and convert to int on send
+- move _base and constanst
