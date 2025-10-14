@@ -10,6 +10,7 @@ class Endpoints(StrEnum):
     FILTERS = "https://api.controld.com/profiles/{profile_id}/filters"
     PROFILES = "https://api.controld.com/profiles"
     DEVICES = "https://api.controld.com/devices"
+    ACCESS = "https://api.controld.com/access"
 
 
 class Do(Enum):

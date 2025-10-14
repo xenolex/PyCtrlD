@@ -1,4 +1,4 @@
-from typing import Any, Iterable, List
+from typing import Any, Iterable, List, Optional
 
 from pydantic import BaseModel, ConfigDict
 from requests import Response, Session
@@ -23,8 +23,10 @@ class BaseEndpoint:
     def __repr__(self):
         return f"<{self.__class__.__name__} url={self._url}>"
 
-    def get_raw_response(self, url):
-        return self._session.get(url)
+    def get_raw_response(self, url, params: Optional[dict] = None):
+        if params is None:
+            params = {}
+        return self._session.get(url, params=params)
 
 
 def check_response(response: Response):
