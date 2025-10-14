@@ -6,11 +6,12 @@ class Endpoints(StrEnum):
     DEFAULT_RULE = "https://api.controld.com/profiles/{profile_id}/default"
     CUSTOM_RULES = "https://api.controld.com/profiles/{profile_id}/rules"
     RULE_FOLDERS = "https://api.controld.com/profiles/{profile_id}/groups"
-    SERVICES = "https://api.controld.com/profiles/{profile_id}/services"
+    PROFILES_SERVICES = "https://api.controld.com/profiles/{profile_id}/services"
     FILTERS = "https://api.controld.com/profiles/{profile_id}/filters"
     PROFILES = "https://api.controld.com/profiles"
     DEVICES = "https://api.controld.com/devices"
     ACCESS = "https://api.controld.com/access"
+    SERVICES = "https://api.controld.com/services/categories"
 
 
 class Do(Enum):
