@@ -35,11 +35,11 @@ from tests.api.profiles.checks import check_api_list_endpoint, check_key_in_mode
 load_dotenv()
 token = os.getenv("TOKEN", "")
 profile_id = os.getenv("TEST_PROFILE_ID", "")
+test_device_id2 = os.getenv("TEST_DEVICE_ID2", "")
 
 
 class TestDevices:
     api = DevicesEndpoint(token)
-    device_id = "2eekb5a8zsu"
     default_name = "Default-Device-Name"
 
     def test_list_all_devices(self):
@@ -64,11 +64,11 @@ class TestDevices:
     def test_modify_device(self):
         name = f"test{randint(0, 99999)}"
         form_data = ModifyDeviceFormData(name=name)
-        updated_device = self.api.modify_device(self.device_id, form_data)
+        updated_device = self.api.modify_device(test_device_id2, form_data)
         assert name == updated_device.name
 
         form_data = ModifyDeviceFormData(name=self.default_name)
-        updated_device = self.api.modify_device(self.device_id, form_data)
+        updated_device = self.api.modify_device(test_device_id2, form_data)
 
         assert self.default_name == updated_device.name
 
