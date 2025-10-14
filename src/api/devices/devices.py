@@ -2,26 +2,53 @@ from typing import List, Literal
 from pydantic import model_serializer, SerializerFunctionWrapHandler
 from typing_extensions import Optional
 
-from api._base import  BaseEndpoint, ConfiguratedBaseModel, check_response, create_list_of_items
+from api._base import BaseEndpoint, ConfiguratedBaseModel, check_response, create_list_of_items
 from api.constants import Stats
 from api.devices._model import (
     Device,
-    DeviceType,
+    DeviceTypes,
 )
 from enum import Enum
 
+from api.profiles.constants import Endpoints
+
+_icon_list = Literal[
+    "mobile-ios",
+    "mobile-android",
+    "phone",
+    "desktop-windows",
+    "desktop-mac",
+    "desktop-linux",
+    "browser-chrome",
+    "browser-firefox",
+    "browser-edge",
+    "browser-brave",
+    "browser-other",
+    "tv",
+    "tv-apple",
+    "tv-android",
+    "tv-firetv",
+    "tv-samsung",
+    "router",
+    "router-openwrt",
+    "router-ubiquiti",
+    "router-asus",
+    "router-ddwrt",
+]
+
+
 class BaseFormData(ConfiguratedBaseModel):
-    @model_serializer(mode='wrap')
-    def validate_model(self, handler: SerializerFunctionWrapHandler
-        ) -> dict[str, object]:
-            serialized = handler(self)
-            for key in serialized:
-                if isinstance(serialized[key], bool)
-                    serialized[key] = int(serialized[key])
+    @model_serializer(mode="wrap")
+    def validate_model(self, handler: SerializerFunctionWrapHandler) -> dict[str, object]:
+        serialized = handler(self)
+        for key in serialized:
+            if isinstance(serialized[key], bool):
+                serialized[key] = int(serialized[key])
 
-            return serialized
+        return serialized
 
-class CreateDeviceFormData(ConfiguratedBaseModel):
+
+class CreateDeviceFormData(BaseFormData):
     """
     Create a new Device.
 
@@ -46,7 +73,7 @@ class CreateDeviceFormData(ConfiguratedBaseModel):
     name: str
     profile_id: str
     profile_id2: Optional[str] = None
-    icon: str
+    icon: _icon_list
     stats: Optional[Stats] = None
     legacy_ipv4_status: Optional[bool] = None
     learn_ip: Optional[bool] = None
@@ -65,7 +92,6 @@ class DeviceStatus(Enum):
     ACTIVE = 1
     SOFT_DISABLED = 2
     HARD_DISABLED = 3
-
 
 
 class ModifyDeviceFormData(BaseFormData):
@@ -111,11 +137,9 @@ class DevicesEndpoint(BaseEndpoint):
     def __init__(self, token: str) -> None:
         super().__init__(token)
 
-        self._url = "https://api.controld.com/devices"
+        self._url = Endpoints.DEVICES
 
-    def list_all_devices(
-        self, filter: Literal["all", "users", "routers"] = "all"
-    ) -> tuple[List[Device], bool]:
+    def list_all_devices(self, filter: Literal["all", "users", "routers"] = "all") -> List[Device]:
         """
         List all devices that are associated with an account.
 
@@ -141,7 +165,7 @@ class DevicesEndpoint(BaseEndpoint):
 
         data = response.json()
 
-        return create_list_of_items(Device, data["body"]["devices"]), data["body"]["activity"]
+        return create_list_of_items(Device, data["body"]["devices"])
 
     def create_device(self, form_data: CreateDeviceFormData) -> Device:
         """
@@ -163,12 +187,12 @@ class DevicesEndpoint(BaseEndpoint):
 
         return Device.model_validate(data["body"], strict=True)
 
-    def list_device_types(self) -> List[DeviceType]:
+    def list_device_types(self) -> DeviceTypes:
         """
         Return a list of allowed device types.
 
         Returns:
-            List[DeviceType]: Return a list of allowed device types.
+            DeviceTypes: Return a list of allowed device types.
 
         Reference:
             https://docs.controld.com/reference/get_devices-types
@@ -179,8 +203,7 @@ class DevicesEndpoint(BaseEndpoint):
         check_response(response)
 
         data = response.json()
-        items = data["body"]["types"]
-        return create_list_of_items(DeviceType, items)
+        return DeviceTypes.model_validate(data["body"]["types"], strict=True)
 
     def modify_device(self, device_id: str, form_data: ModifyDeviceFormData) -> Device:
         """
@@ -203,18 +226,16 @@ class DevicesEndpoint(BaseEndpoint):
         data = response.json()
         return Device.model_validate(data["body"], strict=True)
 
-    def delete_devices(self, device_id: str) -> bool:
+    def delete_device(self, device_id: str) -> bool:
         """
         Delete a Device. This will break DNS on any physical gadget that uses this Device's unique DNS resolvers.
 
         Returns:
-            DeleteDevicesResult: Deletion outcome summary.
+            DeleteDevicesResult: True if the device was deleted successfully.
         """
 
         url = f"{self._url}/{device_id}"
         response = self._session.delete(url)
         check_response(response)
-        data = response.json()
 
-        result_payload = data.get("body", {}).get("result") or data.get("body", {}) or {}
         return True

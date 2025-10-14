@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any, List, Optional
+
+from pydantic import field_validator, model_validator
 
 from api._base import ConfiguratedBaseModel
+from api.constants import Stats
 from api.profiles.constants import Status
 
 
@@ -23,7 +26,7 @@ class Resolvers(ConfiguratedBaseModel):
     doh: str
     dot: str
     v4: Optional[str] = None
-    v6: Optional[str] = None
+    v6: Optional[List[str]] = None
 
 
 class LegacyIPv4(ConfiguratedBaseModel):
@@ -41,11 +44,11 @@ class Device(ConfiguratedBaseModel):
     PK: str
     ts: int
     name: str
-    stats: Optional[int] = None
+    stats: Optional[Stats] = None
     device_id: str
     status: Status
-    restricted: Optional[int] = None
-    learn_ip: int
+    restricted: Optional[Status] = None
+    learn_ip: Status
     desc: Optional[str] = None
     ddns: Optional[Ddns] = None
     ddns_ext: Optional[DdnsExt] = None
@@ -53,15 +56,80 @@ class Device(ConfiguratedBaseModel):
     legacy_ipv4: Optional[LegacyIPv4] = None
     profile: Profile
     icon: Optional[str]
-    bump_tls: Optional[int] = None
+    bump_tls: Optional[Status] = None
+    user: str
+    client_count: int
+    ip_count: Optional[int] = None
+    last_activity: Optional[int] = None
+    clients: Optional[dict[str, Any]] = None
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status(cls, value):
+        return Status(value)
+
+    @field_validator("resolvers", mode="before")
+    @classmethod
+    def validate_resolvers(cls, value):
+        return Resolvers.model_validate(value, strict=True)
+
+    @field_validator("learn_ip", mode="before")
+    @classmethod
+    def validate_learn_ip(cls, value):
+        return Status(value)
+
+    @field_validator("stats", mode="before")
+    @classmethod
+    def validate_stats(cls, value):
+        return Stats(value)
 
 
-class OsIcons(ConfiguratedBaseModel):
-    mobile_ios: str
-    mobile_android: str
-    desktop_windows: str
-    desktop_mac: str
-    desktop_linux: str
+class Settings(ConfiguratedBaseModel):
+    stats: Optional[Stats] = None
+    legacy_ipv4_status: Optional[Status] = None
+    learn_ip: Optional[Status] = None
+
+    @field_validator("learn_ip", mode="before")
+    @classmethod
+    def validate_learn_ip(cls, value):
+        return Status(value)
+
+    @field_validator("legacy_ipv4_status", mode="before")
+    @classmethod
+    def validate_legacy_ipv4_status(cls, value):
+        return Status(value)
+
+    @field_validator("stats", mode="before")
+    @classmethod
+    def validate_stats(cls, value):
+        return Stats(value)
+
+
+class Icon(ConfiguratedBaseModel):
+    name: str
+    settings: Settings
+    highlight: Optional[List[str]] = None
+    require: Optional[List[str]] = None
+
+
+class BaseIcons(ConfiguratedBaseModel):
+    @model_validator(mode="before")
+    @classmethod
+    def validate_values(cls, values):
+        for key in values.copy():
+            if "-" in key:
+                new_key = key.replace("-", "_")
+                values[new_key] = values[key]
+                del values[key]
+        return values
+
+
+class OsIcons(BaseIcons):
+    mobile_ios: Icon
+    mobile_android: Icon
+    desktop_windows: Icon
+    desktop_mac: Icon
+    desktop_linux: Icon
 
 
 class Os(ConfiguratedBaseModel):
@@ -69,12 +137,12 @@ class Os(ConfiguratedBaseModel):
     icons: OsIcons
 
 
-class BrowserIcons(ConfiguratedBaseModel):
-    browser_chrome: str
-    browser_firefox: str
-    browser_edge: str
-    browser_brave: str
-    browser_other: str
+class BrowserIcons(BaseIcons):
+    browser_chrome: Icon
+    browser_firefox: Icon
+    browser_edge: Icon
+    browser_brave: Icon
+    browser_other: Icon
 
 
 class Browser(ConfiguratedBaseModel):
@@ -82,12 +150,12 @@ class Browser(ConfiguratedBaseModel):
     icons: BrowserIcons
 
 
-class TvIcons(ConfiguratedBaseModel):
-    tv: str
-    tv_apple: str
-    tv_android: str
-    tv_firetv: str
-    tv_samsung: str
+class TvIcons(BaseIcons):
+    tv: Icon
+    tv_apple: Icon
+    tv_android: Icon
+    tv_firetv: Icon
+    tv_samsung: Icon
 
 
 class Tv(ConfiguratedBaseModel):
@@ -95,21 +163,29 @@ class Tv(ConfiguratedBaseModel):
     icons: TvIcons
 
 
-class RouterIcons(ConfiguratedBaseModel):
-    router: str
-    router_openwrt: str
-    router_ubiquiti: str
-    router_asus: str
-    router_ddwrt: str
+class RouterIcons(BaseIcons):
+    router: Icon
+    router_openwrt: Icon
+    router_ubiquiti: Icon
+    router_asus: Icon
+    router_ddwrt: Icon
+    router_linux: Icon
+    router_glinet: Icon
+    router_synology: Icon
+    router_freshtomato: Icon
+    router_windows: Icon
+    router_pfsense: Icon
+    router_opnsense: Icon
+    router_firewalla: Icon
 
 
 class Router(ConfiguratedBaseModel):
     name: str
-    icons: TvIcons
+    icons: RouterIcons
     setup_url: str
 
 
-class DeviceType(ConfiguratedBaseModel):
+class DeviceTypes(ConfiguratedBaseModel):
     os: Os
     browser: Browser
     tv: Tv

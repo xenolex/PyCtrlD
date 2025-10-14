@@ -20,6 +20,9 @@ class BaseEndpoint:
 
         self._url = ""
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} url={self._url}>"
+
     def get_raw_response(self, url):
         return self._session.get(url)
 
