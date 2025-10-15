@@ -1,13 +1,20 @@
 from typing import Any, Iterable, List, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 from requests import Response, Session
+
+from api.profiles.constants import Status
 
 
 class ConfiguratedBaseModel(BaseModel):
     """Base Pydantic model allowing unknown / extra fields."""
 
     model_config = ConfigDict(extra="allow")
+
+    @field_validator("status", check_fields=False, mode="before")
+    @classmethod
+    def set_status(cls, value: int):
+        return Status(value)
 
 
 class BaseEndpoint:
