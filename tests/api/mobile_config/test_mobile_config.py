@@ -24,7 +24,15 @@ class TestMobileConfigEndpoint:
     def test_generate_profile(self):
         dir = "tmp"
         path = dir + "/mc.mobileconfig"
-        file = self.api.generate_profile(device_id=test_device_id, filepath=path)
+        file = self.api.generate_profile(
+            device_id=test_device_id,
+            filepath=path,
+            exclude_wifi=["wifi1", "wifi2"],
+            exclude_domain=["domain1", "domain2"],
+            dont_sign=False,
+            exclude_common=False,
+            client_id="test_client",
+        )
 
         assert file.exists()
 
