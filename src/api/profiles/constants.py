@@ -12,6 +12,7 @@ class Endpoints(StrEnum):
     DEVICES = "https://api.controld.com/devices"
     ACCESS = "https://api.controld.com/access"
     SERVICES = "https://api.controld.com/services/categories"
+    ANALYTICS = "https://api.controld.com/analytics"
 
 
 class Do(Enum):
