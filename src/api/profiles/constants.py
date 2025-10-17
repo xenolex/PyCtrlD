@@ -17,6 +17,7 @@ class Endpoints(StrEnum):
     ACCOUNT = "https://api.controld.com/users"
     MOBILE_CONFIG = "https://api.controld.com/mobileconfig/{device_id}"
     BILLING = "https://api.controld.com/billing"
+    ORGANIZATION = "https://api.controld.com/organizations"
 
 
 class Do(Enum):
