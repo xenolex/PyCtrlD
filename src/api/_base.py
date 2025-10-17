@@ -13,7 +13,7 @@ class ConfiguratedBaseModel(BaseModel):
 
     @field_validator("status", check_fields=False, mode="before")
     @classmethod
-    def set_status(cls, value: int):
+    def set_status(cls, value: Any) -> Any:
         return Status(value)
 
 

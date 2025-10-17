@@ -2,6 +2,7 @@ from enum import Enum, StrEnum
 
 
 class Endpoints(StrEnum):
+    BASE = "https://api.controld.com"
     LIST_PROXIES = "https://api.controld.com/proxies"
     DEFAULT_RULE = "https://api.controld.com/profiles/{profile_id}/default"
     CUSTOM_RULES = "https://api.controld.com/profiles/{profile_id}/rules"
