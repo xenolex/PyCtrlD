@@ -3,3 +3,4 @@
 - for devices models think about make baseclass for all same fields validation
 - move count from profile to base file
 - move BaseFormData from devices to root level
+- add logger in inside of print
