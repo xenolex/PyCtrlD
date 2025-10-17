@@ -1,4 +1,4 @@
-from api._base import ConfiguratedBaseModel
+from api._core import ConfiguratedBaseModel
 
 
 class Level(ConfiguratedBaseModel):

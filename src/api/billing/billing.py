@@ -1,4 +1,4 @@
-from api._base import BaseEndpoint, check_response, create_list_of_items
+from api._core import BaseEndpoint, check_response, create_list_of_items
 from api.billing._model import ActiveProduct, Payment, Subscription
 from api.profiles.constants import Endpoints
 

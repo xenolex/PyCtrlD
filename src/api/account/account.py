@@ -1,4 +1,4 @@
-from api._base import BaseEndpoint, check_response
+from api._core import BaseEndpoint, check_response
 from api.account._model import UserData
 from api.profiles.constants import Endpoints
 

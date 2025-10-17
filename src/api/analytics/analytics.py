@@ -1,6 +1,6 @@
 from typing_extensions import List
 
-from api._base import BaseEndpoint, check_response, create_list_of_items
+from api._core import BaseEndpoint, check_response, create_list_of_items
 from api.analytics._model import Endpoint, Level
 from api.profiles.constants import Endpoints
 

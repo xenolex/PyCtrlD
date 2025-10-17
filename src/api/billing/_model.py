@@ -1,6 +1,6 @@
 from typing import Optional
 
-from api._base import ConfiguratedBaseModel
+from api._core import ConfiguratedBaseModel
 from api.profiles.constants import Status
 
 

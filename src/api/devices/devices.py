@@ -2,7 +2,7 @@ from typing import List, Literal
 from pydantic import model_serializer, SerializerFunctionWrapHandler
 from typing_extensions import Optional
 
-from api._base import BaseEndpoint, ConfiguratedBaseModel, check_response, create_list_of_items
+from api._core import BaseEndpoint, ConfiguratedBaseModel, check_response, create_list_of_items
 from api.constants import Stats
 from api.devices._model import (
     Device,

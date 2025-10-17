@@ -2,7 +2,7 @@ from typing import Any
 
 from pydantic import field_validator
 
-from api._base import ConfiguratedBaseModel
+from api._core import ConfiguratedBaseModel
 
 
 class Ip(ConfiguratedBaseModel):
