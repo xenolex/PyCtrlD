@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 
-from api._base import BaseEndpoint, check_response
+from api._core import BaseEndpoint, check_response
 from api.profiles.constants import Endpoints
 
 

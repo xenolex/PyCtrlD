@@ -7,7 +7,7 @@ from pprint import pprint
 
 from dotenv import load_dotenv
 
-from api._base import BaseEndpoint
+from api._core import BaseEndpoint
 from api.account._model import UserData
 from api.account.account import AccountEndpoint
 from api.profiles.constants import Endpoints

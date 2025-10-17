@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, field_validator
 
-from api._base import BaseEndpoint, check_response, create_list_of_items
+from api._core import BaseEndpoint, check_response, create_list_of_items
 from api.profiles._models.rule_folders import RuleFolder
 from api.profiles.constants import Do, Endpoints, Status
 

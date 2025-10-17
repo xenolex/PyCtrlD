@@ -2,7 +2,7 @@ from typing import Any, List, Optional
 
 from pydantic import field_validator
 
-from api._base import ConfiguratedBaseModel, create_list_of_items
+from api._core import ConfiguratedBaseModel, create_list_of_items
 from api.profiles._base import Do, Status
 
 

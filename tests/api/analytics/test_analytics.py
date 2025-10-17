@@ -7,7 +7,7 @@ import os
 
 from dotenv import load_dotenv
 
-from api._base import BaseEndpoint
+from api._core import BaseEndpoint
 from api.analytics._model import Endpoint, Level
 from api.analytics.analytics import AnalyticsEndpoint
 from api.profiles.constants import Endpoints

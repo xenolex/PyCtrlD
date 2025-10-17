@@ -1,4 +1,4 @@
-from api._base import ConfiguratedBaseModel, Status
+from api._core import ConfiguratedBaseModel, Status
 from api.profiles._models.profiles import Count
 
 

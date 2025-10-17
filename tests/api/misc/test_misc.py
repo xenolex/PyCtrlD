@@ -7,7 +7,7 @@ import os
 
 from dotenv import load_dotenv
 
-from api._base import BaseEndpoint
+from api._core import BaseEndpoint
 from api.misc._model import FeatureStatus, Ip, Location, Network
 from api.misc.misc import MiscEndpoint
 from api.profiles.constants import Endpoints

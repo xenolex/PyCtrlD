@@ -8,7 +8,7 @@ from pprint import pprint
 
 from dotenv import load_dotenv
 
-from api._base import BaseEndpoint
+from api._core import BaseEndpoint
 from api.profiles._models.list_proxies import Proxie
 from api.profiles.constants import Endpoints
 from api.profiles.endpoints.list_proxies import ListProxiesEndpoint

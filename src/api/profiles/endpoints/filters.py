@@ -2,7 +2,7 @@ from typing import List
 
 from typing_extensions import Dict
 
-from api._base import BaseEndpoint, check_response, create_list_of_items
+from api._core import BaseEndpoint, check_response, create_list_of_items
 from api.profiles._base import (
     Action,
     ConfiguratedBaseModel,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from api._base import ConfiguratedBaseModel
+from api._core import ConfiguratedBaseModel
 
 
 class Category(ConfiguratedBaseModel):

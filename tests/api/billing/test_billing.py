@@ -7,7 +7,7 @@ import os
 
 from dotenv import load_dotenv
 
-from api._base import BaseEndpoint
+from api._core import BaseEndpoint
 from api.billing._model import (
     ActiveProduct,
     ActiveSubscription,

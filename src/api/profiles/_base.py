@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import field_validator
 
-from api._base import ConfiguratedBaseModel
+from api._core import ConfiguratedBaseModel
 from api.profiles.constants import Do, Status
 
 

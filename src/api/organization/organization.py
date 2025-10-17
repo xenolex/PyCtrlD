@@ -1,6 +1,6 @@
 from typing import Optional
 
-from api._base import BaseEndpoint, check_response, create_list_of_items
+from api._core import BaseEndpoint, check_response, create_list_of_items
 from api.devices.devices import BaseFormData
 from api.organization._model import Member, Organization, SubOrganization
 from api.profiles.constants import Endpoints

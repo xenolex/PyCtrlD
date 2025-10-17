@@ -1,6 +1,6 @@
 from typing import List
 
-from api._base import BaseEndpoint, check_response, create_list_of_items
+from api._core import BaseEndpoint, check_response, create_list_of_items
 from api.profiles._models.list_proxies import Proxie
 from api.profiles.constants import Endpoints
 

@@ -2,7 +2,7 @@ import sys
 
 sys.path.extend(["./", "./src/"])
 
-from api._base import BaseEndpoint
+from api._core import BaseEndpoint
 from api.profiles.constants import Endpoints
 from pprint import pprint
 import os

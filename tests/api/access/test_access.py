@@ -7,7 +7,7 @@ import os
 
 from dotenv import load_dotenv
 
-from api._base import BaseEndpoint
+from api._core import BaseEndpoint
 from api.access._models import Ips
 from api.access.access import AccessEndpoint, AccessFormData
 from api.profiles.constants import Endpoints

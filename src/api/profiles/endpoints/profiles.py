@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import model_validator
 
-from api._base import BaseEndpoint, check_response, create_list_of_items
+from api._core import BaseEndpoint, check_response, create_list_of_items
 from api.profiles._base import (
     ConfiguratedBaseModel,
 )
