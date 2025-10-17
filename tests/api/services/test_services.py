@@ -7,7 +7,7 @@ import os
 
 from dotenv import load_dotenv
 
-from api._base import BaseEndpoint
+from api._core import BaseEndpoint
 from api.profiles.constants import Endpoints
 from api.services._model import Category, Service
 from api.services.services import ServicesEndpoint

@@ -8,7 +8,7 @@ from random import randint
 
 from dotenv import load_dotenv
 
-from api._base import BaseEndpoint
+from api._core import BaseEndpoint
 from api.profiles._base import Action
 from api.profiles._models.rule_folders import RuleFolder
 from api.profiles.constants import Do, Endpoints, Status
