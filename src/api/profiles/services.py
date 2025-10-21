@@ -89,7 +89,7 @@ class ServicesEndpoint(BaseEndpoint):
         """
         url = self._url.format(profile_id=profile_id)
         return self._modify(
-            url=f"{url}/{service}",
+            url=url + f"/{service}",
             model=Action,
             key="services",
             form_data=form_data.model_dump_json(),

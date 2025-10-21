@@ -4,7 +4,7 @@ from typing import Optional
 
 from api._core.models.common import Action, BaseFormData, Do, Status
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response
+from api._core.utils import BaseEndpoint
 
 
 class DefaultRuleFormData(BaseFormData):
@@ -40,12 +40,8 @@ class DefaultRuleEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/get_profiles-profile-id-default
         """
-        url = self._url.format(profile_id=profile_id)
-        response = self._session.get(url)
-        check_response(response)
-        data = response.json()
-        default_data = data["body"]["default"]
-        return Action.model_validate(default_data)
+        data = self._request(method="GET", url=self._url.format(profile_id=profile_id))
+        return Action.model_validate(data["default"], strict=True)
 
     def modify(self, profile_id: str, form_data: DefaultRuleFormData) -> Action:
         """Modify the Default Rule for a profile.
@@ -60,10 +56,11 @@ class DefaultRuleEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id-default
         """
-        url = self._url.format(profile_id=profile_id)
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        response = self._session.put(url, headers=headers, data=form_data.model_dump_json())
-        check_response(response)
-        data = response.json()
-        default_data = data["body"]["default"]
-        return Action.model_validate(default_data)
+
+        data = self._request(
+            method="PUT",
+            url=self._url.format(profile_id=profile_id),
+            data=form_data.model_dump_json(),
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        return Action.model_validate(data["default"], strict=True)

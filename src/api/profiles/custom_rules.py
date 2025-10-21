@@ -177,7 +177,6 @@ class CustomRulesEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/delete_profiles-profile-id-rules-hostname
         """
-        url = self._url.format(profile_id=profile_id)
-        url = url + f"/{hostname}"
+        url = self._url.format(profile_id=profile_id) + f"/{hostname}"
         self._delete(url)
         return True

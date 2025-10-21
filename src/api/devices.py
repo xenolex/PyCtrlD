@@ -10,7 +10,7 @@ from api._core.models.devices import (
     Stats,
 )
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response
+from api._core.utils import BaseEndpoint
 
 _icon_list = Literal[
     "mobile-ios",
@@ -163,12 +163,14 @@ class DevicesEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/post_devices
         """
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        response = self._session.post(self._url, data=form_data.model_dump_json(), headers=headers)
-        check_response(response)
-        data = response.json()
 
-        return Device.model_validate(data["body"], strict=True)
+        data = self._request(
+            method="POST",
+            url=self._url,
+            data=form_data.model_dump_json(),
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        return Device.model_validate(data, strict=True)
 
     def list_device_types(self) -> DeviceTypes:
         """
@@ -180,13 +182,11 @@ class DevicesEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/get_devices-types
         """
-        url = f"{self._url}/types"
-        response = self._session.get(url)
-
-        check_response(response)
-
-        data = response.json()
-        return DeviceTypes.model_validate(data["body"]["types"], strict=True)
+        data = self._request(
+            method="GET",
+            url=self._url + "/types",
+        )
+        return DeviceTypes.model_validate(data["types"], strict=True)
 
     def modify_device(self, device_id: str, form_data: ModifyDeviceFormData) -> Device:
         """
@@ -199,15 +199,14 @@ class DevicesEndpoint(BaseEndpoint):
         Returns:
             list[Device]: Updated device.
         """
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-        url = f"{self._url}/{device_id}"
-        response = self._session.put(url, data=form_data.model_dump_json(), headers=headers)
-
-        check_response(response)
-
-        data = response.json()
-        return Device.model_validate(data["body"], strict=True)
+        data = self._request(
+            method="PUT",
+            url=self._url + f"/{device_id}",
+            data=form_data.model_dump_json(),
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        return Device.model_validate(data, strict=True)
 
     def delete_device(self, device_id: str) -> bool:
         """
@@ -217,6 +216,5 @@ class DevicesEndpoint(BaseEndpoint):
             DeleteDevicesResult: True if the device was deleted successfully.
         """
 
-        url = f"{self._url}/{device_id}"
-        self._delete(url)
+        self._delete(self._url + f"/{device_id}")
         return True

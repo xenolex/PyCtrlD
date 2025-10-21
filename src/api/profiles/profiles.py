@@ -9,8 +9,6 @@ from api._core.models.profiles.profiles import Data, Option, ProfileObject
 from api._core.urls import Endpoints
 from api._core.utils import (
     BaseEndpoint,
-    check_response,
-    create_list_of_items,
 )
 
 
@@ -147,12 +145,7 @@ class ProfilesEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/get_profiles-options
         """
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        response = self._session.get(f"{self._url}/options", headers=headers)
-        check_response(response)
-
-        data = response.json()
-        return create_list_of_items(Option, data["body"]["options"])
+        return self._list(url=self._url + "/options", model=Option, key="options")
 
     def modify_options(
         self, profile_id: str, name: str, form_data: ModifyOptionFormData

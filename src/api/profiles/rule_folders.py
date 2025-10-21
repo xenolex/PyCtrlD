@@ -94,10 +94,9 @@ class RuleFoldersEndpoint(BaseEndpoint):
             https://docs.controld.com/reference/put_profiles-profile-id-groups-folder
         """
         url = self._url.format(profile_id=profile_id)
-        url = url + f"/{folder}"
 
         return self._modify(
-            url=url,
+            url=url + f"/{folder}",
             model=RuleFolder,
             key="groups",
             form_data=form_data.model_dump_json(),
@@ -116,9 +115,8 @@ class RuleFoldersEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/post_profiles-profile-id-groups
         """
-        url = self._url.format(profile_id=profile_id)
         return self._create(
-            url=url,
+            url=self._url.format(profile_id=profile_id),
             model=RuleFolder,
             key="groups",
             form_data=form_data.model_dump_json(),
@@ -142,6 +140,5 @@ class RuleFoldersEndpoint(BaseEndpoint):
             https://docs.controld.com/reference/delete_profiles-profile-id-groups-folder
         """
         url = self._url.format(profile_id=profile_id)
-        url = url + f"/{folder}"
-        self._delete(url)
+        self._delete(url + f"/{folder}")
         return True

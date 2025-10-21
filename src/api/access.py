@@ -3,7 +3,7 @@ from __future__ import annotations
 from api._core.models.access import Ips
 from api._core.models.common import BaseFormData
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response
+from api._core.utils import BaseEndpoint
 
 
 class AccessFormData(BaseFormData):
@@ -38,10 +38,12 @@ class AccessEndpoint(BaseEndpoint):
 
         https://docs.controld.com/reference/post_access
         """
-
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        response = self._session.post(self._url, data=form_data.model_dump_json(), headers=headers)
-        check_response(response)
+        self._request(
+            method="POST",
+            url=self._url,
+            data=form_data.model_dump_json(),
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
         return True
 
     def delete_learned_ip(self, form_data: AccessFormData) -> bool:

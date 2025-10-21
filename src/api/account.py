@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from api._core.models.account import UserData
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response
+from api._core.utils import BaseEndpoint
 
 
 class AccountEndpoint(BaseEndpoint):
@@ -14,9 +14,5 @@ class AccountEndpoint(BaseEndpoint):
         """
         https://docs.controld.com/reference/get_users
         """
-        response = self._session.get(self._url)
-        check_response(response)
-
-        data = response.json()
-
-        return UserData.model_validate(data["body"], strict=True)
+        data = self._request(method="GET", url=self._url)
+        return UserData.model_validate(data, strict=True)

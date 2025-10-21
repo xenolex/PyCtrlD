@@ -3,7 +3,7 @@ from __future__ import annotations
 from api._core.models.common import Action, BaseFormData, Status
 from api._core.models.profiles.filters import NativeFilter, ThirdPartyFilter
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response
+from api._core.utils import BaseEndpoint
 
 
 class ModifyFilterFormData(BaseFormData):
@@ -72,16 +72,13 @@ class FiltersEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id-filters-filter-filter
         """
-        url = self._url.format(profile_id=profile_id)
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        response = self._session.put(
-            url + f"/filter/{filter}", data=form_data.model_dump_json(), headers=headers
+        data = self._request(
+            method="PUT",
+            url=self._url.format(profile_id=profile_id) + f"/filter/{filter}",
+            data=form_data.model_dump_json(),
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
-        check_response(response)
-
-        data = response.json()
 
         return {
-            key: Action.model_validate(value, strict=True)
-            for key, value in data["body"]["filters"].items()
+            key: Action.model_validate(value, strict=True) for key, value in data["filters"].items()
         }

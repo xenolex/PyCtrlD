@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from api._core.models.misc import Ip, Network
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response
+from api._core.utils import BaseEndpoint
 
 
 class MiscEndpoint(BaseEndpoint):
@@ -17,14 +17,9 @@ class MiscEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/get_ip
         """
+        data = self._request(method="GET", url=self._url + "/ip")
 
-        url = self._url + "/ip"
-        response = self._session.get(url)
-        check_response(response)
-
-        data = response.json()
-
-        return Ip.model_validate(data["body"], strict=True)
+        return Ip.model_validate(data, strict=True)
 
     def network_stats(self) -> list[Network]:
         """

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from api._core.models.organization import Member, Organization, SubOrganization
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response
+from api._core.utils import BaseEndpoint
 from api.devices import BaseFormData
 
 if TYPE_CHECKING:
@@ -60,13 +60,9 @@ class OrganizationEndpoint(BaseEndpoint):
         """
         __print_warning()
 
-        url = self._url + "/organization"
-        response = self._session.get(url)
-        check_response(response)
+        data = self._request(method="GET", url=self._url + "/organization")
 
-        data = response.json()
-
-        return Organization.model_validate(data["body"]["organization"], strict=True)
+        return Organization.model_validate(data["organization"], strict=True)
 
     def view_members(self) -> list[Member]:
         """
@@ -97,17 +93,16 @@ class OrganizationEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/post_organizations-suborg
         """
+        __print_warning()
 
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        data = self._request(
+            method="POST",
+            url=self._url + "/suborg",
+            data=form_data.model_dump_json(),
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
 
-        url = f"{self._url}/suborg"
-        response = self._session.post(url, data=form_data.model_dump_json(), headers=headers)
-
-        check_response(response)
-
-        data = response.json()
-
-        return SubOrganization.model_validate(data["body"]["sub_organization"], strict=True)
+        return SubOrganization.model_validate(data["sub_organization"], strict=True)
 
     def modify_organization(self, form_data: ModifyOrganizationFromData) -> Organization:
         """
@@ -118,13 +113,11 @@ class OrganizationEndpoint(BaseEndpoint):
 
         __print_warning()
 
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        data = self._request(
+            method="PUT",
+            url=self._url,
+            data=form_data.model_dump_json(),
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
 
-        url = f"{self._url}"
-        response = self._session.put(url, data=form_data.model_dump_json(), headers=headers)
-
-        check_response(response)
-
-        data = response.json()
-
-        return Organization.model_validate(data["body"]["organization"], strict=True)
+        return Organization.model_validate(data["organization"], strict=True)
