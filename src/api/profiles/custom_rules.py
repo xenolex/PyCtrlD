@@ -164,13 +164,9 @@ class CustomRulesEndpoint(BaseEndpoint):
             https://docs.controld.com/reference/post_profiles-profile-id-rules
         """
         url = self._url.format(profile_id=profile_id)
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
-        response = self._session.post(url, data=form_data.model_dump_json(), headers=headers)
-        check_response(response)
-
-        data = response.json()
-        return create_list_of_items(ModifiedCustomRule, data["body"]["rules"])
+        return self._create(
+            url=url, model=ModifiedCustomRule, key="rules", form_data=form_data.model_dump_json()
+        )
 
     def delete(self, profile_id: str, hostname: str) -> bool:
         """Delete one or more custom rules.

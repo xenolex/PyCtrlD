@@ -41,8 +41,8 @@ class BaseEndpoint:
         data = self._request("GET", url, params=params)
         return create_list_of_items(model, data[key])
 
-    def _create(self, url, model, key, params: Optional[dict] = None):
-        data = self._request("POST", url, params=params)
+    def _create(self, url, model, key, form_data: Optional[dict | str] = None):
+        data = self._request("POST", url, data=form_data)
         return create_list_of_items(model, data[key])
 
     def _delete(self, url, data: Optional[str | dict] = None):

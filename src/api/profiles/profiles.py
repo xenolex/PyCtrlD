@@ -95,13 +95,12 @@ class ProfilesEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/post_profiles
         """
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
-        response = self._session.post(self._url, data=form_data.model_dump_json(), headers=headers)
-        check_response(response)
-
-        data = response.json()
-        return create_list_of_items(ProfileObject, data["body"]["profiles"])
+        return self._create(
+            url=self._url,
+            model=ProfileObject,
+            key="profiles",
+            form_data=form_data.model_dump_json(),
+        )
 
     def modify(self, profile_id: str, form_data: ModifyProfileFormData):
         """Modify an existing profile.

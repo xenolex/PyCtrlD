@@ -116,13 +116,12 @@ class RuleFoldersEndpoint(BaseEndpoint):
             https://docs.controld.com/reference/post_profiles-profile-id-groups
         """
         url = self._url.format(profile_id=profile_id)
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
-        response = self._session.post(url, data=form_data.model_dump_json(), headers=headers)
-        check_response(response)
-
-        data = response.json()
-        return create_list_of_items(RuleFolder, data["body"]["groups"])
+        return self._create(
+            url=url,
+            model=RuleFolder,
+            key="groups",
+            form_data=form_data.model_dump_json(),
+        )
 
     def delete(
         self,
