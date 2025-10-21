@@ -47,6 +47,19 @@ class BaseFormData(BaseModel):
 
         return serialized
 
+    @model_serializer(mode="wrap")
+    def serialize_stats(self, handler: SerializerFunctionWrapHandler) -> dict[str, object]:
+        serialized = handler(self)
+        for key in serialized:
+            match serialized[key]:
+                case "OFF":
+                    serialized[key] = 0
+                case "BASIC":
+                    serialized[key] = 1
+                case "FULL":
+                    serialized[key] = 2
+        return serialized
+
 
 class Count(ConfiguratedBaseModel):
     count: int

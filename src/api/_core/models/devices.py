@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+from enum import Enum
 from typing import Any, Optional
 
 from pydantic import field_validator, model_validator
 
 from api._core.models.common import ConfiguratedBaseModel, Status
-from api.constants import Stats
+
+
+class Stats(Enum):
+    OFF = 0
+    BASIC = 1
+    FULL = 2
 
 
 class Ddns(ConfiguratedBaseModel):
@@ -67,7 +73,7 @@ class Device(ConfiguratedBaseModel):
     ip_count: Optional[int] = None
     last_activity: Optional[int] = None
     clients: Optional[dict[str, Any]] = None
-    ctrld: CtrlD
+    ctrld: Optional[CtrlD] = None
 
     @field_validator("resolvers", mode="before")
     @classmethod

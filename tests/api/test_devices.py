@@ -67,11 +67,11 @@ class TestDevices:
 
     def test_modify_device(self):
         name = f"test{randint(0, 99999)}"
-        form_data = ModifyDeviceFormData(name=name)
+        form_data = ModifyDeviceFormData(name=name, stats="OFF")
         updated_device = self.api.modify_device(test_device_id2, form_data)
         assert name == updated_device.name
 
-        form_data = ModifyDeviceFormData(name=self.default_name)
+        form_data = ModifyDeviceFormData(name=self.default_name, stats="FULL")
         updated_device = self.api.modify_device(test_device_id2, form_data)
 
         assert self.default_name == updated_device.name

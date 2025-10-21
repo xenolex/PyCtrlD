@@ -7,10 +7,10 @@ from api._core.models.common import BaseFormData
 from api._core.models.devices import (
     Device,
     DeviceTypes,
+    Stats,
 )
 from api._core.urls import Endpoints
 from api._core.utils import BaseEndpoint, check_response, create_list_of_items
-from api.constants import Stats
 
 _icon_list = Literal[
     "mobile-ios",
@@ -63,7 +63,7 @@ class CreateDeviceFormData(BaseFormData):
     profile_id: str
     profile_id2: Optional[str] = None
     icon: _icon_list
-    stats: Optional[Stats] = None
+    stats: Optional[Stats | Literal["OFF", "BASIC", "FULL"]] = None
     legacy_ipv4_status: Optional[bool] = None
     learn_ip: Optional[bool] = None
     restricted: Optional[bool] = None
@@ -108,7 +108,7 @@ class ModifyDeviceFormData(BaseFormData):
     name: Optional[str] = None
     profile_id: Optional[str] = None
     profile_id2: Optional[str] = None
-    stats: Optional[Stats] = None
+    stats: Optional[Stats | Literal["OFF", "BASIC", "FULL"]] = None
     legacy_ipv4_status: Optional[bool] = None
     learn_ip: Optional[bool] = None
     restricted: Optional[bool] = None
