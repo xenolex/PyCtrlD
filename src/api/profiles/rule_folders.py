@@ -7,7 +7,7 @@ from pydantic import field_validator
 from api._core.models.common import BaseFormData, Do, Status
 from api._core.models.profiles.rule_folders import RuleFolder
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response, create_list_of_items
+from api._core.utils import BaseEndpoint
 
 
 class RuleFoldersFormData(BaseFormData):
@@ -95,12 +95,13 @@ class RuleFoldersEndpoint(BaseEndpoint):
         """
         url = self._url.format(profile_id=profile_id)
         url = url + f"/{folder}"
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-        response = self._session.put(url, data=form_data.model_dump_json(), headers=headers)
-        check_response(response)
-        data = response.json()
-        return create_list_of_items(RuleFolder, data["body"]["groups"])
+        return self._modify(
+            url=url,
+            model=RuleFolder,
+            key="groups",
+            form_data=form_data.model_dump_json(),
+        )
 
     def create(self, profile_id: str, form_data: CreateRuleFoldersFormData) -> list[RuleFolder]:
         """Create a new folder and assign it an optional rule.

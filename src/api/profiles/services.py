@@ -9,11 +9,9 @@ from api._core.models.profiles.services import Service
 from api._core.urls import Endpoints
 from api._core.utils import (
     BaseEndpoint,
-    check_response,
     check_via_is_proxy_identifier,
     check_via_is_record_or_cname,
     check_via_v6_is_aaaa_record,
-    create_list_of_items,
 )
 
 
@@ -90,13 +88,9 @@ class ServicesEndpoint(BaseEndpoint):
             https://docs.controld.com/reference/put_profiles-profile-id-services-service
         """
         url = self._url.format(profile_id=profile_id)
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
-        response = self._session.put(
-            f"{url}/{service}", data=form_data.model_dump_json(), headers=headers
+        return self._modify(
+            url=f"{url}/{service}",
+            model=Action,
+            key="services",
+            form_data=form_data.model_dump_json(),
         )
-        check_response(response)
-
-        data = response.json()
-
-        return create_list_of_items(Action, data["body"]["services"])

@@ -115,13 +115,12 @@ class ProfilesEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id
         """
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        response = self._session.put(
-            f"{self._url}/{profile_id}", data=form_data.model_dump_json(), headers=headers
+        return self._modify(
+            url=f"{self._url}/{profile_id}",
+            model=ProfileObject,
+            key="profiles",
+            form_data=form_data.model_dump_json(),
         )
-        check_response(response)
-        data = response.json()
-        return create_list_of_items(ProfileObject, data["body"]["profiles"])
 
     def delete(self, profile_id: str) -> bool:
         """Delete profile based on the primary key (PK).
@@ -171,13 +170,10 @@ class ProfilesEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id-options-name
         """
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        response = self._session.put(
-            f"{self._url}/{profile_id}/options/{name}",
-            data=form_data.model_dump_json(),
-            headers=headers,
-        )
-        check_response(response)
 
-        data = response.json()
-        return create_list_of_items(Data, data["body"]["options"])
+        return self._modify(
+            url=f"{self._url}/{profile_id}/options/{name}",
+            model=Data,
+            key="options",
+            form_data=form_data.model_dump_json(),
+        )
