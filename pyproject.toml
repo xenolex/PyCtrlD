@@ -16,3 +16,5 @@ dev = [
 ]
 [tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
+[tool.ruff.lint.pydocstyle]
+convention = "google"
