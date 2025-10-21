@@ -187,8 +187,5 @@ class CustomRulesEndpoint(BaseEndpoint):
         """
         url = self._url.format(profile_id=profile_id)
         url = url + f"/{hostname}"
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
-        response = self._session.delete(url, headers=headers)
-        check_response(response)
+        self._delete(url)
         return True

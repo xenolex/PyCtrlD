@@ -218,7 +218,5 @@ class DevicesEndpoint(BaseEndpoint):
         """
 
         url = f"{self._url}/{device_id}"
-        response = self._session.delete(url)
-        check_response(response)
-
+        self._delete(url)
         return True

@@ -137,9 +137,7 @@ class ProfilesEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/delete_profiles-profile-id
         """
-        response = self._session.delete(f"{self._url}/{profile_id}")
-        check_response(response)
-
+        self._delete(f"{self._url}/{profile_id}")
         return True
 
     def list_options(self):

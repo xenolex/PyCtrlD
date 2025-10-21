@@ -28,22 +28,30 @@ class BaseEndpoint:
             params = {}
         return self._session.get(url, params=params)
 
-    def _list(
-        self,
-        url,
-        model,
-        key,
-        params: Optional[dict] = None,
-    ):
-        if params is None:
-            params = {}
-
-        response = self._session.get(url, params=params)
+    def _request(self, method, url, params: Optional[dict] = None, data=None, headers=None):
+        response = self._session.request(
+            method=method, url=url, params=params, data=data, headers=headers
+        )
         check_response(response)
-
         data = response.json()
 
-        return create_list_of_items(model, data["body"][key])
+        return data["body"]
+
+    def _list(self, url, model, key, params: Optional[dict] = None):
+        data = self._request("GET", url, params=params)
+        return create_list_of_items(model, data[key])
+
+    def _create(self, url, model, key, params: Optional[dict] = None):
+        data = self._request("POST", url, params=params)
+        return create_list_of_items(model, data[key])
+
+    def _delete(self, url, data: Optional[str | dict] = None):
+        self._request(
+            "DELETE",
+            url,
+            data=data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
 
 
 def check_response(response: Response):

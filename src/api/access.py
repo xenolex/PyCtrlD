@@ -49,9 +49,5 @@ class AccessEndpoint(BaseEndpoint):
 
         https://docs.controld.com/reference/delete_access
         """
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        response = self._session.delete(
-            self._url, data=form_data.model_dump_json(), headers=headers
-        )
-        check_response(response)
+        self._delete(self._url, data=form_data.model_dump_json())
         return True
