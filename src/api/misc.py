@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from api._core.models.misc import Ip, Network
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response, create_list_of_items
+from api._core.utils import BaseEndpoint, check_response
 
 
 class MiscEndpoint(BaseEndpoint):
@@ -33,10 +33,4 @@ class MiscEndpoint(BaseEndpoint):
             https://docs.controld.com/reference/get_network
         """
 
-        url = self._url + "/network"
-        response = self._session.get(url)
-        check_response(response)
-
-        data = response.json()
-
-        return create_list_of_items(Network, data["body"]["network"])
+        return self._list(url=self._url + "/network", model=Network, key="network")

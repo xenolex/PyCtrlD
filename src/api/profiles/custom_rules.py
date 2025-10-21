@@ -124,11 +124,7 @@ class CustomRulesEndpoint(BaseEndpoint):
         url = self._url.format(profile_id=profile_id)
         url += f"/{'' if folder_id is None else folder_id}"
 
-        response = self._session.get(url)
-        check_response(response)
-
-        data = response.json()
-        return create_list_of_items(CustomRule, data["body"]["rules"])
+        return self._list(url=url, model=CustomRule, key="rules")
 
     def modify(
         self, profile_id: str, form_data: ModifyCustomRuleFormData

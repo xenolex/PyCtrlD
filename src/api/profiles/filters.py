@@ -3,7 +3,7 @@ from __future__ import annotations
 from api._core.models.common import Action, BaseFormData, Status
 from api._core.models.profiles.filters import NativeFilter, ThirdPartyFilter
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response, create_list_of_items
+from api._core.utils import BaseEndpoint, check_response
 
 
 class ModifyFilterFormData(BaseFormData):
@@ -35,12 +35,10 @@ class FiltersEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/get_profiles-profile-id-filters
         """
-        url = self._url.format(profile_id=profile_id)
-        response = self._session.get(url)
-        check_response(response)
 
-        data = response.json()
-        return create_list_of_items(NativeFilter, data["body"]["filters"])
+        return self._list(
+            url=self._url.format(profile_id=profile_id), model=NativeFilter, key="filters"
+        )
 
     def list_third_party(self, profile_id: str) -> list[ThirdPartyFilter]:
         """Returns all 3rd party filters for this profile and their states.
@@ -55,12 +53,8 @@ class FiltersEndpoint(BaseEndpoint):
             https://docs.controld.com/reference/get_profiles-profile-id-filters-external
         """
         url = self._url.format(profile_id=profile_id)
-        response = self._session.get(url + "/external")
-        check_response(response)
 
-        data = response.json()
-
-        return create_list_of_items(ThirdPartyFilter, data["body"]["filters"])
+        return self._list(url=url + "/external", model=ThirdPartyFilter, key="filters")
 
     def modify(
         self, profile_id: str, filter: str, form_data: ModifyFilterFormData

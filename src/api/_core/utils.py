@@ -28,6 +28,23 @@ class BaseEndpoint:
             params = {}
         return self._session.get(url, params=params)
 
+    def _list(
+        self,
+        url,
+        model,
+        key,
+        params: Optional[dict] = None,
+    ):
+        if params is None:
+            params = {}
+
+        response = self._session.get(url, params=params)
+        check_response(response)
+
+        data = response.json()
+
+        return create_list_of_items(model, data["body"][key])
+
 
 def check_response(response: Response):
     class ApiError(Exception):

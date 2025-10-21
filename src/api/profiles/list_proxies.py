@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from api._core.models.profiles.list_proxies import Proxie
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response, create_list_of_items
+from api._core.utils import BaseEndpoint
 
 
 class ListProxiesEndpoint(BaseEndpoint):
@@ -22,8 +22,4 @@ class ListProxiesEndpoint(BaseEndpoint):
             https://docs.controld.com/reference/get_proxies
         """
 
-        response = self._session.get(self._url)
-        check_response(response)
-        data = response.json()
-        # Important: The response format is not documented in source doc
-        return create_list_of_items(Proxie, data["body"]["proxies"])
+        return self._list(url=self._url, model=Proxie, key="proxies")

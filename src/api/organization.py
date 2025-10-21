@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from api._core.models.organization import Member, Organization, SubOrganization
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response, create_list_of_items
+from api._core.utils import BaseEndpoint, check_response
 from api.devices import BaseFormData
 
 if TYPE_CHECKING:
@@ -76,13 +76,7 @@ class OrganizationEndpoint(BaseEndpoint):
         """
         __print_warning()
 
-        url = self._url + "/members"
-        response = self._session.get(url)
-        check_response(response)
-
-        data = response.json()
-
-        return create_list_of_items(Member, data["body"]["members"])
+        return self._list(url=self._url + "/members", model=Member, key="members")
 
     def view_sub_organizations(self) -> list[SubOrganization]:
         """
@@ -93,13 +87,9 @@ class OrganizationEndpoint(BaseEndpoint):
 
         __print_warning()
 
-        url = self._url + "/sub_organizations"
-        response = self._session.get(url)
-        check_response(response)
-
-        data = response.json()
-
-        return create_list_of_items(SubOrganization, data["body"]["sub_organizations"])
+        return self._list(
+            url=self._url + "/sub_organizations", model=SubOrganization, key="sub_organizations"
+        )
 
     def create_sub_organization(self, form_data: CreateSubOrganizationFromData) -> SubOrganization:
         """

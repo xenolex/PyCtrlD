@@ -39,18 +39,13 @@ class ProfilesBaseModel(ConfiguratedBaseModel):
 
 class BaseFormData(BaseModel):
     @model_serializer(mode="wrap")
-    def serialize_bool(self, handler: SerializerFunctionWrapHandler) -> dict[str, object]:
+    def serialize(self, handler: SerializerFunctionWrapHandler) -> dict[str, object]:
         serialized = handler(self)
         for key in serialized:
+            # bool to int
             if isinstance(serialized[key], bool):
                 serialized[key] = int(serialized[key])
-
-        return serialized
-
-    @model_serializer(mode="wrap")
-    def serialize_stats(self, handler: SerializerFunctionWrapHandler) -> dict[str, object]:
-        serialized = handler(self)
-        for key in serialized:
+            # stats literal to int
             match serialized[key]:
                 case "OFF":
                     serialized[key] = 0

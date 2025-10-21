@@ -3,7 +3,7 @@ from __future__ import annotations
 from api._core.models.access import Ips
 from api._core.models.common import BaseFormData
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response, create_list_of_items
+from api._core.utils import BaseEndpoint, check_response
 
 
 class AccessFormData(BaseFormData):
@@ -29,12 +29,7 @@ class AccessEndpoint(BaseEndpoint):
         """list up to latest 50 IPs that were used to query against a Device (resolver).
         https://docs.controld.com/reference/get_access
         """
-        response = self._session.get(self._url, params={"device_id": device_id})
-        check_response(response)
-
-        data = response.json()
-
-        return create_list_of_items(Ips, data["body"]["ips"])
+        return self._list(url=self._url, model=Ips, key="ips", params={"device_id": device_id})
 
     def learn_new_ip(self, form_data: AccessFormData) -> bool:
         """Supply an array of IPs to authorize on the device.

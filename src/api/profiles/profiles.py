@@ -80,11 +80,8 @@ class ProfilesEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/get_profiles
         """
-        response = self._session.get(self._url)
-        check_response(response)
-        data = response.json()
 
-        return create_list_of_items(ProfileObject, data["body"]["profiles"])
+        return self._list(url=self._url, model=ProfileObject, key="profiles")
 
     def create(self, form_data: CreateProfileFormData) -> list[ProfileObject]:
         """Create a new blank profile, or clone an existing one.

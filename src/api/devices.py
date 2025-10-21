@@ -10,7 +10,7 @@ from api._core.models.devices import (
     Stats,
 )
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response, create_list_of_items
+from api._core.utils import BaseEndpoint, check_response
 
 _icon_list = Literal[
     "mobile-ios",
@@ -148,12 +148,7 @@ class DevicesEndpoint(BaseEndpoint):
             case _:
                 url = self._url
 
-        response = self._session.get(url)
-        check_response(response)
-
-        data = response.json()
-
-        return create_list_of_items(Device, data["body"]["devices"])
+        return self._list(url=url, model=Device, key="devices")
 
     def create_device(self, form_data: CreateDeviceFormData) -> Device:
         """

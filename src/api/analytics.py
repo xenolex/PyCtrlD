@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from api._core.models.analytics import Endpoint, Level
 from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint, check_response, create_list_of_items
+from api._core.utils import BaseEndpoint
 
 
 class AnalyticsEndpoint(BaseEndpoint):
@@ -14,13 +14,8 @@ class AnalyticsEndpoint(BaseEndpoint):
         """Returns Analytics log levels which can be enabled on Devices.
         https://docs.controld.com/reference/get_analytics-levels
         """
-        url = self._url + "/levels"
-        response = self._session.get(url)
-        check_response(response)
 
-        data = response.json()
-
-        return create_list_of_items(Level, data["body"]["levels"])
+        return self._list(url=self._url + "/levels", model=Level, key="levels")
 
     def list_storage_regions(self) -> list[Endpoint]:
         """Returns Analytics storage regions that can be set on the account or organization.
@@ -28,9 +23,4 @@ class AnalyticsEndpoint(BaseEndpoint):
         https://docs.controld.com/reference/get_analytics-endpoints
         """
 
-        url = self._url + "/endpoints"
-        response = self._session.get(url)
-        check_response(response)
-        data = response.json()
-
-        return create_list_of_items(Endpoint, data["body"]["endpoints"])
+        return self._list(url=self._url + "/endpoints", model=Endpoint, key="endpoints")

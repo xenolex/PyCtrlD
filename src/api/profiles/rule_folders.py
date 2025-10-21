@@ -72,12 +72,10 @@ class RuleFoldersEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/get_profiles-profile-id-groups
         """
-        url = self._url.format(profile_id=profile_id)
-        response = self._session.get(url)
-        check_response(response)
 
-        data = response.json()
-        return create_list_of_items(RuleFolder, data["body"]["groups"])
+        return self._list(
+            url=self._url.format(profile_id=profile_id), model=RuleFolder, key="groups"
+        )
 
     def modify(
         self, profile_id: str, folder: int, form_data: RuleFoldersFormData

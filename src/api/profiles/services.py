@@ -68,12 +68,10 @@ class ServicesEndpoint(BaseEndpoint):
         Reference:
             https://docs.controld.com/reference/get_profiles-profile-id-services
         """
-        url = self._url.format(profile_id=profile_id)
-        response = self._session.get(url)
-        check_response(response)
 
-        data = response.json()
-        return create_list_of_items(model=Service, items=data["body"]["services"])
+        return self._list(
+            url=self._url.format(profile_id=profile_id), model=Service, key="services"
+        )
 
     def modify(
         self, profile_id: str, service: str, form_data: ModifyServiceFormData
