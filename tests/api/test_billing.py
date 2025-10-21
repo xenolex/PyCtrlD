@@ -20,7 +20,7 @@ from api._core.models.billing import (
 from api._core.urls import Endpoints
 from api._core.utils import BaseEndpoint
 from api.billing import BillingEndpoint
-from tests.api.checks import check_api_list_endpoint, check_key_in_model
+from tests.checks import check_api_list_endpoint, check_key_in_model
 
 load_dotenv()
 token = os.getenv("TOKEN", "")

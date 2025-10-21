@@ -14,7 +14,7 @@ from api._core.models.common import Action, Do, Status
 from api._core.urls import Endpoints
 from api._core.utils import BaseEndpoint
 from api.profiles.default_rule import DefaultRuleEndpoint, DefaultRuleFormData
-from tests.api.checks import check_key_in_model
+from tests.checks import check_key_in_model
 
 load_dotenv()
 token = os.environ.get("TOKEN", "")

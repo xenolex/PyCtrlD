@@ -13,7 +13,7 @@ from api._core.models.misc import FeatureStatus, Ip, Location, Network
 from api._core.urls import Endpoints
 from api._core.utils import BaseEndpoint
 from api.misc import MiscEndpoint
-from tests.api.checks import check_api_list_endpoint, check_key_in_model
+from tests.checks import check_api_list_endpoint, check_key_in_model
 
 load_dotenv()
 token = os.getenv("TOKEN", "")

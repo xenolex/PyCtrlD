@@ -23,7 +23,7 @@ from api.profiles.filters import (
     FiltersEndpoint,
     ModifyFilterFormData,
 )
-from tests.api.checks import check_api_list_endpoint, check_key_in_model
+from tests.checks import check_api_list_endpoint, check_key_in_model
 
 load_dotenv()
 token = os.environ.get("TOKEN", "")
