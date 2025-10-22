@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import ipaddress
 import re
+from pprint import pformat
 from typing import TYPE_CHECKING
 
-from requests import Response, Session
+from requests import Response, Session, exceptions
+
+from api._core.logger import logger
 
 if TYPE_CHECKING:
     from typing import Any, Iterable, Optional
@@ -13,6 +16,7 @@ if TYPE_CHECKING:
 class BaseEndpoint:
     def __init__(self, token: str) -> None:
         self._session = Session()
+        self._session.hooks["response"].append(lambda resp, *args, **kwargs: logger.debug(resp.url))
 
         self._session.headers.update(
             {"Authorization": f"Bearer {token}", "accept": "application/json"}
@@ -70,6 +74,16 @@ def check_response(response: Response):
 
             super().__init__(message)
 
+    sc_str = f"HTTP Status: {response.status_code}"
+
+    try:
+        js = response.json()
+    except exceptions.JSONDecodeError:
+        js = {}
+
+    msg_str = f" | Message: {js['message']}" if js.get("message") else ""
+    logger.debug(sc_str + msg_str)
+
     if response.status_code != 200:
         raise ApiError(response)
 
@@ -91,6 +105,7 @@ def create_list_of_items(model: type, items: Iterable) -> list[Any]:
     out_list: list[Any] = []
 
     for item in items:
+        logger.trace(pformat(item))
         instance = model.model_validate(item, strict=True)  # type: ignore[attr-defined]
         out_list.append(instance)
 

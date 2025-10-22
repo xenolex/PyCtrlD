@@ -5,11 +5,11 @@ import sys
 sys.path.extend(["./", "./src/"])
 
 import os
-from pprint import pprint
 from random import randint
 
 from dotenv import load_dotenv
 
+from api._core.logger import logger
 from api._core.models.common import Action, Do, Status
 from api._core.urls import Endpoints
 from api._core.utils import BaseEndpoint
@@ -69,7 +69,7 @@ class TestRuleFolders:
             form_data = CreateRuleFoldersFormData.model_validate(item)
             created_folder = self.api.create(profile_id, form_data)
 
-            pprint(created_folder)
+            logger.info(created_folder)
 
             for folder in created_folder:
                 assert folder.action.do == form_data.do
@@ -91,7 +91,7 @@ class TestRuleFolders:
                 form_data = RuleFoldersFormData(status=False)
                 modifed_data = self.api.modify(profile_id, item.PK, form_data)
 
-                pprint(modifed_data)
+                logger.info(modifed_data)
 
                 assert item.PK == modifed_data[-1].PK
                 assert item.group == modifed_data[-1].group
@@ -125,7 +125,7 @@ def test_list_rule_folders_not_changed():
     items = data["body"]["groups"]
 
     for item in items:
-        pprint(item)
+        logger.info(item)
         for key in item:
             check_key_in_model(key, RuleFolder)
             if key == "action":

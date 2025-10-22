@@ -4,6 +4,7 @@ from typing import Optional
 
 from pydantic import model_validator
 
+from api._core.logger import logger
 from api._core.models.common import BaseFormData, Status
 from api._core.models.profiles.profiles import Data, Option, ProfileObject
 from api._core.urls import Endpoints
@@ -27,7 +28,7 @@ class CreateProfileFormData(BaseFormData):
     @model_validator(mode="after")
     def validate_name(self):
         if self.name is not None and self.clone_profile_id is not None:
-            print("Warning: profile 'name' will not be set because 'clone_profile_id' is provided")
+            logger.warning('"name" will not be set because "clone_profile_id" is provided')
 
         return self
 

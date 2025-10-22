@@ -4,6 +4,7 @@ from typing import Optional
 
 from pydantic import field_validator, model_validator
 
+from api._core.logger import logger
 from api._core.models.common import BaseFormData, Do, Status
 from api._core.models.profiles.custom_rules import (
     CustomRule,
@@ -23,6 +24,20 @@ class __BaseCustomRuleFormData(BaseFormData):
     via_v6: Optional[str] = None
     group: Optional[int] = None
     hostnames: list[str]
+
+    @model_validator(mode="after")
+    def validate_rule_constraints(self):
+        do = getattr(self, "do", None)
+        if do == Do.SPOOF:
+            check_via_is_record_or_cname(self.via)
+            check_via_v6_is_aaaa_record(self.via_v6)
+
+        if do == Do.REDIRECT:
+            check_via_is_proxy_identifier(self.via)
+            if self.via_v6 is not None:
+                logger.warning('"via_v6" has no effect for REDIRECT')
+
+        return self
 
 
 class CreateCustomRuleFormData(__BaseCustomRuleFormData):
@@ -46,21 +61,6 @@ class CreateCustomRuleFormData(__BaseCustomRuleFormData):
     def set_do(cls, value):
         return Do(value)
 
-    @model_validator(mode="after")
-    def validate_rule_constraints(self):
-        if self.do == Do.SPOOF:
-            check_via_is_record_or_cname(self.via)
-            check_via_v6_is_aaaa_record(self.via_v6)
-
-        if self.do == Do.REDIRECT:
-            check_via_is_proxy_identifier(self.via)
-            if self.via_v6 is not None:
-                # todo add logger
-                # logger.warning("via_v6 has no effect for REDIRECT")
-                print("via_v6 has no effect for REDIRECT")
-
-        return self
-
 
 class ModifyCustomRuleFormData(__BaseCustomRuleFormData):
     """Form data modifying custom rules.
@@ -82,21 +82,6 @@ class ModifyCustomRuleFormData(__BaseCustomRuleFormData):
     @classmethod
     def set_do(cls, value):
         return None if value is None else Do(value)
-
-    @model_validator(mode="after")
-    def validate_rule_constraints(self):
-        if self.do == Do.SPOOF:
-            check_via_is_record_or_cname(self.via)
-            check_via_v6_is_aaaa_record(self.via_v6)
-
-        if self.do == Do.REDIRECT:
-            check_via_is_proxy_identifier(self.via)
-            if self.via_v6 is not None:
-                # todo add logger
-                # logger.warning("via_v6 has no effect for REDIRECT")
-                print("via_v6 has no effect for REDIRECT")
-
-        return self
 
 
 class CustomRulesEndpoint(BaseEndpoint):

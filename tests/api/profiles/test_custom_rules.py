@@ -5,11 +5,11 @@ import sys
 sys.path.extend(["./", "./src/"])
 
 import os
-from pprint import pprint
 from random import randint
 
 from dotenv import load_dotenv
 
+from api._core.logger import logger
 from api._core.models.common import Action, Do, Status
 from api._core.models.profiles.custom_rules import (
     CustomRule,
@@ -80,7 +80,7 @@ class TestCustomRules:
             form_data = CreateCustomRuleFormData.model_validate(item)
             created_rule = self.api.create(profile_id, form_data)
 
-            pprint(created_rule)
+            logger.info(created_rule)
 
             assert item["do"] == created_rule[-1].do
             assert item["status"] == created_rule[-1].status
@@ -96,7 +96,7 @@ class TestCustomRules:
                 form_data = ModifyCustomRuleFormData(status=Status.DISABLED, hostnames=[item.PK])
                 modifed_data = self.api.modify(profile_id, form_data)
 
-                pprint(modifed_data)
+                logger.info(modifed_data)
 
                 assert item.action.do == modifed_data[-1].do
                 assert item.action.status != modifed_data[-1].status
@@ -124,7 +124,7 @@ def test_list_custom_rules_not_changed():
     items = data["body"]["rules"]
 
     for item in items:
-        pprint(item)
+        logger.info(item)
         for key in item:
             check_key_in_model(key, CustomRule)
             if key == "action":

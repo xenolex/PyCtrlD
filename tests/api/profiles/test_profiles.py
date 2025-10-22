@@ -5,11 +5,11 @@ import sys
 sys.path.extend(["./", "./src/"])
 
 import os
-from pprint import pprint
 from random import randint
 
 from dotenv import load_dotenv
 
+from api._core.logger import logger
 from api._core.models.common import Status
 from api._core.models.profiles.profiles import (
     Cbp,
@@ -95,7 +95,7 @@ def test_list_profiles_not_changed():
     items = data["body"]["profiles"]
 
     for item in items:
-        pprint(item)
+        logger.info(item)
         for key in item:
             check_key_in_model(key, ProfileObject)
             if key == "profile":
@@ -129,6 +129,6 @@ def test_list_options_profiles_not_changed():
     data = response.json()
     items = data["body"]["options"]
     for item in items:
-        pprint(item)
+        logger.info(item)
         for key in item:
             check_key_in_model(key, Option)

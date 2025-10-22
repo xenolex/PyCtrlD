@@ -5,10 +5,10 @@ import sys
 sys.path.extend(["./", "./src/"])
 
 import os
-from pprint import pprint
 
 from dotenv import load_dotenv
 
+from api._core.logger import logger
 from api._core.models.common import Action, Status
 from api._core.models.profiles.services import Service
 from api._core.urls import Endpoints
@@ -36,7 +36,7 @@ class TestServices:
                 form_data = ModifyServiceFormData(status=status)
                 modifed_data = self.api.modify(profile_id, service=service.PK, form_data=form_data)
 
-                pprint(modifed_data)
+                logger.info(modifed_data)
 
                 assert service.action.do == modifed_data[-1].do
                 assert status == modifed_data[-1].status
@@ -53,7 +53,7 @@ def test_list_rule_folders_not_changed():
     items = data["body"]["services"]
 
     for item in items:
-        pprint(item)
+        logger.info(item)
         for key in item:
             check_key_in_model(key, Service)
             if key == "action":

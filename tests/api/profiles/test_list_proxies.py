@@ -6,10 +6,10 @@ sys.path.extend(["./", "./src/"])
 
 
 import os
-from pprint import pprint
 
 from dotenv import load_dotenv
 
+from api._core.logger import logger
 from api._core.models.profiles.list_proxies import Proxie
 from api._core.urls import Endpoints
 from api._core.utils import BaseEndpoint
@@ -30,6 +30,6 @@ def test_list_proxies_not_changed():
     data = response.json()
     proxies = data["body"]["proxies"]
     for proxie_item in proxies:
-        pprint(proxie_item)
+        logger.info(proxie_item)
         for key in proxie_item:
             check_key_in_model(key, Proxie)

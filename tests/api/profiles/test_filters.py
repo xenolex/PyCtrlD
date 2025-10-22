@@ -5,10 +5,10 @@ import sys
 sys.path.extend(["./", "./src/"])
 
 import os
-from pprint import pprint
 
 from dotenv import load_dotenv
 
+from api._core.logger import logger
 from api._core.models.common import Status
 from api._core.models.profiles.filters import (
     Level,
@@ -56,7 +56,7 @@ class TestFilters:
             modifed_data = self.api.modify(profile_id, filter.PK, form_data=form_data)
 
             modifed_filter = modifed_data.get(filter.PK)
-            pprint(modifed_filter)
+            logger.info(modifed_filter)
             if status == Status.DISABLED:
                 assert modifed_filter is None
             else:
@@ -77,7 +77,7 @@ def test_list_native_filters_not_changed():
     items = data["body"]["filters"]
 
     for item in items:
-        pprint(item)
+        logger.info(item)
         for key in item:
             check_key_in_model(key, NativeFilter)
             if key == "action":
@@ -98,7 +98,7 @@ def test_list_third_party_filters_not_changed():
     items = data["body"]["filters"]
 
     for item in items:
-        pprint(item)
+        logger.info(item)
         for key in item:
             check_key_in_model(key, ThirdPartyFilter)
             if key == "resolvers":

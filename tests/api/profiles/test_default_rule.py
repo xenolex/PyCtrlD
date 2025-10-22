@@ -5,11 +5,11 @@ import sys
 sys.path.extend(["./", "./src/"])
 
 import os
-from pprint import pprint
 
 import pytest
 from dotenv import load_dotenv
 
+from api._core.logger import logger
 from api._core.models.common import Action, Do, Status
 from api._core.urls import Endpoints
 from api._core.utils import BaseEndpoint
@@ -35,7 +35,7 @@ class TestDefaultRule:
 
     def test_list(self):
         default = self.api.list(profile_id)
-        pprint(default)
+        logger.info(default)
         assert isinstance(default, Action)
 
     def test_modify(self, current_default_rule_settings):

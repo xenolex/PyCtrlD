@@ -4,6 +4,7 @@ from typing import Optional
 
 from pydantic import model_validator
 
+from api._core.logger import logger
 from api._core.models.common import Action, BaseFormData, Do, Status
 from api._core.models.profiles.services import Service
 from api._core.urls import Endpoints
@@ -40,9 +41,7 @@ class ModifyServiceFormData(BaseFormData):
         if self.do == Do.REDIRECT:
             check_via_is_proxy_identifier(self.via_v6)
             if self.via_v6 is not None:
-                # todo add logger
-                # logger.warning("via_v6 has no effect for REDIRECT")
-                print("via_v6 has no effect for REDIRECT")
+                logger.warning('"via_v6" has no effect for REDIRECT')
 
         return self
 

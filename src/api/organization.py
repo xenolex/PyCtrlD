@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from api._core.logger import logger
 from api._core.models.organization import Member, Organization, SubOrganization
 from api._core.urls import Endpoints
 from api._core.utils import BaseEndpoint
@@ -12,9 +13,9 @@ if TYPE_CHECKING:
 
 
 def __print_warning():
-    print("======================================================================")
-    print("Warning!!! Use on your own risk!!! Author haven't organization profile")
-    print("======================================================================")
+    logger.warning("======================================================================")
+    logger.warning("Warning!!! Use on your own risk!!! Author haven't organization profile")
+    logger.warning("======================================================================")
 
 
 class CreateSubOrganizationFromData(BaseFormData):

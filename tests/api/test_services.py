@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from pprint import pprint
 
 sys.path.extend(["./", "./src/"])
 
@@ -9,6 +8,7 @@ import os
 
 from dotenv import load_dotenv
 
+from api._core.logger import logger
 from api._core.models.services import Category, Service
 from api._core.urls import Endpoints
 from api._core.utils import BaseEndpoint
@@ -49,7 +49,7 @@ class TestAccessEndpoint:
             data = response.json()
             items = data["body"]["services"]
             for category in items:
-                pprint(category)
+                logger.info(category)
                 for key in category:
                     check_key_in_model(key, Service)
 
@@ -61,6 +61,6 @@ def test_list_service_categories_not_changed():
     data = response.json()
     items = data["body"]["categories"]
     for category in items:
-        pprint(category)
+        logger.info(category)
         for key in category:
             check_key_in_model(key, Category)

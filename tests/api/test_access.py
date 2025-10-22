@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from pprint import pprint
 
 sys.path.extend(["./", "./src/"])
 
@@ -9,6 +8,7 @@ import os
 
 from dotenv import load_dotenv
 
+from api._core.logger import logger
 from api._core.models.access import Ips
 from api._core.urls import Endpoints
 from api._core.utils import BaseEndpoint
@@ -52,6 +52,6 @@ def test_list_known_ips_not_changed():
     data = response.json()
     items = data["body"]["ips"]
     for ip in items:
-        pprint(ip)
+        logger.info(ip)
         for key in ip:
             check_key_in_model(key, Ips)

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from pprint import pprint
 
 sys.path.extend(["./", "./src/"])
 
@@ -9,6 +8,7 @@ import os
 
 from dotenv import load_dotenv
 
+from api._core.logger import logger
 from api._core.models.billing import (
     ActiveProduct,
     ActiveSubscription,
@@ -51,7 +51,7 @@ def test_payments_not_changed():
     data = response.json()
     items = data["body"]["payments"]
     for payment in items:
-        pprint(payment)
+        logger.info(payment)
         for key in payment:
             check_key_in_model(key, Payment)
             if key == "product" and payment[key] is not None:
@@ -69,7 +69,7 @@ def test_subscriptions_not_changed():
     data = response.json()
     items = data["body"]["subscriptions"]
     for subscription in items:
-        pprint(subscription)
+        logger.info(subscription)
         for key in subscription:
             check_key_in_model(key, Subscription)
             if key == "product" and subscription[key] is not None:
@@ -84,7 +84,7 @@ def test_active_products_not_changed():
     data = response.json()
     items = data["body"]["products"]
     for product in items:
-        pprint(product)
+        logger.info(product)
         for key in product:
             check_key_in_model(key, ActiveProduct)
             if key == "price_point" and product[key] is not None:

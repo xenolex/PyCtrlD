@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from pprint import pprint
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
+
+from api._core.logger import logger
 
 
 def check_key_in_model(key: str, model: type[BaseModel]) -> None:
@@ -26,5 +27,5 @@ def check_api_list_endpoint(
     items = func(**api_kwargs)
 
     for item in items:
-        pprint(item)
+        logger.info(item)
         assert isinstance(item, model), f"Api returns items is not an instance of {model.__name__}"

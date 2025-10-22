@@ -5,12 +5,12 @@ import sys
 sys.path.extend(["./", "./src/"])
 
 import os
-from pprint import pprint
 from random import randint
 
 import pytest
 from dotenv import load_dotenv
 
+from api._core.logger import logger
 from api._core.models.devices import (
     Browser,
     BrowserIcons,
@@ -150,7 +150,7 @@ def test_list_all_devices_not_changed():
     data = response.json()
     items = data["body"]["devices"]
     for device in items:
-        pprint(device)
+        logger.info(device)
         for key in device:
             check_key_in_model(key, Device)
             if key == "ctrd":
