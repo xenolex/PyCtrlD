@@ -105,7 +105,7 @@ def create_list_of_items(model: type, items: Iterable) -> list[Any]:
     out_list: list[Any] = []
 
     for item in items:
-        logger.trace(pformat(item))
+        logger.trace(pformat(item))  # type: ignore
         instance = model.model_validate(item, strict=True)  # type: ignore[attr-defined]
         out_list.append(instance)
 
