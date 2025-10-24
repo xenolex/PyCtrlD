@@ -1,18 +1,14 @@
 from __future__ import annotations
 
-import sys
-
-sys.path.extend(["./", "./src/"])
-
 import os
 
 from dotenv import load_dotenv
 
-from api._core.logger import logger
-from api._core.models.account import UserData
-from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint
-from api.account import AccountEndpoint
+from pyctrld._core.logger import logger
+from pyctrld._core.models.account import UserData
+from pyctrld._core.urls import Endpoints
+from pyctrld._core.utils import BaseEndpoint
+from pyctrld.api.account import AccountEndpoint
 from tests.checks import check_key_in_model
 
 load_dotenv()

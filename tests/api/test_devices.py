@@ -1,17 +1,13 @@
 from __future__ import annotations
 
-import sys
-
-sys.path.extend(["./", "./src/"])
-
 import os
 from random import randint
 
 import pytest
 from dotenv import load_dotenv
 
-from api._core.logger import logger
-from api._core.models.devices import (
+from pyctrld._core.logger import logger
+from pyctrld._core.models.devices import (
     Browser,
     BrowserIcons,
     CtrlD,
@@ -31,9 +27,9 @@ from api._core.models.devices import (
     Tv,
     TvIcons,
 )
-from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint
-from api.devices import CreateDeviceFormData, DevicesEndpoint, ModifyDeviceFormData
+from pyctrld._core.urls import Endpoints
+from pyctrld._core.utils import BaseEndpoint
+from pyctrld.api.devices import CreateDeviceFormData, DevicesEndpoint, ModifyDeviceFormData
 from tests.checks import check_api_list_endpoint, check_key_in_model
 
 load_dotenv()

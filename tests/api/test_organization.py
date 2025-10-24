@@ -4,13 +4,13 @@ Not tested due havent acces to organizations
 
 # import sys
 
-# sys.path.extend(["./", "./src/"])
+#
 
 # import os
 
 # from dotenv import load_dotenv
 
-# from api.organization.organization import OrganizationEndpoint
+# from pyctrld.api.organization.organization import OrganizationEndpoint
 
 # load_dotenv()
 # token = os.getenv("TOKEN", "")

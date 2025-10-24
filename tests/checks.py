@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-from api._core.logger import logger
+from pyctrld._core.logger import logger
 
 
 def check_key_in_model(key: str, model: type[BaseModel]) -> None:

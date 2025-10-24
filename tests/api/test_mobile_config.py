@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-import sys
-
-sys.path.extend(["./", "./src/"])
-
 import os
 import shutil
 
 from dotenv import load_dotenv
 
-from api.mobile_config import MobileConfigEndpoint
+from pyctrld.api.mobile_config import MobileConfigEndpoint
 
 load_dotenv()
 token = os.getenv("TOKEN", "")

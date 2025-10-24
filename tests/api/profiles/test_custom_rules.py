@@ -1,23 +1,19 @@
 from __future__ import annotations
 
-import sys
-
-sys.path.extend(["./", "./src/"])
-
 import os
 from random import randint
 
 from dotenv import load_dotenv
 
-from api._core.logger import logger
-from api._core.models.common import Action, Do, Status
-from api._core.models.profiles.custom_rules import (
+from pyctrld._core.logger import logger
+from pyctrld._core.models.common import Action, Do, Status
+from pyctrld._core.models.profiles.custom_rules import (
     CustomRule,
     ModifiedCustomRule,
 )
-from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint
-from api.profiles.custom_rules import (
+from pyctrld._core.urls import Endpoints
+from pyctrld._core.utils import BaseEndpoint
+from pyctrld.api.profiles.custom_rules import (
     CreateCustomRuleFormData,
     CustomRulesEndpoint,
     ModifyCustomRuleFormData,

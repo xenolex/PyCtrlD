@@ -1,17 +1,13 @@
 from __future__ import annotations
 
-import sys
-
-sys.path.extend(["./", "./src/"])
-
 import os
 from random import randint
 
 from dotenv import load_dotenv
 
-from api._core.logger import logger
-from api._core.models.common import Status
-from api._core.models.profiles.profiles import (
+from pyctrld._core.logger import logger
+from pyctrld._core.models.common import Status
+from pyctrld._core.models.profiles.profiles import (
     Cbp,
     Count,
     Da,
@@ -21,9 +17,9 @@ from api._core.models.profiles.profiles import (
     Profile,
     ProfileObject,
 )
-from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint
-from api.profiles.profiles import (
+from pyctrld._core.urls import Endpoints
+from pyctrld._core.utils import BaseEndpoint
+from pyctrld.api.profiles.profiles import (
     CreateProfileFormData,
     ModifyOptionFormData,
     ModifyProfileFormData,

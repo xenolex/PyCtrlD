@@ -1,19 +1,14 @@
 from __future__ import annotations
 
-import sys
-
-sys.path.extend(["./", "./src/"])
-
-
 import os
 
 from dotenv import load_dotenv
 
-from api._core.logger import logger
-from api._core.models.profiles.list_proxies import Proxie
-from api._core.urls import Endpoints
-from api._core.utils import BaseEndpoint
-from api.profiles.list_proxies import ListProxiesEndpoint
+from pyctrld._core.logger import logger
+from pyctrld._core.models.profiles.list_proxies import Proxie
+from pyctrld._core.urls import Endpoints
+from pyctrld._core.utils import BaseEndpoint
+from pyctrld.api.profiles.list_proxies import ListProxiesEndpoint
 from tests.checks import check_api_list_endpoint, check_key_in_model
 
 load_dotenv()
