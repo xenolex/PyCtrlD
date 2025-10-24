@@ -23,11 +23,6 @@ convention = "google"
 [tool.setuptools]
 package-dir = {"pyctrld" = "pyctrld"}
 
-# [tool.setuptools.packages.find]
-# include = ["src*"]
-# exclude = ["tests*"]
-
-
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
