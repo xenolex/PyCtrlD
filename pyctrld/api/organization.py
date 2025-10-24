@@ -10,6 +10,7 @@ Warning:
 
 from __future__ import annotations
 
+import shutil
 from typing import Optional
 
 from pyctrld._core.logger import logger
@@ -21,9 +22,11 @@ from pyctrld.api.devices import BaseFormData
 
 def __print_warning() -> None:
     """Print warning message about untested organization functionality."""
-    logger.warning("======================================================================")
+    width = shutil.get_terminal_size().columns
+
+    logger.warning("=" * width)
     logger.warning("Warning!!! Use on your own risk!!! Author haven't organization profile")
-    logger.warning("======================================================================")
+    logger.warning("=" * width)
 
 
 class CreateSubOrganizationFromData(BaseFormData):
