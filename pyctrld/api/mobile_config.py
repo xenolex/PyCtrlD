@@ -1,3 +1,9 @@
+"""Mobile config endpoint for ControlD API.
+
+This module provides functionality for generating Apple .mobileconfig profiles
+for DNS configuration on iOS, iPadOS, and macOS devices.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -11,7 +17,21 @@ if TYPE_CHECKING:
 
 
 class MobileConfigEndpoint(BaseEndpoint):
+    """Endpoint for generating Apple mobile configuration profiles.
+
+    This endpoint provides methods to generate signed .mobileconfig files
+    that configure DNS settings on Apple devices (iOS, iPadOS, macOS).
+
+    Args:
+        token: The API authentication bearer token.
+    """
+
     def __init__(self, token: str) -> None:
+        """Initialize the MobileConfig endpoint.
+
+        Args:
+            token: Bearer token for API authentication.
+        """
         super().__init__(token)
         self._url = Endpoints.MOBILE_CONFIG
 
@@ -26,23 +46,26 @@ class MobileConfigEndpoint(BaseEndpoint):
         exclude_common: bool = True,
         client_id: Optional[str] = None,
     ) -> Path:
-        """
-        This endpoint will returned a signed .mobileconfig
-        Apple DNS profile which can be configured on any modern Apple device.
+        """Generate a signed .mobileconfig Apple DNS profile.
+
+        This endpoint generates a configuration profile that can be installed on
+        any modern Apple device to configure DNS settings for the specified device.
 
         Args:
-            device_id (str): Device/Resolver ID.
-            filepath (str | Path): The path to save the profile to.
-            exclude_wifi (Optional[list[str]]): Array of Wi-Fi SSIDs to exclude from using Control D.
-            exclude_domain (Optional[list[str]]): Array of domain names to exclude from using Control D.
-            dont_sign (bool): Supply value of 'False' to not sign the profile.
-            exclude_common (bool): Supply value of 'False' to not include common captive portal hostnames into exclude_wifi list.
-            client_id (Optional[str]): Optional client name.
+            device_id: Device/Resolver ID to generate the profile for.
+            filepath: The file path where the profile should be saved.
+            exclude_wifi: Array of Wi-Fi SSIDs to exclude from using Control D.
+            exclude_domain: Array of domain names to exclude from using Control D.
+            dont_sign: If False, the profile will not be signed. Defaults to True.
+            exclude_common: If False, common captive portal hostnames will not be
+                included in the exclude_wifi list. Defaults to True.
+            client_id: Optional client name identifier.
 
         Returns:
-            Path: The path to the generated profile.
+            Path object pointing to the saved .mobileconfig file.
 
-        https://docs.controld.com/reference/get_mobileconfig-device-id
+        Reference:
+            https://docs.controld.com/reference/get_mobileconfig-device-id
         """
         params = {}
         if exclude_wifi:

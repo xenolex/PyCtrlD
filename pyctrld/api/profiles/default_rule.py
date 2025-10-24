@@ -1,3 +1,9 @@
+"""Default rule endpoint for ControlD API.
+
+This module provides functionality for managing the default DNS rule in profiles,
+which acts as a fallback for queries that don't match any custom rules.
+"""
+
 from __future__ import annotations
 
 from typing import Optional
@@ -22,20 +28,35 @@ class DefaultRuleFormData(BaseFormData):
 
 
 class DefaultRuleEndpoint(BaseEndpoint):
-    """Endpoint for managing profile default rules."""
+    """Endpoint for managing the default DNS rule in profiles.
+
+    This endpoint provides methods to view and modify the default rule,
+    which is applied to DNS queries that don't match any custom rules.
+
+    Args:
+        token: The API authentication bearer token.
+    """
 
     def __init__(self, token: str) -> None:
+        """Initialize the DefaultRule endpoint.
+
+        Args:
+            token: Bearer token for API authentication.
+        """
         super().__init__(token)
         self._url = Endpoints.DEFAULT_RULE
 
     def list(self, profile_id: str) -> Action:
-        """Returns status of the Default Rule.
+        """Returns status of the default rule.
+
+        Retrieves the current configuration of the default DNS rule for the
+        specified profile, including its action type, status, and routing settings.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
+            profile_id: Primary key (PK) of the profile.
 
         Returns:
-            ActionItem: Default rule item with current settings.
+            Action object containing the default rule configuration.
 
         Reference:
             https://docs.controld.com/reference/get_profiles-profile-id-default
@@ -44,14 +65,17 @@ class DefaultRuleEndpoint(BaseEndpoint):
         return Action.model_validate(data["default"], strict=True)
 
     def modify(self, profile_id: str, form_data: DefaultRuleFormData) -> Action:
-        """Modify the Default Rule for a profile.
+        """Modify the default rule for a profile.
+
+        Updates the default DNS rule configuration with new action type, status,
+        and optional routing settings.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
-            form_data (DefaultRuleFormData): Form data for default rule modification.
+            profile_id: Primary key (PK) of the profile.
+            form_data: Form data containing the new default rule settings.
 
         Returns:
-            ActionItem: Modified default rule item with updated settings.
+            Action object with the updated default rule configuration.
 
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id-default

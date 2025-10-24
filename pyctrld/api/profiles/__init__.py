@@ -1,3 +1,9 @@
+"""Profiles API subpackage for ControlD.
+
+This package contains all profile-related endpoints and form data classes for managing
+DNS profiles, custom rules, filters, services, and rule folders in the ControlD API.
+"""
+
 from __future__ import annotations
 
 from pyctrld.api.profiles._api import ProfilesAPI

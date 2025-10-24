@@ -1,3 +1,9 @@
+"""Rule folders endpoint for ControlD API.
+
+This module provides functionality for managing rule folders (groups) in DNS profiles,
+which allow organizing custom DNS rules into logical groups with shared actions.
+"""
+
 from __future__ import annotations
 
 from typing import Optional
@@ -49,25 +55,35 @@ class CreateRuleFoldersFormData(RuleFoldersFormData):
 
 
 class RuleFoldersEndpoint(BaseEndpoint):
-    """Endpoint for managing profile rule folders (groups)."""
+    """Endpoint for managing profile rule folders (groups).
+
+    This endpoint provides methods to create, list, modify, and delete rule folders,
+    which are used to organize custom DNS rules into groups with shared actions.
+
+    Args:
+        token: The API authentication bearer token.
+    """
 
     def __init__(self, token: str) -> None:
-        """Initialize the rule folders endpoint.
+        """Initialize the RuleFolders endpoint.
 
         Args:
-            token: Authentication token for API access.
+            token: Bearer token for API authentication.
         """
         super().__init__(token)
         self._url = Endpoints.RULE_FOLDERS
 
     def list(self, profile_id: str) -> list[RuleFolder]:
-        """Return all folders in a profile. These can be used to group custom rules.
+        """Return all folders in a profile.
+
+        Retrieves all rule folders (groups) in the specified profile. These folders
+        can be used to organize custom DNS rules into logical groups.
 
         Args:
             profile_id: Primary key (PK) of the profile.
 
         Returns:
-            list of rule folder items.
+            A list of RuleFolder objects representing rule folders in the profile.
 
         Reference:
             https://docs.controld.com/reference/get_profiles-profile-id-groups
@@ -82,13 +98,16 @@ class RuleFoldersEndpoint(BaseEndpoint):
     ) -> list[RuleFolder]:
         """Modify an existing folder.
 
+        Updates the settings of an existing rule folder, including its name,
+        action type, status, and routing settings.
+
         Args:
             profile_id: Primary key (PK) of the profile.
-            folder: Folder ID.
-            form_data: Form data for folder modification.
+            folder: Folder ID to modify.
+            form_data: Form data containing fields to update.
 
         Returns:
-            list of all rule folder items after modification.
+            A list of all RuleFolder objects in the profile after modification.
 
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id-groups-folder
@@ -105,12 +124,16 @@ class RuleFoldersEndpoint(BaseEndpoint):
     def create(self, profile_id: str, form_data: CreateRuleFoldersFormData) -> list[RuleFolder]:
         """Create a new folder and assign it an optional rule.
 
+        Creates a new rule folder (group) in the profile with the specified name,
+        action type, and routing settings. All rules added to this folder will
+        inherit these settings.
+
         Args:
             profile_id: Primary key (PK) of the profile.
-            form_data: Form data for folder creation.
+            form_data: Form data containing folder configuration.
 
         Returns:
-            list of all rule folder items after creation.
+            A list of all RuleFolder objects in the profile after creation.
 
         Reference:
             https://docs.controld.com/reference/post_profiles-profile-id-groups
@@ -129,9 +152,12 @@ class RuleFoldersEndpoint(BaseEndpoint):
     ) -> bool:
         """Delete folder and all custom rules inside it.
 
+        Deletes the specified rule folder and all custom DNS rules contained within it.
+        This operation cannot be undone.
+
         Args:
             profile_id: Primary key (PK) of the profile.
-            folder: Folder ID.
+            folder: Folder ID to delete.
 
         Returns:
             True if folder was deleted successfully.

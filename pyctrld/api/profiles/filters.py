@@ -1,3 +1,9 @@
+"""Filters endpoint for ControlD API.
+
+This module provides functionality for managing DNS filters in profiles,
+including both native ControlD filters and third-party filter lists.
+"""
+
 from __future__ import annotations
 
 from pyctrld._core.models.common import Action, BaseFormData, Status
@@ -17,20 +23,35 @@ class ModifyFilterFormData(BaseFormData):
 
 
 class FiltersEndpoint(BaseEndpoint):
-    """Endpoint for managing profile filters."""
+    """Endpoint for managing DNS filters in profiles.
+
+    This endpoint provides methods to list and modify both native ControlD filters
+    and third-party filter lists that can be applied to DNS profiles.
+
+    Args:
+        token: The API authentication bearer token.
+    """
 
     def __init__(self, token: str) -> None:
+        """Initialize the Filters endpoint.
+
+        Args:
+            token: Bearer token for API authentication.
+        """
         super().__init__(token)
         self._url = Endpoints.FILTERS
 
     def list_native(self, profile_id: str) -> list[NativeFilter]:
-        """Returns all Native filters for this profile and their states.
+        """Returns all native ControlD filters for this profile and their states.
+
+        Retrieves all built-in ControlD filters available for the specified profile,
+        along with their current enabled/disabled status.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
+            profile_id: Primary key (PK) of the profile.
 
         Returns:
-            list[FilterItem]: list of native filter items.
+            A list of NativeFilter objects representing available native filters.
 
         Reference:
             https://docs.controld.com/reference/get_profiles-profile-id-filters
@@ -41,13 +62,16 @@ class FiltersEndpoint(BaseEndpoint):
         )
 
     def list_third_party(self, profile_id: str) -> list[ThirdPartyFilter]:
-        """Returns all 3rd party filters for this profile and their states.
+        """Returns all third-party filters for this profile and their states.
+
+        Retrieves all external/third-party filter lists available for the specified
+        profile, along with their current enabled/disabled status.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
+            profile_id: Primary key (PK) of the profile.
 
         Returns:
-            list[FilterItem]: list of third-party filter items.
+            A list of ThirdPartyFilter objects representing available third-party filters.
 
         Reference:
             https://docs.controld.com/reference/get_profiles-profile-id-filters-external
@@ -59,15 +83,18 @@ class FiltersEndpoint(BaseEndpoint):
     def modify(
         self, profile_id: str, filter: str, form_data: ModifyFilterFormData
     ) -> dict[str, Action]:
-        """Enables or disables a {filter} on a specified {profile}, which is the value of PK from the list endpoint.
+        """Enables or disables a filter on a specified profile.
+
+        Updates the status of a specific filter (identified by its PK value from
+        the list endpoint) on the given profile.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
-            filter (str): Filter identifier.
-            form_data (ModifyFilterFormData): Form data for filter modification.
+            profile_id: Primary key (PK) of the profile.
+            filter: Filter identifier (PK value from list endpoint).
+            form_data: Form data containing the new filter status.
 
         Returns:
-           dict[str, ActionItem]: Response data from the API containing filter information.
+            Dictionary mapping filter identifiers to their Action configurations.
 
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id-filters-filter-filter

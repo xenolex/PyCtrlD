@@ -1,3 +1,9 @@
+"""Profile services endpoint for ControlD API.
+
+This module provides functionality for managing service-based DNS filtering rules
+in profiles, allowing control over predefined service categories.
+"""
+
 from __future__ import annotations
 
 from typing import Optional
@@ -47,20 +53,35 @@ class ModifyServiceFormData(BaseFormData):
 
 
 class ServicesEndpoint(BaseEndpoint):
-    """Endpoint for managing profile services."""
+    """Endpoint for managing service-based DNS rules in profiles.
+
+    This endpoint provides methods to list and modify DNS filtering rules
+    for predefined service categories within a profile.
+
+    Args:
+        token: The API authentication bearer token.
+    """
 
     def __init__(self, token: str) -> None:
+        """Initialize the Services endpoint.
+
+        Args:
+            token: Bearer token for API authentication.
+        """
         super().__init__(token)
         self._url = Endpoints.PROFILES_SERVICES
 
     def list(self, profile_id: str) -> list[Service]:
-        """This returns services that have any kind of rule associated with it.
+        """Returns services that have any kind of rule associated with them.
+
+        Retrieves all services in the profile that have DNS filtering rules
+        configured, along with their current action settings.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
+            profile_id: Primary key (PK) of the profile.
 
         Returns:
-            list[ServiceItem]: list of service items for the profile.
+            A list of Service objects representing services with configured rules.
 
         Reference:
             https://docs.controld.com/reference/get_profiles-profile-id-services
@@ -73,15 +94,18 @@ class ServicesEndpoint(BaseEndpoint):
     def modify(
         self, profile_id: str, service: str, form_data: ModifyServiceFormData
     ) -> list[Action]:
-        """Create or modify a rule for a {service} in a {profile}.
+        """Create or modify a rule for a service in a profile.
+
+        Creates a new DNS filtering rule for a service, or modifies an existing one,
+        with the specified action type, status, and routing settings.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
-            service (str): Service name.
-            form_data (ModifyServiceFormData): Form data for service modification/ creation.
+            profile_id: Primary key (PK) of the profile.
+            service: Service identifier/name.
+            form_data: Form data containing rule configuration.
 
         Returns:
-            list[ActionItem]: list of modified service items.
+            A list of Action objects representing the updated service rules.
 
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id-services-service

@@ -1,3 +1,9 @@
+"""Utility classes and functions for ControlD API interactions.
+
+This module provides the base endpoint class for API communication, response validation,
+and various helper functions for data processing and validation.
+"""
+
 from __future__ import annotations
 
 import ipaddress
@@ -14,7 +20,25 @@ if TYPE_CHECKING:
 
 
 class BaseEndpoint:
+    """Base class for all ControlD API endpoints.
+
+    This class handles HTTP session management, authentication, and provides
+    common methods for GET, POST, PUT, and DELETE requests to the ControlD API.
+
+    Attributes:
+        _session: The requests Session object for making HTTP calls.
+        _url: The base URL for this endpoint.
+
+    Args:
+        token: The API authentication token.
+    """
+
     def __init__(self, token: str) -> None:
+        """Initialize the base endpoint with authentication.
+
+        Args:
+            token: Bearer token for API authentication.
+        """
         self._session = Session()
         self._session.hooks["response"].append(lambda resp, *args, **kwargs: logger.debug(resp.url))
 
@@ -24,15 +48,51 @@ class BaseEndpoint:
 
         self._url = ""
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Return string representation of the endpoint.
+
+        Returns:
+            A string showing the class name and URL.
+        """
         return f"<{self.__class__.__name__} url={self._url}>"
 
-    def get_raw_response(self, url, params: Optional[dict] = None):
+    def get_raw_response(self, url: str, params: Optional[dict[str, Any]] = None) -> Response:
+        """Get raw HTTP response without processing.
+
+        Args:
+            url: The URL to request.
+            params: Optional query parameters.
+
+        Returns:
+            The raw requests.Response object.
+        """
         if params is None:
             params = {}
         return self._session.get(url, params=params)
 
-    def _request(self, method, url, params: Optional[dict] = None, data=None, headers=None):
+    def _request(
+        self,
+        method: str,
+        url: str,
+        params: Optional[dict[str, Any]] = None,
+        data: Optional[str | dict[str, Any]] = None,
+        headers: Optional[dict[str, str]] = None,
+    ) -> Any:
+        """Make an HTTP request and return the response body.
+
+        Args:
+            method: HTTP method (GET, POST, PUT, DELETE).
+            url: The URL to request.
+            params: Optional query parameters.
+            data: Optional request body data.
+            headers: Optional HTTP headers.
+
+        Returns:
+            The 'body' field from the JSON response.
+
+        Raises:
+            ApiError: If the response status is not 200.
+        """
         response = self._session.request(
             method=method, url=url, params=params, data=data, headers=headers
         )
@@ -41,19 +101,64 @@ class BaseEndpoint:
 
         return data["body"]
 
-    def _list(self, url, model, key, params: Optional[dict] = None):
+    def _list(
+        self, url: str, model: type, key: str, params: Optional[dict[str, Any]] = None
+    ) -> list[Any]:
+        """Fetch and validate a list of items from the API.
+
+        Args:
+            url: The URL to request.
+            model: The Pydantic model class for validation.
+            key: The JSON key containing the list of items.
+            params: Optional query parameters.
+
+        Returns:
+            A list of validated model instances.
+        """
         data = self._request("GET", url, params=params)
         return create_list_of_items(model, data[key])
 
-    def _create(self, url, model, key, form_data: Optional[dict | str] = None):
+    def _create(
+        self, url: str, model: type, key: str, form_data: Optional[dict[str, Any] | str] = None
+    ) -> list[Any]:
+        """Create a new resource via POST request.
+
+        Args:
+            url: The URL to request.
+            model: The Pydantic model class for validation.
+            key: The JSON key containing the created item(s).
+            form_data: Optional form data for the request body.
+
+        Returns:
+            A list of validated model instances.
+        """
         data = self._request("POST", url, data=form_data)
         return create_list_of_items(model, data[key])
 
-    def _modify(self, url, model, key, form_data: Optional[dict | str] = None):
+    def _modify(
+        self, url: str, model: type, key: str, form_data: Optional[dict[str, Any] | str] = None
+    ) -> list[Any]:
+        """Modify an existing resource via PUT request.
+
+        Args:
+            url: The URL to request.
+            model: The Pydantic model class for validation.
+            key: The JSON key containing the modified item(s).
+            form_data: Optional form data for the request body.
+
+        Returns:
+            A list of validated model instances.
+        """
         data = self._request("PUT", url, data=form_data)
         return create_list_of_items(model, data[key])
 
-    def _delete(self, url, data: Optional[str | dict] = None):
+    def _delete(self, url: str, data: Optional[str | dict[str, Any]] = None) -> None:
+        """Delete a resource via DELETE request.
+
+        Args:
+            url: The URL to request.
+            data: Optional data for the request body.
+        """
         self._request(
             "DELETE",
             url,
@@ -62,9 +167,25 @@ class BaseEndpoint:
         )
 
 
-def check_response(response: Response):
+def check_response(response: Response) -> None:
+    """Validate API response and raise exception on errors.
+
+    Args:
+        response: The requests.Response object to validate.
+
+    Raises:
+        ApiError: If the response status code is not 200.
+    """
+
     class ApiError(Exception):
-        def __init__(self, response: Response):
+        """Exception raised when the API returns an error response."""
+
+        def __init__(self, response: Response) -> None:
+            """Initialize ApiError with response details.
+
+            Args:
+                response: The error response from the API.
+            """
             data = response.json()["error"]
 
             message = (
@@ -112,14 +233,28 @@ def create_list_of_items(model: type, items: Iterable) -> list[Any]:
     return out_list
 
 
-def check_via_is_proxy_identifier(via: str | None):
-    """Check that via field contains a valid 3-letter uppercase proxy identifier."""
+def check_via_is_proxy_identifier(via: str | None) -> None:
+    """Check that via field contains a valid 3-letter uppercase proxy identifier.
+
+    Args:
+        via: The proxy identifier string to validate.
+
+    Raises:
+        ValueError: If via is not a 3-letter uppercase string.
+    """
     if not all((via is not None, str(via).isupper(), len(str(via)) == 3)):
         raise ValueError(f"via field must be a valid proxy identifier, got: {via}")
 
 
-def check_via_is_record_or_cname(via: str | None):
-    """Check that via field contains either a valid IPv4 address or domain name."""
+def check_via_is_record_or_cname(via: str | None) -> None:
+    """Check that via field contains either a valid IPv4 address or domain name.
+
+    Args:
+        via: The IP address or domain name to validate.
+
+    Raises:
+        ValueError: If via is None, or is neither a valid IPv4 address nor domain name.
+    """
     if via is None:
         raise ValueError("via field is required when do=SPOOF")
 
@@ -141,8 +276,15 @@ def check_via_is_record_or_cname(via: str | None):
         raise ValueError(f"via field must be a valid IPv4 address or domain name, got: {via}")
 
 
-def check_via_v6_is_aaaa_record(via_v6: str | None):
-    """Check that via_v6 field contains a valid IPv6 address (AAAA record)."""
+def check_via_v6_is_aaaa_record(via_v6: str | None) -> None:
+    """Check that via_v6 field contains a valid IPv6 address (AAAA record).
+
+    Args:
+        via_v6: The IPv6 address to validate.
+
+    Raises:
+        ValueError: If via_v6 is not a valid IPv6 address.
+    """
     if via_v6 is not None:
         try:
             ipaddress.IPv6Address(via_v6)

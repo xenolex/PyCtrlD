@@ -1,9 +1,23 @@
+"""ControlD API endpoint URL definitions.
+
+This module contains the enumeration of all API endpoints used by the ControlD API client.
+Each endpoint is defined as a string constant that can be used to make HTTP requests to
+the ControlD API service.
+"""
+
 from __future__ import annotations
 
 from enum import StrEnum
 
 
 class Endpoints(StrEnum):
+    """Enumeration of ControlD API endpoint URLs.
+
+    This enum provides type-safe access to all ControlD API endpoints.
+    URLs may contain template variables (e.g., {profile_id}, {device_id})
+    that should be formatted with actual values before use.
+    """
+
     BASE = "https://api.controld.com"
     LIST_PROXIES = "https://api.controld.com/proxies"
     DEFAULT_RULE = "https://api.controld.com/profiles/{profile_id}/default"

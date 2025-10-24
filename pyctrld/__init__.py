@@ -1,3 +1,21 @@
+"""PyCtrlD - Python client library for the ControlD API.
+
+This package provides a comprehensive Python interface to the ControlD API,
+allowing you to manage DNS devices, profiles, rules, analytics, and more.
+
+The main entry point is the ControlDApi class, which provides access to all
+API endpoints through cached properties.
+
+Example:
+    >>> from pyctrld import ControlDApi
+    >>> api = ControlDApi(token="your_api_token")
+    >>> devices = api.devices.list_all_devices()
+    >>> profiles = api.profiles.profiles.list()
+
+The package also exports individual endpoint classes and form data models
+for more granular control over API interactions.
+"""
+
 from __future__ import annotations
 
 from pyctrld._api import ControlDApi

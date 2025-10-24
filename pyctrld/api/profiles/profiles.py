@@ -1,3 +1,9 @@
+"""Profiles endpoint for ControlD API.
+
+This module provides functionality for managing DNS profiles including
+creating, modifying, deleting profiles and managing profile options.
+"""
+
 from __future__ import annotations
 
 from typing import Optional
@@ -66,15 +72,31 @@ class ModifyOptionFormData(BaseFormData):
 
 
 class ProfilesEndpoint(BaseEndpoint):
+    """Endpoint for managing DNS profiles.
+
+    This endpoint provides methods to list, create, modify, and delete DNS profiles,
+    as well as manage profile options and settings.
+
+    Args:
+        token: The API authentication bearer token.
+    """
+
     def __init__(self, token: str) -> None:
+        """Initialize the Profiles endpoint.
+
+        Args:
+            token: Bearer token for API authentication.
+        """
         super().__init__(token)
         self._url = Endpoints.PROFILES
 
     def list(self) -> list[ProfileObject]:
         """List all profiles associated with an account.
 
+        Retrieves all DNS profiles that are configured for the authenticated account.
+
         Returns:
-            List[ProfileItem]: List of profile items.
+            A list of ProfileObject instances representing each profile.
 
         Reference:
             https://docs.controld.com/reference/get_profiles
@@ -85,11 +107,14 @@ class ProfilesEndpoint(BaseEndpoint):
     def create(self, form_data: CreateProfileFormData) -> list[ProfileObject]:
         """Create a new blank profile, or clone an existing one.
 
+        Creates either a new blank DNS profile or clones an existing profile
+        with all its rules and settings.
+
         Args:
-            form_data (CreateProfileFormData): Form data for profile creation.
+            form_data: Form data for profile creation containing name and optional clone ID.
 
         Returns:
-            bool: True if profile was created successfully.
+            A list containing the newly created ProfileObject.
 
         Reference:
             https://docs.controld.com/reference/post_profiles
@@ -101,15 +126,17 @@ class ProfilesEndpoint(BaseEndpoint):
             form_data=form_data.model_dump_json(),
         )
 
-    def modify(self, profile_id: str, form_data: ModifyProfileFormData):
+    def modify(self, profile_id: str, form_data: ModifyProfileFormData) -> list[ProfileObject]:
         """Modify an existing profile.
 
+        Updates profile settings such as name, lock status, or disable timer.
+
         Args:
-            profile_id (str): Primary key (PK) of the profile.
-            form_data (ModifyProfileFormData): Form data for profile modification.
+            profile_id: Primary key (PK) of the profile to modify.
+            form_data: Form data containing fields to update.
 
         Returns:
-            dict: Response data from the API.
+            A list containing the modified ProfileObject.
 
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id
@@ -123,13 +150,15 @@ class ProfilesEndpoint(BaseEndpoint):
 
     def delete(self, profile_id: str) -> bool:
         """Delete profile based on the primary key (PK).
-        Profile cannot be enforced by a device to be deleted successfully (must be orphaned profile).
+
+        Deletes the specified profile. The profile must not be enforced by any device
+        (must be an orphaned profile) for deletion to succeed.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
+            profile_id: Primary key (PK) of the profile to delete.
 
         Returns:
-            bool: True if profile was deleted successfully.
+            True if profile was deleted successfully.
 
         Reference:
             https://docs.controld.com/reference/delete_profiles-profile-id
@@ -137,11 +166,13 @@ class ProfilesEndpoint(BaseEndpoint):
         self._delete(f"{self._url}/{profile_id}")
         return True
 
-    def list_options(self):
+    def list_options(self) -> list[Option]:
         """Get all profile options.
 
+        Retrieves all available profile options that can be configured on DNS profiles.
+
         Returns:
-            List[OptionItem]: List of available profile options.
+            A list of Option objects representing available profile options.
 
         Reference:
             https://docs.controld.com/reference/get_profiles-options
@@ -153,13 +184,15 @@ class ProfilesEndpoint(BaseEndpoint):
     ) -> list[Data]:
         """Set an option on a profile.
 
+        Updates a specific option on the given profile with new status and/or value.
+
         Args:
-            profile_id (str): Primary key (PK) of the profile.
-            name (str): Option name.
-            form_data (ModifyOptionFormData): Form data for option modification.
+            profile_id: Primary key (PK) of the profile.
+            name: Name of the option to modify.
+            form_data: Form data containing option status and optional value.
 
         Returns:
-            bool:  True if profile was modified successfully.
+            A list of Data objects containing the updated option information.
 
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id-options-name

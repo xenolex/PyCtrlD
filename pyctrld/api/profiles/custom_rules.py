@@ -1,3 +1,9 @@
+"""Custom rules endpoint for ControlD API.
+
+This module provides functionality for managing custom DNS filtering rules
+within profiles, including creating, modifying, deleting, and listing rules.
+"""
+
 from __future__ import annotations
 
 from typing import Optional
@@ -20,13 +26,33 @@ from pyctrld._core.utils import (
 
 
 class __BaseCustomRuleFormData(BaseFormData):
+    """Base form data class for custom rule operations.
+
+    This is an internal base class that provides common fields and validation
+    for both creating and modifying custom rules.
+
+    Attributes:
+        via: Spoof/Redirect target. For SPOOF: IPv4 or hostname. For REDIRECT: proxy identifier.
+        via_v6: IPv6 address (AAAA record) when using SPOOF action.
+        group: Group/folder ID to organize rules.
+        hostnames: List of hostnames this rule applies to.
+    """
+
     via: Optional[str] = None
     via_v6: Optional[str] = None
     group: Optional[int] = None
     hostnames: list[str]
 
     @model_validator(mode="after")
-    def validate_rule_constraints(self):
+    def validate_rule_constraints(self) -> __BaseCustomRuleFormData:
+        """Validate rule constraints based on the action type.
+
+        Returns:
+            Self reference after validation.
+
+        Raises:
+            ValueError: If validation constraints are not met.
+        """
         do = getattr(self, "do", None)
         if do == Do.SPOOF:
             check_via_is_record_or_cname(self.via)
@@ -85,21 +111,36 @@ class ModifyCustomRuleFormData(__BaseCustomRuleFormData):
 
 
 class CustomRulesEndpoint(BaseEndpoint):
-    """Endpoint for managing custom DNS rules."""
+    """Endpoint for managing custom DNS filtering rules.
+
+    This endpoint provides methods to create, list, modify, and delete custom
+    DNS rules within a profile. Rules can be organized into folders/groups.
+
+    Args:
+        token: The API authentication bearer token.
+    """
 
     def __init__(self, token: str) -> None:
+        """Initialize the CustomRules endpoint.
+
+        Args:
+            token: Bearer token for API authentication.
+        """
         super().__init__(token)
         self._url = Endpoints.CUSTOM_RULES
 
     def list(self, profile_id: str, folder_id: Optional[int] = None) -> list[CustomRule]:
-        """Return custom rules in a folder. For root folder, omit the folder ID.
+        """Return custom rules in a folder.
+
+        Lists all custom DNS rules within the specified folder of a profile.
+        For root folder, omit the folder_id parameter.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
-            folder_id (Optional[int]): Folder ID (None for root). Defaults to None.
+            profile_id: Primary key (PK) of the profile.
+            folder_id: Folder ID to list rules from. None for root folder.
 
         Returns:
-            list[listCustomRuleItem]: list of custom rule items.
+            A list of CustomRule objects.
 
         Reference:
             https://docs.controld.com/reference/get_profiles-profile-id-rules-folder-id
@@ -112,14 +153,17 @@ class CustomRulesEndpoint(BaseEndpoint):
     def modify(
         self, profile_id: str, form_data: ModifyCustomRuleFormData
     ) -> list[ModifiedCustomRule]:
-        """Modify an existing custom rule.
+        """Modify existing custom rules.
+
+        Updates one or more custom DNS rules based on the hostnames provided
+        in the form data.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
-            form_data (CustomRuleFormData): Form data for rule modification.
+            profile_id: Primary key (PK) of the profile.
+            form_data: Form data containing hostnames and fields to update.
 
         Returns:
-            bool: list of modified items.
+            A list of ModifiedCustomRule objects representing updated rules.
 
         Reference:
             https://docs.controld.com/reference/put_profiles-profile-id-rules
@@ -134,12 +178,15 @@ class CustomRulesEndpoint(BaseEndpoint):
     ) -> list[ModifiedCustomRule]:
         """Create one or more custom rules.
 
+        Creates custom DNS rules for each hostname provided in the form data.
+        The number of rules created equals the length of the hostnames list.
+
         Args:
-            profile_id (str): Primary key (PK) of the profile.
-            form_data (CustomRuleFormData): Form data for rule creation.
+            profile_id: Primary key (PK) of the profile.
+            form_data: Form data containing rule configuration and hostnames.
 
         Returns:
-            list[CreateCustomRuleItem]: list of created custom rule items.
+            A list of ModifiedCustomRule objects representing created rules.
 
         Reference:
             https://docs.controld.com/reference/post_profiles-profile-id-rules
@@ -150,14 +197,17 @@ class CustomRulesEndpoint(BaseEndpoint):
         )
 
     def delete(self, profile_id: str, hostname: str) -> bool:
-        """Delete one or more custom rules.
+        """Delete custom rules for a specific hostname.
+
+        Deletes all custom DNS rules associated with the specified hostname
+        from the profile.
 
         Args:
-            profile_id (str): Primary key (PK) of the profile.
-            hostname (str): Hostname to delete.
+            profile_id: Primary key (PK) of the profile.
+            hostname: Hostname whose rules should be deleted.
 
         Returns:
-            bool: True if rules were deleted successfully.
+            True if rules were deleted successfully.
 
         Reference:
             https://docs.controld.com/reference/delete_profiles-profile-id-rules-hostname

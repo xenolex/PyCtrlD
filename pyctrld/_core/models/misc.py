@@ -1,16 +1,34 @@
+"""Miscellaneous models for ControlD API.
+
+This module provides data models for miscellaneous utility endpoints including
+IP information and network statistics across ControlD points of presence.
+"""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 from pydantic import field_validator
 
-from pyctrld._core.models.common import ConfiguratedBaseModel
+from pyctrld._core.models.common import ConfiguratedBaseModel, Status
 
 if TYPE_CHECKING:
     from typing import Any
 
 
 class Ip(ConfiguratedBaseModel):
+    """IP information model.
+
+    Attributes:
+        ip: The IP address.
+        type: IP address type.
+        org: Organization/ISP name.
+        asn: Autonomous System Number.
+        country: Country code.
+        handler: Handler/datacenter identifier.
+        pop: Point of presence identifier.
+    """
+
     ip: str
     type: str
     org: str
@@ -21,17 +39,47 @@ class Ip(ConfiguratedBaseModel):
 
 
 class Location(ConfiguratedBaseModel):
+    """Geographic location coordinates.
+
+    Attributes:
+        lat: Latitude coordinate.
+        long: Longitude coordinate.
+    """
+
     lat: float
     long: float
 
 
 class FeatureStatus(ConfiguratedBaseModel):
-    api: int
-    dns: int
-    pxy: int
+    """Feature availability status at a network location.
+
+    Attributes:
+        api: API service status.
+        dns: DNS service status.
+        pxy: Proxy service status.
+    """
+
+    api: Status
+    dns: Status
+    pxy: Status
+
+    @field_validator("api", "dns", "pxy", mode="before")
+    @classmethod
+    def set_feature_status(cls, value: int) -> Status:
+        return Status(value)
 
 
 class Network(ConfiguratedBaseModel):
+    """Network point of presence (POP) information.
+
+    Attributes:
+        iata_code: IATA airport code for the location.
+        city_name: City name where the POP is located.
+        country_name: Country name where the POP is located.
+        location: Geographic coordinates of the POP.
+        status: Feature availability status at this POP.
+    """
+
     iata_code: str
     city_name: str
     country_name: str
@@ -40,5 +88,13 @@ class Network(ConfiguratedBaseModel):
 
     @field_validator("status", check_fields=False, mode="before")
     @classmethod
-    def set_status(cls, value: Any) -> Any:
+    def set_status(cls, value: dict[str, Any]) -> FeatureStatus:
+        """Validate and convert status field to FeatureStatus model.
+
+        Args:
+            value: The raw status value from the API.
+
+        Returns:
+            Validated FeatureStatus model instance.
+        """
         return FeatureStatus.model_validate(value, strict=True)
