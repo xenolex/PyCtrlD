@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING
 
 from requests import Response, Session, exceptions
 
+from pyctrld._core.exceptions import ApiError
 from pyctrld._core.logger import logger
 
 if TYPE_CHECKING:
@@ -176,24 +177,6 @@ def check_response(response: Response) -> None:
     Raises:
         ApiError: If the response status code is not 200.
     """
-
-    class ApiError(Exception):
-        """Exception raised when the API returns an error response."""
-
-        def __init__(self, response: Response) -> None:
-            """Initialize ApiError with response details.
-
-            Args:
-                response: The error response from the API.
-            """
-            data = response.json()["error"]
-
-            message = (
-                f"HTTP Status: {response.status_code} | "
-                f"Error Code: {data['code']} | Message: {data['message']}"
-            )
-
-            super().__init__(message)
 
     sc_str = f"HTTP Status: {response.status_code}"
 
