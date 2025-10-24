@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import field_validator
 
-from pyctrld._core.models.common import ConfiguratedBaseModel, Status
+from pyctrld._core.models.common import ConfiguratedBaseModel
 
 if TYPE_CHECKING:
     from typing import Any
@@ -59,14 +59,9 @@ class FeatureStatus(ConfiguratedBaseModel):
         pxy: Proxy service status.
     """
 
-    api: Status
-    dns: Status
-    pxy: Status
-
-    @field_validator("api", "dns", "pxy", mode="before")
-    @classmethod
-    def set_feature_status(cls, value: int) -> Status:
-        return Status(value)
+    api: int
+    dns: int
+    pxy: int
 
 
 class Network(ConfiguratedBaseModel):
