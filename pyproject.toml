@@ -1,0 +1,31 @@
+[project]
+name = "pyctrld"
+version = "0.0.1"
+description = "Non-official Control D api for Python"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.11.9",
+    "requests>=2.32.5",
+    "dotenv>=0.9.9"
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.setuptools]
+package-dir = {"pyctrld" = "pyctrld"}
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
