@@ -4,6 +4,10 @@
 
 A unofficial Python client library for the [Control D](https://controld.com/) API.
 
+## What not supported?
+
+Organizations endpoint and features are not tested and may not work as expected.
+
 ## Installation
 
 ```bash
