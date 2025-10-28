@@ -32,6 +32,39 @@ jobs:
           name: python-package-distributions
           path: dist/
 
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: leave only tests
+        run: rm -rf pyctrld/
+
+      - name: Download distributions
+        uses: actions/download-artifact@v6
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+
+      - name: Install pytest
+        run: pip install pytest
+
+      - name: Run tests
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+          TEST_PROFILE_ID: ${{ secrets.TEST_PROFILE_ID }}
+          TEST_DEVICE_ID: ${{ secrets.TEST_DEVICE_ID }}
+          TEST_DEVICE_ID2: ${{ secrets.TEST_DEVICE_ID2 }}
+        run: |
+          pytest tests/ -v
+
   publish-to-pypi:
     name: Publish to PyPI
     needs: [build]
