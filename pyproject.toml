@@ -1,30 +1,54 @@
 [project]
 name = "pyctrld"
-version = "0.0.1"
-description = "Non-official Control D api for Python"
+version = "0.1.0"
+description = "Non-official Control D API for Python"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "xenolex", email = "alexey.belkov@gmail.com"}
+]
+keywords = ["controld", "dns", "api", "client", "privacy", "ad-blocking"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: Name Service (DNS)",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
 dependencies = [
     "pydantic>=2.11.9",
     "requests>=2.32.5",
-    "dotenv>=0.9.9"
+    "python-dotenv>=1.0.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/xenolex/PyCtrlD"
+Documentation = "https://github.com/xenolex/PyCtrlD#readme"
+Repository = "https://github.com/xenolex/PyCtrlD"
+"Bug Tracker" = "https://github.com/xenolex/PyCtrlD/issues"
 
 [dependency-groups]
 dev = [
     "pytest>=8.4.2",
+    "build>=1.0.0",
+    "twine>=5.0.0",
 ]
+
 [tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.setuptools]
-package-dir = {"pyctrld" = "pyctrld"}
-
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
