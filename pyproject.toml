@@ -24,8 +24,7 @@ classifiers = [
 
 dependencies = [
     "pydantic>=2.11.9",
-    "requests>=2.32.5",
-    "python-dotenv>=1.0.0",
+    "requests>=2.32.5"
 ]
 
 [project.urls]
@@ -39,6 +38,7 @@ dev = [
     "pytest>=8.4.2",
     "build>=1.0.0",
     "twine>=5.0.0",
+    "python-dotenv>=1.0.0",
 ]
 
 [tool.ruff.lint.isort]
