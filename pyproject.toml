@@ -24,7 +24,8 @@ classifiers = [
 
 dependencies = [
     "pydantic>=2.11.9",
-    "requests>=2.32.5"
+    "requests>=2.32.5",
+    "backports.strenum>=1.0.0; python_version < '3.11'"
 ]
 
 [project.urls]
