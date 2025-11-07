@@ -1,0 +1,87 @@
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build distribution
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install build
+        run: uv pip install --system build
+
+      - name: Build distribution
+        run: python -m build
+
+      - name: Store distribution packages
+        uses: actions/upload-artifact@v5
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: leave only tests
+        run: rm -rf pyctrld/
+
+      - name: Download distributions
+        uses: actions/download-artifact@v6
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+
+      - name: Install pytest
+        run: pip install pytest
+
+      - name: Run tests
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+          TEST_PROFILE_ID: ${{ secrets.TEST_PROFILE_ID }}
+          TEST_DEVICE_ID: ${{ secrets.TEST_DEVICE_ID }}
+          TEST_DEVICE_ID2: ${{ secrets.TEST_DEVICE_ID2 }}
+        run: |
+          pytest tests/ -v
+
+  publish-to-pypi:
+    name: Publish to PyPI
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pyctrld
+
+    permissions:
+      id-token: write
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@v6
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

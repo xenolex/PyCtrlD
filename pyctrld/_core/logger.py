@@ -10,9 +10,6 @@ import logging
 import os
 from typing import Any
 
-from dotenv import load_dotenv
-
-load_dotenv()
 LOGGING_LEVEL: int | str = os.getenv("LOGGING_LEVEL", logging.INFO)
 
 TRACE: int = 1

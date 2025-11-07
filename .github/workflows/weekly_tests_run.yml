@@ -1,9 +1,8 @@
-name: Run Tests
+name: Run Tests Weekly
 
 on:
-  pull_request:
-    branches:
-      - main
+  schedule:
+    - cron: "0 0 * * 1"
 
 jobs:
   test:
