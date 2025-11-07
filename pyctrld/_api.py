@@ -31,7 +31,7 @@ class ControlDApi:
 
     Attributes:
         access: Access endpoint for managing known IPs.
-        accounts: Account endpoint for user data.
+        account: Account endpoint for user data.
         analytics: Analytics endpoint for usage statistics.
         billing: Billing endpoint for subscription information.
         devices: Devices endpoint for managing DNS resolvers.
@@ -65,7 +65,7 @@ class ControlDApi:
         return AccessEndpoint(token=self._token)
 
     @cached_property
-    def accounts(self) -> AccountEndpoint:
+    def account(self) -> AccountEndpoint:
         """Account endpoint for retrieving user data.
 
         Returns:
