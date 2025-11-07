@@ -55,7 +55,7 @@ jobs:
           python-version: "3.10"
 
       - name: Install dependencies
-        run: pip install pytest, python-dotenv
+        run: pip install pytest python-dotenv
 
       - name: Install package
         run: pip install dist/*.whl
