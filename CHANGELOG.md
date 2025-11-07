@@ -16,3 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed git action release workflows
+
+## [0.1.2] - 2025-11-07
+
+### Fixed
+- Renamed 'accounts' endpoint to correct 'account'

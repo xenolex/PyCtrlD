@@ -34,7 +34,7 @@ for device in devices:
     print(f"Device: {device.name} - {device.status}")
 
 # Get account information
-account = api.accounts.fetch()
+account = api.account.user_data()
 print(f"Account: {account.email}")
 
 # List all profiles
@@ -45,7 +45,7 @@ for profile in profiles:
 # Create a new device
 from pyctrld import CreateDeviceFormData
 
-new_device = api.devices.create(
+new_device = api.devices.create_device(
     data=CreateDeviceFormData(
         name="My DNS Device",
         icon="router",
