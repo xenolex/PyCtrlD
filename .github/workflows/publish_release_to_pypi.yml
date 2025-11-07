@@ -33,6 +33,7 @@ jobs:
           path: dist/
 
   test:
+    needs: [build]
     runs-on: ubuntu-latest
 
     steps:
@@ -67,7 +68,7 @@ jobs:
 
   publish-to-pypi:
     name: Publish to PyPI
-    needs: [build]
+    needs: [test]
     runs-on: ubuntu-latest
 
     environment:
