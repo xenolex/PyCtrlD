@@ -44,3 +44,4 @@ class UserData(ConfiguratedBaseModel):
     sso: str
     stats_endpoint: str
     debug: list[Any]
+    safe_countries: list[Any]
