@@ -21,3 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Renamed 'accounts' endpoint to correct 'account'
+
+## [0.1.3] - 2025-11-07
+
+### Fixed
+- Add 'safe_countries' to UserData model
