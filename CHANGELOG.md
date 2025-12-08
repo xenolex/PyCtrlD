@@ -20,17 +20,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.2] - 2025-11-07
 
 ### Fixed
-- Renamed 'accounts' endpoint to correct 'account'
+- Renamed `accounts` endpoint to correct `account`
 
 ## [0.1.3] - 2025-11-07
 
 ### Fixed
-- Add 'safe_countries' to UserData model
+- Add `safe_countries` to `UserData` model
 
 ## [0.1.4] - 2025-12-08
 
 ### Fixed
 
-- 'UserData' model fields 'safe_countries' and 'proxy_access' changed to Optional (#5)
-- 'status' field validation in DevicesEndpoint.list_all_devices() (#6)
-- types in 'CreateDeviceFormData' and 'ModifyDeviceFormData'
+- `UserData` model fields `safe_countries` and `proxy_access` changed to `Optional` (#5)
+- `status` field validation in `DevicesEndpoint.list_all_devices()` (#6)
+- types in `CreateDeviceFormData` and `ModifyDeviceFormData`
