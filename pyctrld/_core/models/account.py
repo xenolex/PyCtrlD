@@ -6,7 +6,7 @@ status, settings, and authentication details.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 from pyctrld._core.models.common import ConfiguratedBaseModel, Status
 
@@ -33,7 +33,7 @@ class UserData(ConfiguratedBaseModel):
     """
 
     last_active: int
-    proxy_access: int
+    proxy_access: Optional[int] = None
     email_status: int
     status: Status
     email: str
@@ -44,4 +44,4 @@ class UserData(ConfiguratedBaseModel):
     sso: str
     stats_endpoint: str
     debug: list[Any]
-    safe_countries: list[Any]
+    safe_countries: Optional[list[Any]] = None

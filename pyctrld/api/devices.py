@@ -1,14 +1,9 @@
 from __future__ import annotations
 
-from enum import Enum
 from typing import Literal, Optional
 
 from pyctrld._core.models.common import BaseFormData
-from pyctrld._core.models.devices import (
-    Device,
-    DeviceTypes,
-    Stats,
-)
+from pyctrld._core.models.devices import Device, DeviceStatus, DeviceTypes, Stats
 from pyctrld._core.urls import Endpoints
 from pyctrld._core.utils import BaseEndpoint
 
@@ -70,17 +65,10 @@ class CreateDeviceFormData(BaseFormData):
     desc: Optional[str] = None
     ddns_status: Optional[bool] = None
     ddns_subdomain: Optional[str] = None
-    ddns_ext_status: Optional[int] = None
-    ddns_ext_host: Optional[bool] = None
+    ddns_ext_status: Optional[bool] = None
+    ddns_ext_host: Optional[str] = None
     remap_device_id: Optional[str] = None
     remap_client_id: Optional[str] = None
-
-
-class DeviceStatus(Enum):
-    PENDING = 0
-    ACTIVE = 1
-    SOFT_DISABLED = 2
-    HARD_DISABLED = 3
 
 
 class ModifyDeviceFormData(BaseFormData):
@@ -112,6 +100,7 @@ class ModifyDeviceFormData(BaseFormData):
     legacy_ipv4_status: Optional[bool] = None
     learn_ip: Optional[bool] = None
     restricted: Optional[bool] = None
+    bump_tls: Optional[bool] = None
     desc: Optional[str] = None
     ddns_status: Optional[bool] = None
     ddns_subdomain: Optional[str] = None
