@@ -29,7 +29,12 @@ from pyctrld._core.models.devices import (
 )
 from pyctrld._core.urls import Endpoints
 from pyctrld._core.utils import BaseEndpoint
-from pyctrld.api.devices import CreateDeviceFormData, DevicesEndpoint, ModifyDeviceFormData
+from pyctrld.api.devices import (
+    CreateDeviceFormData,
+    DevicesEndpoint,
+    DeviceStatus,
+    ModifyDeviceFormData,
+)
 from tests.checks import check_api_list_endpoint, check_key_in_model
 
 load_dotenv()
@@ -71,6 +76,22 @@ class TestDevices:
         updated_device = self.api.modify_device(test_device_id2, form_data)
 
         assert self.default_name == updated_device.name
+
+    def test_modify_device_status(self):
+        name = f"test{randint(0, 99999)}"
+        for status in DeviceStatus:
+            form_data = ModifyDeviceFormData(name=name, stats="OFF", status=status)
+            updated_device = self.api.modify_device(test_device_id2, form_data)
+            assert name == updated_device.name
+            
+            check_api_list_endpoint(self.api, model=Device, method_name="list_all_devices")
+            
+            form_data = ModifyDeviceFormData(
+                name=self.default_name, stats="FULL", status=DeviceStatus.ACTIVE
+            )
+            updated_device = self.api.modify_device(test_device_id2, form_data)
+
+            assert self.default_name == updated_device.name
 
     def test_delete_device(self):
         lst = self.api.list_all_devices()

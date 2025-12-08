@@ -114,6 +114,13 @@ class CtrlD(ConfiguratedBaseModel):
     version: str
 
 
+class DeviceStatus(Enum):
+    PENDING = 0
+    ACTIVE = 1
+    SOFT_DISABLED = 2
+    HARD_DISABLED = 3
+
+
 class Device(ConfiguratedBaseModel):
     """Complete device/resolver configuration model.
 
@@ -149,7 +156,7 @@ class Device(ConfiguratedBaseModel):
     name: str
     stats: Optional[Stats] = None
     device_id: str
-    status: Status
+    status: DeviceStatus
     restricted: Optional[Status] = None
     learn_ip: Status
     desc: Optional[str] = None
@@ -166,6 +173,18 @@ class Device(ConfiguratedBaseModel):
     last_activity: Optional[int] = None
     clients: Optional[dict[str, Any]] = None
     ctrld: Optional[CtrlD] = None
+
+    # rewrited nasted validation
+    @field_validator("learn_ip", mode="before")
+    @classmethod
+    def set_learn_ip(cls, value: Any) -> Any:
+        return Status(value)
+
+    # rewrited nasted validation
+    @field_validator("status", mode="before")
+    @classmethod
+    def set_status(cls, value: Any) -> Any:
+        return DeviceStatus(value)
 
     @field_validator("resolvers", mode="before")
     @classmethod
