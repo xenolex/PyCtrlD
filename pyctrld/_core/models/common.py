@@ -138,13 +138,13 @@ class Action(ConfiguratedBaseModel):
     """Model representing a DNS rule action configuration.
 
     Attributes:
-        do: The action to perform on matching queries.
+        do: Optional action to perform on matching queries.
         status: Whether this action is enabled or disabled.
         via: Optional proxy identifier, IPv4 address, or domain for routing.
         via_v6: Optional IPv6 address (AAAA record) for routing.
     """
 
-    do: Do
+    do: Optional[Do] = None
     status: Status
     via: Optional[str] = None
     via_v6: Optional[str] = None
