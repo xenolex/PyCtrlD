@@ -34,3 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `UserData` model fields `safe_countries` and `proxy_access` changed to `Optional` (#5)
 - `status` field validation in `DevicesEndpoint.list_all_devices()` (#6)
 - types in `CreateDeviceFormData` and `ModifyDeviceFormData`
+
+## [0.1.5] - 2025-12-11
+
+### Fixed
+
+- Update `do` field in `Action` model to be optional
